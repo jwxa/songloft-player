@@ -48,6 +48,7 @@ jobs:
         run: |
           mkdir -p /tmp/gdstudio-acceptance
           unzip -q gdstudio-plugin/dist/gdstudio.jsplugin.zip -d /tmp/gdstudio-acceptance
+          node integration_test/support/generate_gdstudio_fixture.mjs /tmp/gdstudio-acceptance integration_test/generated/gdstudio_fixture.dart
           node integration_test/support/gdstudio_acceptance_server.mjs /tmp/gdstudio-acceptance 58092 > /tmp/gdstudio-acceptance-server.log 2>&1 &
           echo $! > /tmp/gdstudio-acceptance-server.pid
           for attempt in {1..30}; do
@@ -103,6 +104,7 @@ jobs:
         shell: pwsh
         run: |
           Expand-Archive -Path gdstudio-plugin/dist/gdstudio.jsplugin.zip -DestinationPath $env:RUNNER_TEMP/gdstudio-acceptance
+          node integration_test/support/generate_gdstudio_fixture.mjs "$env:RUNNER_TEMP/gdstudio-acceptance" integration_test/generated/gdstudio_fixture.dart
           $log = "$env:RUNNER_TEMP/gdstudio-acceptance-server.log"
           $process = Start-Process node -ArgumentList @('integration_test/support/gdstudio_acceptance_server.mjs', "$env:RUNNER_TEMP/gdstudio-acceptance", '58092') -RedirectStandardOutput $log -RedirectStandardError "$env:RUNNER_TEMP/gdstudio-acceptance-server-error.log" -PassThru
           echo "ACCEPTANCE_SERVER_PID=$($process.Id)" >> $env:GITHUB_ENV

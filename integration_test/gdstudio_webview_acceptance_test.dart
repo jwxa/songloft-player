@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:songloft_flutter/core/utils/webview_environment.dart';
 
+import 'generated/gdstudio_fixture.dart';
+
 const _acceptanceUrl = String.fromEnvironment('GDSTUDIO_ACCEPTANCE_URL');
 
 void main() {
@@ -37,9 +39,6 @@ void main() {
 
     final controller = await controllerCompleter.future.timeout(
       const Duration(seconds: 30),
-    );
-    await controller.loadUrl(
-      urlRequest: URLRequest(url: WebUri(_acceptanceUrl)),
     );
     await _waitFor(
       controller,
@@ -75,7 +74,12 @@ class _AcceptanceApp extends StatelessWidget {
         body: SafeArea(
           child: InAppWebView(
             webViewEnvironment: SongloftWebViewEnvironment.instance,
-            initialUrlRequest: URLRequest(url: WebUri(url)),
+            initialData: InAppWebViewInitialData(
+              data: gdstudioFixtureHTML,
+              baseUrl: WebUri(url),
+              mimeType: 'text/html',
+              encoding: 'utf-8',
+            ),
             initialSettings: InAppWebViewSettings(
               javaScriptEnabled: true,
               allowFileAccessFromFileURLs: true,
