@@ -155,20 +155,38 @@ function createBootstrap() {
       { id: 'track-1', source: 'netease', dedupe_key: 'gdstudio:netease:track-1', title: 'So Cynical (Badum)', artist: 'Acceptance Artist', album: 'Acceptance Album', duration: 185, cover_id: '', source_data: { root_source: 'netease', identifier: 'track-1', url_id: 'url-1' } },
       { id: 'track-2', source: 'netease', dedupe_key: 'gdstudio:netease:track-2', title: 'Second Track', artist: 'Acceptance Artist', album: 'Acceptance Album', duration: 201, cover_id: '', source_data: { root_source: 'netease', identifier: 'track-2', url_id: 'url-2' } }
     ];
-    window.__acceptance = { previewRequests: 0, previewDeletes: 0, openPlayerCount: 0, queue: [], downloadPolls: {} };
+    window.__acceptance = {
+      previewRequests: 0,
+      previewDeletes: 0,
+      audioRequests: 0,
+      openPlayerCount: 0,
+      queue: [],
+      downloadPolls: {},
+      settings: { sources: { netease: true, kuwo: true, tencent: true } },
+      downloadSettings: { path_template: 'downloads/{artist}-{album}/{title}', max_concurrency: 2 }
+    };
     const originalFetch = window.fetch.bind(window);
-    window.fetch = async (...args) => {
-      const url = String(args[0]);
-      const method = args[1]?.method || 'GET';
-      if (url.includes('/plugin-preview-sessions/gdstudio') && method === 'POST') window.__acceptance.previewRequests++;
-      if (url.includes('/audio.wav') && method === 'DELETE') window.__acceptance.previewDeletes++;
-      return originalFetch(...args);
+    const audioURL = URL.createObjectURL(new Blob([new Uint8Array(4096)], { type: 'audio/wav' }));
+    window.fetch = async (input, options = {}) => {
+      const url = String(input);
+      const method = options.method || 'GET';
+      if (url.includes('/plugin-preview-sessions/gdstudio') && method === 'POST') {
+        window.__acceptance.previewRequests++;
+        window.__acceptance.audioRequests++;
+        return new Response(JSON.stringify({ stream_url: audioURL, audio: { format: 'wav', bitrate: 1411 } }), { status: 200 });
+      }
+      if (url === audioURL && method === 'DELETE') {
+        window.__acceptance.previewDeletes++;
+        return new Response(null, { status: 204 });
+      }
+      if (url.includes('/__range-check')) return new Response(new Uint8Array(64), { status: 206 });
+      return originalFetch(input, options);
     };
     window.SongloftPlugin = {
       getAuthToken: () => 'acceptance-token',
       apiGet: async path => {
-        if (path === '/api/settings') return fetch('/__settings').then(response => response.json());
-        if (path === '/api/download-settings') return fetch('/__download-settings').then(response => response.json());
+        if (path === '/api/settings') return structuredClone(window.__acceptance.settings);
+        if (path === '/api/download-settings') return structuredClone(window.__acceptance.downloadSettings);
         if (path === '/api/info') return { plugin_version: 'acceptance', musicdl_version: '2.13.4', protocol_version: 'v1' };
         if (path.startsWith('/api/download-status/')) {
           const id = path.split('/').pop();
@@ -180,8 +198,9 @@ function createBootstrap() {
         throw new Error('unexpected GET ' + path);
       },
       apiPut: async (path, body) => {
-        const endpoint = path === '/api/settings' ? '/__settings' : '/__download-settings';
-        return fetch(endpoint, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(response => response.json());
+        if (path === '/api/settings') window.__acceptance.settings = structuredClone(body);
+        if (path === '/api/download-settings') window.__acceptance.downloadSettings = structuredClone(body);
+        return structuredClone(body);
       },
       apiPost: async (path, body) => {
         if (path === '/api/search') return { keyword: body.keyword, page_size: 10, groups: [{ source: 'netease', label: '网易云', page: 1, has_more: false, items: tracks }] };

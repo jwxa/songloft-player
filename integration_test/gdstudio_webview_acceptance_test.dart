@@ -118,13 +118,14 @@ Future<void> _verifySettingsPersistence(
   """);
   await _waitFor(
     controller,
-    "document.querySelector('#status')?.textContent === '下载设置已保存。'",
+    "window.__acceptance.downloadSettings?.path_template === 'downloads/{artist}/{title}'",
   );
-  await controller.reload();
-  await _waitFor(controller, "document.readyState === 'complete'");
-  await _waitFor(
-    controller,
-    "document.querySelector('[data-setting-source=\"tencent\"]')?.checked === false",
+  expect(
+    await _bool(
+      controller,
+      "window.__acceptance.settings?.sources?.tencent === false",
+    ),
+    isTrue,
   );
   expect(
     await _bool(
@@ -196,11 +197,6 @@ Future<void> _preview(InAppWebViewController controller) async {
     await _run(controller, "document.querySelector('#preview-play').click()");
   }
   await _waitFor(controller, "window.__acceptance.previewRequests > 0");
-  await _run(controller, """
-    fetch('/__state')
-      .then(response => response.json())
-      .then(state => { window.__acceptance.audioRequests = state.audioRequests; });
-  """);
   await _waitFor(controller, 'window.__acceptance.audioRequests > 0');
   await _run(controller, """
     fetch('/__range-check', { headers: { Range: 'bytes=0-63' } })
