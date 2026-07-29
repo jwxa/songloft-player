@@ -4,10 +4,12 @@ import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:web/web.dart' as web;
 
 import '../../../core/a11y/web_semantics_controller.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../player/domain/player_state.dart';
@@ -55,7 +57,11 @@ class _PluginWebViewPageState extends ConsumerState<PluginWebViewPage> {
   String? _lastPushedStateSig;
 
   PluginHostDispatcher get _hostDispatcher =>
-      _dispatcher ??= PluginHostDispatcher(ref, platformName: 'web');
+      _dispatcher ??= PluginHostDispatcher(
+        ref,
+        platformName: 'web',
+        onOpenPlayer: () async => context.go(AppRoutes.player),
+      );
 
   /// 在传入的裸 url 上追加 theme + access_token（不带 embed，插件保留自身工具栏）。
   String _buildPluginUrl(String theme) {

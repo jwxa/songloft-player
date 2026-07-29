@@ -4,9 +4,11 @@ import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:web/web.dart' as web;
 
 import '../../../config/app_config.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../player/domain/player_state.dart';
 import '../../player/presentation/providers/player_provider.dart';
@@ -50,7 +52,11 @@ class _PluginTabPageState extends ConsumerState<PluginTabPage> {
   String? _lastPushedStateSig;
 
   PluginHostDispatcher get _hostDispatcher =>
-      _dispatcher ??= PluginHostDispatcher(ref, platformName: 'web');
+      _dispatcher ??= PluginHostDispatcher(
+        ref,
+        platformName: 'web',
+        onOpenPlayer: () async => context.go(AppRoutes.player),
+      );
 
   String _buildPluginUrl(String theme) {
     final baseUrl =

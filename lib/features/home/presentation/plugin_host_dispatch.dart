@@ -15,10 +15,15 @@ import '../../player/presentation/providers/player_provider.dart';
 /// 本文件 **web-safe**：不 import `dart:io` / `flutter_inappwebview`，故可被
 /// Web 平台的 stub 页面直接引用。平台名由调用方注入（native 传 `Platform.*`，web 传 `'web'`）。
 class PluginHostDispatcher {
-  PluginHostDispatcher(this.ref, {required this.platformName});
+  PluginHostDispatcher(
+    this.ref, {
+    required this.platformName,
+    this.onOpenPlayer,
+  });
 
   final WidgetRef ref;
   final String platformName;
+  final Future<void> Function()? onOpenPlayer;
 
   /// 处理一次调用，统一返回 `{ok:true, data}` 或 `{ok:false, error}`。
   Future<Map<String, dynamic>> handleCall(Map<String, dynamic> req) async {
@@ -46,8 +51,14 @@ class PluginHostDispatcher {
           return {
             'version': AppConfig.frontendVersion,
             'platform': platformName,
-            'capabilities': ['player'],
+            'capabilities': ['player', 'navigation'],
           };
+        case 'openPlayer':
+          if (onOpenPlayer == null) {
+            throw Exception('host navigation unavailable');
+          }
+          await onOpenPlayer!();
+          return null;
       }
       throw Exception('unknown host method: $method');
     }

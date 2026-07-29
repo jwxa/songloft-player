@@ -4,7 +4,9 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/router/app_router.dart';
 import '../../player/domain/player_state.dart';
 import '../../player/presentation/providers/player_provider.dart';
 import 'plugin_host_dispatch.dart';
@@ -29,7 +31,11 @@ mixin PluginHostBridgeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T
   PluginHostDispatcher? _dispatcher;
 
   PluginHostDispatcher get _hostDispatcher =>
-      _dispatcher ??= PluginHostDispatcher(ref, platformName: _platformName());
+      _dispatcher ??= PluginHostDispatcher(
+        ref,
+        platformName: _platformName(),
+        onOpenPlayer: () async => context.go(AppRoutes.player),
+      );
 
   /// 在 `onWebViewCreated` 里调用，注册 JS→Dart handler。
   void registerHostBridge(InAppWebViewController controller) {
