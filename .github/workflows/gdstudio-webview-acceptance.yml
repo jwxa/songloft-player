@@ -1,0 +1,128 @@
+name: GDStudio WebView Acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      plugin_ref:
+        description: GDStudio plugin git ref
+        required: true
+        default: main
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: '3.44.6'
+  PLUGIN_REPOSITORY: jwxa/songloft-plugin-gdstudio
+
+jobs:
+  android-webview:
+    name: Android WebView
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PLUGIN_REPOSITORY }}
+          ref: ${{ inputs.plugin_ref }}
+          path: gdstudio-plugin
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: gdstudio-plugin/pnpm-lock.yaml
+      - name: Build plugin fixture
+        working-directory: gdstudio-plugin
+        run: pnpm install --frozen-lockfile && pnpm validate
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Start acceptance server
+        run: |
+          mkdir -p /tmp/gdstudio-acceptance
+          unzip -q gdstudio-plugin/dist/gdstudio.jsplugin.zip -d /tmp/gdstudio-acceptance
+          node integration_test/support/gdstudio_acceptance_server.mjs /tmp/gdstudio-acceptance 58092 > /tmp/gdstudio-acceptance-server.log 2>&1 &
+          echo $! > /tmp/gdstudio-acceptance-server.pid
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:58092/healthz && exit 0
+            sleep 1
+          done
+          cat /tmp/gdstudio-acceptance-server.log
+          exit 1
+      - name: Run Android WebView acceptance
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: flutter test integration_test/gdstudio_webview_acceptance_test.dart -d emulator-5554 --dart-define=GDSTUDIO_ACCEPTANCE_URL=http://10.0.2.2:58092/api/v1/jsplugin/gdstudio/
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdstudio-android-webview-diagnostics
+          path: /tmp/gdstudio-acceptance-server.log
+
+  windows-webview:
+    name: Windows WebView2
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PLUGIN_REPOSITORY }}
+          ref: ${{ inputs.plugin_ref }}
+          path: gdstudio-plugin
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: gdstudio-plugin/pnpm-lock.yaml
+      - name: Build plugin fixture
+        working-directory: gdstudio-plugin
+        run: pnpm install --frozen-lockfile; pnpm validate
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Start acceptance server
+        shell: pwsh
+        run: |
+          Expand-Archive -Path gdstudio-plugin/dist/gdstudio.jsplugin.zip -DestinationPath $env:RUNNER_TEMP/gdstudio-acceptance
+          $log = "$env:RUNNER_TEMP/gdstudio-acceptance-server.log"
+          $process = Start-Process node -ArgumentList @('integration_test/support/gdstudio_acceptance_server.mjs', "$env:RUNNER_TEMP/gdstudio-acceptance", '58092') -RedirectStandardOutput $log -RedirectStandardError "$env:RUNNER_TEMP/gdstudio-acceptance-server-error.log" -PassThru
+          echo "ACCEPTANCE_SERVER_PID=$($process.Id)" >> $env:GITHUB_ENV
+          for ($attempt = 0; $attempt -lt 30; $attempt++) {
+            try {
+              Invoke-RestMethod -Uri http://127.0.0.1:58092/healthz | Out-Null
+              exit 0
+            } catch {
+              Start-Sleep -Seconds 1
+            }
+          }
+          Get-Content $log
+          exit 1
+      - name: Run Windows WebView2 acceptance
+        run: flutter test integration_test/gdstudio_webview_acceptance_test.dart -d windows --dart-define=GDSTUDIO_ACCEPTANCE_URL=http://127.0.0.1:58092/api/v1/jsplugin/gdstudio/
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdstudio-windows-webview-diagnostics
+          path: |
+            ${{ runner.temp }}/gdstudio-acceptance-server.log
+            ${{ runner.temp }}/gdstudio-acceptance-server-error.log
