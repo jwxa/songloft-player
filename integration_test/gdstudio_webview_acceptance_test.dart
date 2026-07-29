@@ -27,8 +27,10 @@ void main() {
     final viewport = Platform.isAndroid
         ? const Size(412, 780)
         : const Size(1280, 800);
-    await tester.binding.setSurfaceSize(viewport);
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    if (!Platform.isAndroid) {
+      await tester.binding.setSurfaceSize(viewport);
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+    }
 
     await tester.pumpWidget(
       _AcceptanceApp(
