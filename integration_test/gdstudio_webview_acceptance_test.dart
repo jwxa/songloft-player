@@ -22,7 +22,6 @@ void main() {
 
   testWidgets('GDStudio 核心流程可在真实 WebView 中完成', (tester) async {
     final controllerCompleter = Completer<InAppWebViewController>();
-    final loadedCompleter = Completer<void>();
     final viewport = Platform.isAndroid
         ? const Size(412, 780)
         : const Size(1280, 800);
@@ -33,17 +32,20 @@ void main() {
       _AcceptanceApp(
         url: _acceptanceUrl,
         onController: controllerCompleter.complete,
-        onLoaded: () {
-          if (!loadedCompleter.isCompleted) loadedCompleter.complete();
-        },
       ),
     );
 
     final controller = await controllerCompleter.future.timeout(
       const Duration(seconds: 30),
     );
-    await loadedCompleter.future.timeout(const Duration(seconds: 30));
-    await _waitFor(controller, "document.readyState === 'complete'");
+    await controller.loadUrl(
+      urlRequest: URLRequest(url: WebUri(_acceptanceUrl)),
+    );
+    await _waitFor(
+      controller,
+      "document.readyState === 'complete' && document.querySelector('#consent-dialog') !== null",
+      timeout: const Duration(seconds: 45),
+    );
 
     await _acceptConsent(controller);
     await _verifySettingsPersistence(controller);
@@ -61,12 +63,10 @@ class _AcceptanceApp extends StatelessWidget {
   const _AcceptanceApp({
     required this.url,
     required this.onController,
-    required this.onLoaded,
   });
 
   final String url;
   final ValueChanged<InAppWebViewController> onController;
-  final VoidCallback onLoaded;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +83,6 @@ class _AcceptanceApp extends StatelessWidget {
               supportZoom: false,
             ),
             onWebViewCreated: onController,
-            onLoadStop: (_, __) => onLoaded(),
           ),
         ),
       ),
@@ -251,7 +250,11 @@ Future<void> _waitFor(
 }) async {
   final deadline = DateTime.now().add(timeout);
   while (DateTime.now().isBefore(deadline)) {
-    if (await _bool(controller, expression)) return;
+    try {
+      if (await _bool(controller, expression)) return;
+    } catch (_) {
+      // WebView 导航切换期间 JavaScript 上下文可能短暂不可用。
+    }
     await Future<void>.delayed(const Duration(milliseconds: 150));
   }
   throw TimeoutException('等待页面条件超时：$expression', timeout);

@@ -12,6 +12,7 @@ const audio = createWave()
 
 const server = createServer((request, response) => {
   const url = new URL(request.url || '/', `http://${request.headers.host}`)
+  console.log(`${request.method} ${url.pathname}`)
   if (url.pathname === '/healthz') return json(response, 200, { ok: true })
   if (url.pathname === '/__state') return json(response, 200, state)
   if (url.pathname === '/__range-check') return serveAudio(request, response, false)
