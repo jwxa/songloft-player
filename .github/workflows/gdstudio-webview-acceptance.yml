@@ -63,10 +63,11 @@ jobs:
       - name: Run Android WebView acceptance
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          api-level: 34
           arch: x86_64
           profile: pixel_6
-          disable-animations: true
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: flutter test integration_test/gdstudio_webview_acceptance_test.dart -d emulator-5554 --dart-define=GDSTUDIO_ACCEPTANCE_URL=http://10.0.2.2:58092/api/v1/jsplugin/gdstudio/
       - name: Upload diagnostics
         if: always()

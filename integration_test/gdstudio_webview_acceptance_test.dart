@@ -188,7 +188,7 @@ Future<void> _preview(InAppWebViewController controller) async {
   await _run(controller, "document.querySelector('[data-preview-id]').click()");
   await _waitFor(
     controller,
-    "document.querySelector('#preview-audio')?.src.includes('/audio.wav') === true",
+    "document.querySelector('#preview-audio')?.src.startsWith('blob:') === true",
   );
   if (Platform.isAndroid) {
     await _waitFor(controller, "document.querySelector('#preview-play').hidden === false");
