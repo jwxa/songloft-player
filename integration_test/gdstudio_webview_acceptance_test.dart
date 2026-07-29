@@ -118,7 +118,7 @@ Future<void> _verifySettingsPersistence(
   """);
   await _waitFor(
     controller,
-    "localStorage.getItem('acceptance-download-settings')?.includes('downloads/{artist}/{title}') === true",
+    "document.querySelector('#status')?.textContent === '下载设置已保存。'",
   );
   await controller.reload();
   await _waitFor(controller, "document.readyState === 'complete'");

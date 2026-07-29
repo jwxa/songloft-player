@@ -4,7 +4,13 @@ import { extname, join, normalize, resolve, sep } from 'node:path'
 
 const root = resolve(process.argv[2] || '')
 const port = Number(process.argv[3] || 58092)
-const state = { audioRequests: 0, rangeRequests: 0, previewDeletes: 0 }
+const state = {
+  audioRequests: 0,
+  rangeRequests: 0,
+  previewDeletes: 0,
+  settings: { sources: { netease: true, kuwo: true, tencent: true } },
+  downloadSettings: { path_template: 'downloads/{artist}-{album}/{title}', max_concurrency: 2 },
+}
 const indexPath = join(root, 'static', 'index.html')
 const bootstrap = `<script>${createBootstrap()}</script>`
 const indexHTML = readFileSync(indexPath, 'utf8').replace('<script src=', `${bootstrap}<script src=`)
@@ -15,6 +21,20 @@ const server = createServer((request, response) => {
   console.log(`${request.method} ${url.pathname}`)
   if (url.pathname === '/healthz') return json(response, 200, { ok: true })
   if (url.pathname === '/__state') return json(response, 200, state)
+  if (url.pathname === '/__settings' && request.method === 'GET') return json(response, 200, state.settings)
+  if (url.pathname === '/__settings' && request.method === 'PUT') {
+    return readJSONBody(request).then(body => {
+      state.settings = body
+      json(response, 200, body)
+    })
+  }
+  if (url.pathname === '/__download-settings' && request.method === 'GET') return json(response, 200, state.downloadSettings)
+  if (url.pathname === '/__download-settings' && request.method === 'PUT') {
+    return readJSONBody(request).then(body => {
+      state.downloadSettings = body
+      json(response, 200, body)
+    })
+  }
   if (url.pathname === '/__range-check') return serveAudio(request, response, false)
   if (url.pathname === '/audio.wav' && request.method === 'DELETE') {
     state.previewDeletes++
@@ -90,6 +110,12 @@ function readBody(request) {
   })
 }
 
+async function readJSONBody(request) {
+  const chunks = []
+  for await (const chunk of request) chunks.push(chunk)
+  return JSON.parse(Buffer.concat(chunks).toString('utf8'))
+}
+
 function contentType(filePath) {
   return {
     '.css': 'text/css; charset=utf-8',
@@ -125,10 +151,6 @@ function createWave() {
 
 function createBootstrap() {
   return `
-    const defaultSources = { netease: true, kuwo: true, tencent: true };
-    const readJSON = (key, fallback) => {
-      try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
-    };
     const tracks = [
       { id: 'track-1', source: 'netease', dedupe_key: 'gdstudio:netease:track-1', title: 'So Cynical (Badum)', artist: 'Acceptance Artist', album: 'Acceptance Album', duration: 185, cover_id: '', source_data: { root_source: 'netease', identifier: 'track-1', url_id: 'url-1' } },
       { id: 'track-2', source: 'netease', dedupe_key: 'gdstudio:netease:track-2', title: 'Second Track', artist: 'Acceptance Artist', album: 'Acceptance Album', duration: 201, cover_id: '', source_data: { root_source: 'netease', identifier: 'track-2', url_id: 'url-2' } }
@@ -145,8 +167,8 @@ function createBootstrap() {
     window.SongloftPlugin = {
       getAuthToken: () => 'acceptance-token',
       apiGet: async path => {
-        if (path === '/api/settings') return readJSON('acceptance-settings', { sources: defaultSources });
-        if (path === '/api/download-settings') return readJSON('acceptance-download-settings', { path_template: 'downloads/{artist}-{album}/{title}', max_concurrency: 2 });
+        if (path === '/api/settings') return fetch('/__settings').then(response => response.json());
+        if (path === '/api/download-settings') return fetch('/__download-settings').then(response => response.json());
         if (path === '/api/info') return { plugin_version: 'acceptance', musicdl_version: '2.13.4', protocol_version: 'v1' };
         if (path.startsWith('/api/download-status/')) {
           const id = path.split('/').pop();
@@ -158,9 +180,8 @@ function createBootstrap() {
         throw new Error('unexpected GET ' + path);
       },
       apiPut: async (path, body) => {
-        if (path === '/api/settings') localStorage.setItem('acceptance-settings', JSON.stringify(body));
-        if (path === '/api/download-settings') localStorage.setItem('acceptance-download-settings', JSON.stringify(body));
-        return body;
+        const endpoint = path === '/api/settings' ? '/__settings' : '/__download-settings';
+        return fetch(endpoint, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(response => response.json());
       },
       apiPost: async (path, body) => {
         if (path === '/api/search') return { keyword: body.keyword, page_size: 10, groups: [{ source: 'netease', label: '网易云', page: 1, has_more: false, items: tracks }] };
