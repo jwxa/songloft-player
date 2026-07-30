@@ -115,9 +115,10 @@ class _GithubProxyDialogState extends State<GithubProxyDialog> {
         ),
         FilledButton(
           onPressed: () {
-            final value = _selected == -1
-                ? _customController.text.trim()
-                : presets[_selected].value;
+            final value =
+                _selected == -1
+                    ? _customController.text.trim()
+                    : presets[_selected].value;
             Navigator.pop(context, value);
           },
           child: Text(l10n.settingsSave),

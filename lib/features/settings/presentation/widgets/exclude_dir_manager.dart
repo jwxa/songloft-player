@@ -41,7 +41,8 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
 
   // 输入控制器
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _autoCreateExcludeController = TextEditingController();
+  final TextEditingController _autoCreateExcludeController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -67,7 +68,9 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
         _musicPath = setting.path;
         _excludeDirs = List<String>.from(setting.excludeDirs);
         _excludePaths = List<String>.from(setting.excludePaths);
-        _autoCreateExcludeDirs = List<String>.from(setting.autoCreateExcludeDirs);
+        _autoCreateExcludeDirs = List<String>.from(
+          setting.autoCreateExcludeDirs,
+        );
         _isLoading = false;
       });
 
@@ -78,7 +81,9 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).settingsExcludeDirLoadFailed('$e'),
+          message: AppLocalizations.of(
+            context,
+          ).settingsExcludeDirLoadFailed('$e'),
         );
       }
     }
@@ -175,14 +180,18 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).settingsExcludeDirSaveFailed(e.message),
+          message: AppLocalizations.of(
+            context,
+          ).settingsExcludeDirSaveFailed(e.message),
         );
       }
     } catch (e) {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).settingsExcludeDirSaveFailed('$e'),
+          message: AppLocalizations.of(
+            context,
+          ).settingsExcludeDirSaveFailed('$e'),
         );
       }
     } finally {
@@ -249,13 +258,14 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
           width: double.infinity,
           child: FilledButton.icon(
             onPressed: _isSaving ? null : _saveConfig,
-            icon: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
+            icon:
+                _isSaving
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Icon(Icons.save),
             label: Text(
               _isSaving
                   ? l10n.settingsExcludeDirSaving
@@ -303,10 +313,13 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
             if (textEditingValue.text.isEmpty) {
               return const Iterable<String>.empty();
             }
-            return _allDirNames.where((name) =>
-                name.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase()) &&
-                !_excludeDirs.contains(name));
+            return _allDirNames.where(
+              (name) =>
+                  name.toLowerCase().contains(
+                    textEditingValue.text.toLowerCase(),
+                  ) &&
+                  !_excludeDirs.contains(name),
+            );
           },
           onSelected: _addExcludeDir,
           fieldViewBuilder: (context, controller, focusNode, onSubmitted) {
@@ -321,9 +334,10 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
               focusNode: focusNode,
               decoration: InputDecoration(
                 labelText: l10n.settingsExcludeDirInputName,
-                hintText: _isLoadingNames
-                    ? l10n.settingsExcludeDirLoadingCandidates
-                    : l10n.settingsExcludeDirInputHint,
+                hintText:
+                    _isLoadingNames
+                        ? l10n.settingsExcludeDirLoadingCandidates
+                        : l10n.settingsExcludeDirInputHint,
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.folder_outlined),
                 suffixIcon: IconButton(
@@ -360,14 +374,15 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
           Wrap(
             spacing: 8,
             runSpacing: 4,
-            children: _excludeDirs.map((name) {
-              return InputChip(
-                label: Text(name),
-                avatar: const Icon(Icons.folder_outlined, size: 18),
-                onDeleted: () => _removeExcludeDir(name),
-                deleteIconColor: colorScheme.onSurfaceVariant,
-              );
-            }).toList(),
+            children:
+                _excludeDirs.map((name) {
+                  return InputChip(
+                    label: Text(name),
+                    avatar: const Icon(Icons.folder_outlined, size: 18),
+                    onDeleted: () => _removeExcludeDir(name),
+                    deleteIconColor: colorScheme.onSurfaceVariant,
+                  );
+                }).toList(),
           ),
         ],
 
@@ -459,18 +474,20 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
           Wrap(
             spacing: 8,
             runSpacing: 4,
-            children: _excludePaths.map((path) {
-              // 显示相对于音乐目录的路径
-              final displayPath = path.startsWith(_musicPath)
-                  ? path.substring(_musicPath.length)
-                  : path;
-              return InputChip(
-                label: Text(displayPath.isEmpty ? '/' : displayPath),
-                avatar: const Icon(Icons.folder_off_outlined, size: 18),
-                onDeleted: () => _removeExcludePath(path),
-                deleteIconColor: colorScheme.onSurfaceVariant,
-              );
-            }).toList(),
+            children:
+                _excludePaths.map((path) {
+                  // 显示相对于音乐目录的路径
+                  final displayPath =
+                      path.startsWith(_musicPath)
+                          ? path.substring(_musicPath.length)
+                          : path;
+                  return InputChip(
+                    label: Text(displayPath.isEmpty ? '/' : displayPath),
+                    avatar: const Icon(Icons.folder_off_outlined, size: 18),
+                    onDeleted: () => _removeExcludePath(path),
+                    deleteIconColor: colorScheme.onSurfaceVariant,
+                  );
+                }).toList(),
           ),
         ],
       ],
@@ -521,14 +538,15 @@ class _ExcludeDirManagerState extends ConsumerState<ExcludeDirManager> {
           Wrap(
             spacing: 8,
             runSpacing: 4,
-            children: _autoCreateExcludeDirs.map((name) {
-              return InputChip(
-                label: Text(name),
-                avatar: const Icon(Icons.folder_outlined, size: 18),
-                onDeleted: () => _removeAutoCreateExcludeDir(name),
-                deleteIconColor: colorScheme.onSurfaceVariant,
-              );
-            }).toList(),
+            children:
+                _autoCreateExcludeDirs.map((name) {
+                  return InputChip(
+                    label: Text(name),
+                    avatar: const Icon(Icons.folder_outlined, size: 18),
+                    onDeleted: () => _removeAutoCreateExcludeDir(name),
+                    deleteIconColor: colorScheme.onSurfaceVariant,
+                  );
+                }).toList(),
           ),
         ],
 

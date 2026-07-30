@@ -13,10 +13,8 @@ class DlnaService {
   bool _hasStartedPlaying = false;
   bool _suppressCompletion = false; // 重新投歌期间抑制完成误判
 
-  final _devicesController =
-      StreamController<List<DlnaDeviceInfo>>.broadcast();
-  final _positionController =
-      StreamController<PositionParser>.broadcast();
+  final _devicesController = StreamController<List<DlnaDeviceInfo>>.broadcast();
+  final _positionController = StreamController<PositionParser>.broadcast();
   final _completionController = StreamController<void>.broadcast();
 
   Stream<List<DlnaDeviceInfo>> get devicesStream => _devicesController.stream;
@@ -29,15 +27,16 @@ class DlnaService {
   Future<void> startDiscovery() async {
     _deviceManager = await _manager.start();
     _deviceManager!.devices.stream.listen((deviceMap) {
-      final devices = deviceMap.values
-          .map(
-            (d) => DlnaDeviceInfo(
-              id: d.info.URLBase,
-              name: d.info.friendlyName,
-              location: d.info.URLBase,
-            ),
-          )
-          .toList();
+      final devices =
+          deviceMap.values
+              .map(
+                (d) => DlnaDeviceInfo(
+                  id: d.info.URLBase,
+                  name: d.info.friendlyName,
+                  location: d.info.URLBase,
+                ),
+              )
+              .toList();
       _devicesController.add(devices);
     });
   }
@@ -63,9 +62,7 @@ class DlnaService {
     try {
       // mime 由调用方按歌曲真实格式决定（视频→VideoMime，音频→对应 AudioMime），
       // 不再硬编码 mp3：写死 mp3 会让 DIDL 永远声明 audio/mp3，非 mp3（flac/wav）或视频投屏可能被渲染器拒绝。
-      await _sendWithRetry(
-        () => device.setUrl(url, title: title, type: mime),
-      );
+      await _sendWithRetry(() => device.setUrl(url, title: title, type: mime));
       await _sendWithRetry(() => device.play());
     } finally {
       _suppressCompletion = false;
@@ -86,15 +83,13 @@ class DlnaService {
     Future<String> Function() action, {
     int retries = 3,
   }) async {
-    for (var attempt = 0;; attempt++) {
+    for (var attempt = 0; ; attempt++) {
       try {
         await action();
         return;
       } catch (_) {
         if (attempt >= retries) rethrow;
-        await Future<void>.delayed(
-          Duration(milliseconds: 400 * (attempt + 1)),
-        );
+        await Future<void>.delayed(Duration(milliseconds: 400 * (attempt + 1)));
       }
     }
   }

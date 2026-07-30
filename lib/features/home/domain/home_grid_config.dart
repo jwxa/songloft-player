@@ -2,7 +2,7 @@
 ///
 /// 仅作用于首页宽屏（`context.useWideLayout`）的「我的歌单 / 我的电台」两个网格；
 /// 窄屏走 `PlaylistCarousel` 横向轮播，没有行列概念。曲库的
-/// `browse_collection_view` 与 TV 首页不受此配置影响。
+/// `browse_collection_view` 不受此配置影响。
 ///
 /// 纯本地偏好，刻意不参与服务器偏好同步：网格规格与屏幕尺寸强相关，同一账号的
 /// 手机与桌面不该共享同一份配置。

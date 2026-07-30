@@ -89,7 +89,10 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
       final maxSize = prefs.getLocalCacheMaxSize();
       if (mounted) {
         setState(() {
-          _localCacheMaxSizeIndex = _findSizeIndex(maxSize, _localCacheSizeOptions);
+          _localCacheMaxSizeIndex = _findSizeIndex(
+            maxSize,
+            _localCacheSizeOptions,
+          );
           _localConfigLoaded = true;
         });
       }
@@ -107,9 +110,12 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
       pushPreferencesToServer(ref.read(dioProvider));
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context).settingsCacheSaveConfigFailed(
-                e.toString()));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsCacheSaveConfigFailed(e.toString()),
+        );
       }
     }
   }
@@ -139,8 +145,7 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
     // cached_network_image 图片缓存大小
     try {
       final tempDir = await getTemporaryDirectory();
-      final imageCacheDir =
-          Directory('${tempDir.path}/libCachedImageData');
+      final imageCacheDir = Directory('${tempDir.path}/libCachedImageData');
       if (await imageCacheDir.exists()) {
         await for (final entity in imageCacheDir.list(recursive: true)) {
           if (entity is File) {
@@ -176,14 +181,19 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
       // 刷新统计数据
       ref.invalidate(serverCacheStatsProvider);
       if (mounted) {
-        ResponsiveSnackBar.show(context,
-            message: AppLocalizations.of(context).settingsCacheServerCleaned);
+        ResponsiveSnackBar.show(
+          context,
+          message: AppLocalizations.of(context).settingsCacheServerCleaned,
+        );
       }
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context)
-                .settingsCacheCleanFailed(e.toString()));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsCacheCleanFailed(e.toString()),
+        );
       }
     } finally {
       if (mounted) setState(() => _isCleaningServer = false);
@@ -218,8 +228,7 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
       // 清理 cached_network_image 图片缓存
       try {
         final tempDir = await getTemporaryDirectory();
-        final imageCacheDir =
-            Directory('${tempDir.path}/libCachedImageData');
+        final imageCacheDir = Directory('${tempDir.path}/libCachedImageData');
         if (await imageCacheDir.exists()) {
           await imageCacheDir.delete(recursive: true);
         }
@@ -231,14 +240,19 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
       await _loadLocalCacheSize();
 
       if (mounted) {
-        ResponsiveSnackBar.show(context,
-            message: AppLocalizations.of(context).settingsCacheLocalCleaned);
+        ResponsiveSnackBar.show(
+          context,
+          message: AppLocalizations.of(context).settingsCacheLocalCleaned,
+        );
       }
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context)
-                .settingsCacheCleanFailed(e.toString()));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsCacheCleanFailed(e.toString()),
+        );
       }
     } finally {
       if (mounted) setState(() => _isCleaningLocal = false);
@@ -261,9 +275,12 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
     } catch (e) {
       if (mounted) {
         setState(() => _isCleaningBrowser = false);
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context)
-                .settingsCacheCleanFailed(e.toString()));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsCacheCleanFailed(e.toString()),
+        );
       }
     }
   }
@@ -273,19 +290,24 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
     try {
       final cacheApi = ref.read(cacheApiProvider);
       final current = ref.read(serverCacheConfigProvider).value;
-      await cacheApi.updateCacheConfig(CacheConfig(
-        maxSize: maxSize,
-        cacheDir: current?.cacheDir ?? '',
-        transcodeFormat: current?.transcodeFormat ?? '',
-        transcodeQuality: current?.transcodeQuality ?? '',
-      ));
+      await cacheApi.updateCacheConfig(
+        CacheConfig(
+          maxSize: maxSize,
+          cacheDir: current?.cacheDir ?? '',
+          transcodeFormat: current?.transcodeFormat ?? '',
+          transcodeQuality: current?.transcodeQuality ?? '',
+        ),
+      );
       ref.invalidate(serverCacheConfigProvider);
       ref.invalidate(serverCacheStatsProvider);
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context)
-                .settingsCacheUpdateConfigFailed(e.toString()));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsCacheUpdateConfigFailed(e.toString()),
+        );
       }
     }
   }
@@ -295,37 +317,44 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
     final cacheApi = ref.read(cacheApiProvider);
     final result = await showDialog<String>(
       context: context,
-      builder: (ctx) => _CacheDirDialog(
-        cacheApi: cacheApi,
-        currentDir: config.cacheDir,
-        defaultDir: config.defaultCacheDir,
-      ),
+      builder:
+          (ctx) => _CacheDirDialog(
+            cacheApi: cacheApi,
+            currentDir: config.cacheDir,
+            defaultDir: config.defaultCacheDir,
+          ),
     );
     if (result == null || result == config.cacheDir) return;
     try {
       final api = ref.read(cacheApiProvider);
-      await api.updateCacheConfig(CacheConfig(
-        maxSize: config.maxSize,
-        cacheDir: result,
-        transcodeFormat: config.transcodeFormat,
-        transcodeQuality: config.transcodeQuality,
-      ));
+      await api.updateCacheConfig(
+        CacheConfig(
+          maxSize: config.maxSize,
+          cacheDir: result,
+          transcodeFormat: config.transcodeFormat,
+          transcodeQuality: config.transcodeQuality,
+        ),
+      );
       ref.invalidate(serverCacheConfigProvider);
       ref.invalidate(serverCacheStatsProvider);
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         ResponsiveSnackBar.show(
           context,
-          message: result.isEmpty
-              ? l10n.settingsCacheDirRestored
-              : l10n.settingsCacheDirUpdated,
+          message:
+              result.isEmpty
+                  ? l10n.settingsCacheDirRestored
+                  : l10n.settingsCacheDirUpdated,
         );
       }
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context)
-                .settingsCacheUpdateFailed(e.toString()));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsCacheUpdateFailed(e.toString()),
+        );
       }
     }
   }
@@ -340,24 +369,28 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
     };
     final picked = await showDialog<String>(
       context: context,
-      builder: (ctx) => SimpleDialog(
-        title: Text(l10n.settingsCacheTranscodeDialogTitle),
-        children: [
-          RadioGroup<String>(
-            groupValue: config.transcodeFormat,
-            onChanged: (v) => Navigator.pop(ctx, v ?? ''),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: labels.entries
-                  .map((e) => RadioListTile<String>(
-                        title: Text(e.value),
-                        value: e.key,
-                      ))
-                  .toList(),
-            ),
+      builder:
+          (ctx) => SimpleDialog(
+            title: Text(l10n.settingsCacheTranscodeDialogTitle),
+            children: [
+              RadioGroup<String>(
+                groupValue: config.transcodeFormat,
+                onChanged: (v) => Navigator.pop(ctx, v ?? ''),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children:
+                      labels.entries
+                          .map(
+                            (e) => RadioListTile<String>(
+                              title: Text(e.value),
+                              value: e.key,
+                            ),
+                          )
+                          .toList(),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     if (picked == null || picked == config.transcodeFormat) return;
     await _saveTranscodeConfig(config, format: picked);
@@ -374,40 +407,49 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
     };
     final picked = await showDialog<String>(
       context: context,
-      builder: (ctx) => SimpleDialog(
-        title: Text(l10n.settingsCacheTranscodeQualityDialogTitle),
-        children: [
-          RadioGroup<String>(
-            groupValue: config.transcodeQuality,
-            onChanged: (v) => Navigator.pop(ctx, v ?? ''),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: labels.entries
-                  .map((e) => RadioListTile<String>(
-                        title: Text(e.value),
-                        value: e.key,
-                      ))
-                  .toList(),
-            ),
+      builder:
+          (ctx) => SimpleDialog(
+            title: Text(l10n.settingsCacheTranscodeQualityDialogTitle),
+            children: [
+              RadioGroup<String>(
+                groupValue: config.transcodeQuality,
+                onChanged: (v) => Navigator.pop(ctx, v ?? ''),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children:
+                      labels.entries
+                          .map(
+                            (e) => RadioListTile<String>(
+                              title: Text(e.value),
+                              value: e.key,
+                            ),
+                          )
+                          .toList(),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     if (picked == null || picked == config.transcodeQuality) return;
     await _saveTranscodeConfig(config, quality: picked);
   }
 
   /// 保存转码设置（format/quality 二选一变更，其余字段沿用当前配置）
-  Future<void> _saveTranscodeConfig(CacheConfig config,
-      {String? format, String? quality}) async {
+  Future<void> _saveTranscodeConfig(
+    CacheConfig config, {
+    String? format,
+    String? quality,
+  }) async {
     try {
       final api = ref.read(cacheApiProvider);
-      await api.updateCacheConfig(CacheConfig(
-        maxSize: config.maxSize,
-        cacheDir: config.cacheDir,
-        transcodeFormat: format ?? config.transcodeFormat,
-        transcodeQuality: quality ?? config.transcodeQuality,
-      ));
+      await api.updateCacheConfig(
+        CacheConfig(
+          maxSize: config.maxSize,
+          cacheDir: config.cacheDir,
+          transcodeFormat: format ?? config.transcodeFormat,
+          transcodeQuality: quality ?? config.transcodeQuality,
+        ),
+      );
       ref.invalidate(serverCacheConfigProvider);
       if (mounted) {
         ResponsiveSnackBar.show(
@@ -417,9 +459,12 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
       }
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context)
-                .settingsCacheUpdateConfigFailed(e.toString()));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsCacheUpdateConfigFailed(e.toString()),
+        );
       }
     }
   }
@@ -505,13 +550,17 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
   }
 
   /// 本机歌曲缓存：展示用户手动缓存的单曲列表，可单删或整体清空。
-  Widget _buildDeviceSongCacheSection(ThemeData theme, ColorScheme colorScheme) {
+  Widget _buildDeviceSongCacheSection(
+    ThemeData theme,
+    ColorScheme colorScheme,
+  ) {
     final l10n = AppLocalizations.of(context);
     // watch 修订号，缓存增删后刷新列表。
     ref.watch(songCacheProvider);
     final notifier = ref.read(songCacheProvider.notifier);
-    final singles = notifier.manualEntries
-      ..sort((a, b) => b.cachedAt.compareTo(a.cachedAt));
+    final singles =
+        notifier.manualEntries
+          ..sort((a, b) => b.cachedAt.compareTo(a.cachedAt));
     final groups = notifier.playlistGroups();
     final totalSize = notifier.totalSize();
     final isEmpty = singles.isEmpty && groups.isEmpty;
@@ -521,19 +570,28 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
       children: [
         Row(
           children: [
-            Icon(Icons.download_done_rounded, size: 18, color: colorScheme.primary),
+            Icon(
+              Icons.download_done_rounded,
+              size: 18,
+              color: colorScheme.primary,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 l10n.localSongCacheTitle,
-                style: theme.textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             Text(
-              l10n.localSongCacheSummary(singles.length, _formatSize(totalSize)),
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: colorScheme.onSurfaceVariant),
+              l10n.localSongCacheSummary(
+                singles.length,
+                _formatSize(totalSize),
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -541,16 +599,18 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
         if (isEmpty)
           Text(
             l10n.localSongCacheEmpty,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           )
         else ...[
           // 已缓存歌单
           if (groups.isNotEmpty) ...[
             Text(
               l10n.localSongCachePlaylists,
-              style: theme.textTheme.labelLarge
-                  ?.copyWith(color: colorScheme.onSurfaceVariant),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             for (final entry in groups.entries)
               _buildPlaylistCacheTile(
@@ -567,14 +627,19 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
           if (singles.isNotEmpty)
             Text(
               l10n.localSongCacheSingles,
-              style: theme.textTheme.labelLarge
-                  ?.copyWith(color: colorScheme.onSurfaceVariant),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           for (final e in singles)
             ListTile(
               contentPadding: EdgeInsets.zero,
               dense: true,
-              title: Text(e.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+              title: Text(
+                e.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               subtitle: Text(
                 '${e.artist?.isNotEmpty == true ? '${e.artist} · ' : ''}'
                 '${_formatSize(e.size)}',
@@ -655,17 +720,16 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
               ),
             ),
             TextButton.icon(
-              onPressed: () =>
-                  setState(() => _serverExpanded = !_serverExpanded),
+              onPressed:
+                  () => setState(() => _serverExpanded = !_serverExpanded),
               icon: Icon(
                 _serverExpanded ? Icons.expand_less : Icons.tune,
                 size: 18,
               ),
-              label:
-                  Text(_serverExpanded ? l10n.collapse : l10n.settingsCacheManage),
-              style: TextButton.styleFrom(
-                visualDensity: VisualDensity.compact,
+              label: Text(
+                _serverExpanded ? l10n.collapse : l10n.settingsCacheManage,
               ),
+              style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
             ),
           ],
         ),
@@ -677,9 +741,10 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
             final maxSize = stats.maxSize;
             final progress =
                 maxSize > 0 ? (stats.totalSize / maxSize).clamp(0.0, 1.0) : 0.0;
-            final sizeText = maxSize > 0
-                ? '${_formatSize(stats.totalSize)} / ${_formatSize(maxSize)}'
-                : l10n.settingsCacheNoLimit(_formatSize(stats.totalSize));
+            final sizeText =
+                maxSize > 0
+                    ? '${_formatSize(stats.totalSize)} / ${_formatSize(maxSize)}'
+                    : l10n.settingsCacheNoLimit(_formatSize(stats.totalSize));
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -703,8 +768,7 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 6,
-                      backgroundColor:
-                          colorScheme.surfaceContainerHighest,
+                      backgroundColor: colorScheme.surfaceContainerHighest,
                       valueColor: AlwaysStoppedAnimation<Color>(
                         progress > 0.9
                             ? colorScheme.error
@@ -715,14 +779,16 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
               ],
             );
           },
-          loading: () => const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: LinearProgressIndicator(),
-          ),
-          error: (e, _) => Text(
-            l10n.settingsCacheStatsLoadFailed,
-            style: TextStyle(color: colorScheme.error),
-          ),
+          loading:
+              () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: LinearProgressIndicator(),
+              ),
+          error:
+              (e, _) => Text(
+                l10n.settingsCacheStatsLoadFailed,
+                style: TextStyle(color: colorScheme.error),
+              ),
         ),
 
         // 折叠区域：Slider + 清理按钮
@@ -736,9 +802,10 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
               // 缓存目录
               configAsync.when(
                 data: (config) {
-                  final dir = config.cacheDir.isNotEmpty
-                      ? config.cacheDir
-                      : config.defaultCacheDir;
+                  final dir =
+                      config.cacheDir.isNotEmpty
+                          ? config.cacheDir
+                          : config.defaultCacheDir;
                   return ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.folder_outlined),
@@ -760,9 +827,10 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
               configAsync.when(
                 data: (config) {
                   final fmt = config.transcodeFormat;
-                  final fmtLabel = fmt.isEmpty
-                      ? l10n.settingsCacheTranscodeOriginal
-                      : fmt.toUpperCase();
+                  final fmtLabel =
+                      fmt.isEmpty
+                          ? l10n.settingsCacheTranscodeOriginal
+                          : fmt.toUpperCase();
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -780,10 +848,12 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(fmtLabel,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                )),
+                            Text(
+                              fmtLabel,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                             const Icon(Icons.chevron_right),
                           ],
                         ),
@@ -821,8 +891,10 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
               // 最大缓存大小滑动条
               configAsync.when(
                 data: (config) {
-                  int currentIndex =
-                      _findSizeIndex(config.maxSize, _serverCacheSizeOptions);
+                  int currentIndex = _findSizeIndex(
+                    config.maxSize,
+                    _serverCacheSizeOptions,
+                  );
                   return StatefulBuilder(
                     builder: (context, setSliderState) {
                       return Column(
@@ -830,17 +902,20 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
                         children: [
                           Text(
                             l10n.settingsCacheMaxSize(
-                                _serverCacheSizeOptions[currentIndex].label),
+                              _serverCacheSizeOptions[currentIndex].label,
+                            ),
                             style: theme.textTheme.bodyMedium,
                           ),
                           Slider(
                             value: currentIndex.toDouble(),
                             min: 0,
-                            max: (_serverCacheSizeOptions.length - 1).toDouble(),
+                            max:
+                                (_serverCacheSizeOptions.length - 1).toDouble(),
                             divisions: _serverCacheSizeOptions.length - 1,
                             label: _serverCacheSizeOptions[currentIndex].label,
                             semanticFormatterCallback: (value) {
-                              return _serverCacheSizeOptions[value.round()].label;
+                              return _serverCacheSizeOptions[value.round()]
+                                  .label;
                             },
                             onChanged: (value) {
                               setSliderState(() {
@@ -869,23 +944,27 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _isCleaningServer ? null : _cleanServerCache,
-                  icon: _isCleaningServer
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.delete_outline),
-                  label: Text(_isCleaningServer
-                      ? l10n.settingsCacheCleaning
-                      : l10n.settingsCacheCleanServerButton),
+                  icon:
+                      _isCleaningServer
+                          ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Icon(Icons.delete_outline),
+                  label: Text(
+                    _isCleaningServer
+                        ? l10n.settingsCacheCleaning
+                        : l10n.settingsCacheCleanServerButton,
+                  ),
                 ),
               ),
             ],
           ),
-          crossFadeState: _serverExpanded
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
+          crossFadeState:
+              _serverExpanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 200),
         ),
       ],
@@ -915,17 +994,15 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
               ),
             ),
             TextButton.icon(
-              onPressed: () =>
-                  setState(() => _localExpanded = !_localExpanded),
+              onPressed: () => setState(() => _localExpanded = !_localExpanded),
               icon: Icon(
                 _localExpanded ? Icons.expand_less : Icons.tune,
                 size: 18,
               ),
-              label:
-                  Text(_localExpanded ? l10n.collapse : l10n.settingsCacheManage),
-              style: TextButton.styleFrom(
-                visualDensity: VisualDensity.compact,
+              label: Text(
+                _localExpanded ? l10n.collapse : l10n.settingsCacheManage,
               ),
+              style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
             ),
           ],
         ),
@@ -935,10 +1012,7 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n.settingsCacheSize,
-              style: theme.textTheme.bodyMedium,
-            ),
+            Text(l10n.settingsCacheSize, style: theme.textTheme.bodyMedium),
             Text(
               _localCacheSizeLoaded
                   ? _formatSize(_localCacheSize)
@@ -969,7 +1043,8 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
               if (_localConfigLoaded) ...[
                 Text(
                   l10n.settingsCacheMaxLocalSize(
-                      _localCacheSizeOptions[_localCacheMaxSizeIndex].label),
+                    _localCacheSizeOptions[_localCacheMaxSizeIndex].label,
+                  ),
                   style: theme.textTheme.bodyMedium,
                 ),
                 Slider(
@@ -999,23 +1074,27 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: _isCleaningLocal ? null : _cleanLocalCache,
-                  icon: _isCleaningLocal
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.delete_outline),
-                  label: Text(_isCleaningLocal
-                      ? l10n.settingsCacheCleaning
-                      : l10n.settingsCacheCleanLocalButton),
+                  icon:
+                      _isCleaningLocal
+                          ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Icon(Icons.delete_outline),
+                  label: Text(
+                    _isCleaningLocal
+                        ? l10n.settingsCacheCleaning
+                        : l10n.settingsCacheCleanLocalButton,
+                  ),
                 ),
               ),
             ],
           ),
-          crossFadeState: _localExpanded
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
+          crossFadeState:
+              _localExpanded
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 200),
         ),
       ],
@@ -1052,16 +1131,19 @@ class _CacheManagerState extends ConsumerState<CacheManager> {
           width: double.infinity,
           child: OutlinedButton.icon(
             onPressed: _isCleaningBrowser ? null : _cleanBrowserCache,
-            icon: _isCleaningBrowser
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh_outlined),
-            label: Text(_isCleaningBrowser
-                ? l10n.settingsCacheCleaning
-                : l10n.settingsCacheCleanBrowserButton),
+            icon:
+                _isCleaningBrowser
+                    ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Icon(Icons.refresh_outlined),
+            label: Text(
+              _isCleaningBrowser
+                  ? l10n.settingsCacheCleaning
+                  : l10n.settingsCacheCleanBrowserButton,
+            ),
           ),
         ),
       ],
@@ -1114,13 +1196,16 @@ class _CacheDirDialogState extends State<_CacheDirDialog> {
       if (mounted) setState(() => _validateResult = result);
     } catch (e) {
       if (mounted) {
-        setState(() => _validateResult = DirValidateResult(
-          valid: false,
-          created: false,
-          totalSize: 0,
-          freeSize: 0,
-          error: e.toString(),
-        ));
+        setState(
+          () =>
+              _validateResult = DirValidateResult(
+                valid: false,
+                created: false,
+                totalSize: 0,
+                freeSize: 0,
+                error: e.toString(),
+              ),
+        );
       }
     } finally {
       if (mounted) setState(() => _validating = false);
@@ -1152,7 +1237,9 @@ class _CacheDirDialogState extends State<_CacheDirDialog> {
                     decoration: InputDecoration(
                       labelText: l10n.settingsCacheDirLabel,
                       hintText: widget.defaultDir,
-                      helperText: l10n.settingsCacheDirDefault(widget.defaultDir),
+                      helperText: l10n.settingsCacheDirDefault(
+                        widget.defaultDir,
+                      ),
                       helperMaxLines: 2,
                       border: const OutlineInputBorder(),
                     ),
@@ -1165,16 +1252,18 @@ class _CacheDirDialogState extends State<_CacheDirDialog> {
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: OutlinedButton(
-                    onPressed: _validating || _controller.text.trim().isEmpty
-                        ? null
-                        : _validate,
-                    child: _validating
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.settingsCacheValidate),
+                    onPressed:
+                        _validating || _controller.text.trim().isEmpty
+                            ? null
+                            : _validate,
+                    child:
+                        _validating
+                            ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                            : Text(l10n.settingsCacheValidate),
                   ),
                 ),
               ],
@@ -1246,7 +1335,11 @@ class _CacheDirDialogState extends State<_CacheDirDialog> {
       ),
       child: Row(
         children: [
-          Icon(Icons.check_circle_outline, color: colorScheme.primary, size: 20),
+          Icon(
+            Icons.check_circle_outline,
+            color: colorScheme.primary,
+            size: 20,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

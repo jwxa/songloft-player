@@ -137,7 +137,9 @@ class FacetListNotifier extends AsyncNotifier<FacetListState> {
     if (normalized == _keyword) return;
     _keyword = normalized;
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async => _fromResponse(await _fetch(offset: 0)));
+    state = await AsyncValue.guard(
+      () async => _fromResponse(await _fetch(offset: 0)),
+    );
   }
 
   /// 触底加载下一页。
@@ -176,15 +178,16 @@ final facetListProvider =
     );
 
 /// getSongs 的分类过滤参数集合（各维度互斥，仅其一非空）。
-typedef CategoryFilter = ({
-  String? genre,
-  String? artist,
-  String? album,
-  String? language,
-  String? style,
-  int? year,
-  int? decade,
-});
+typedef CategoryFilter =
+    ({
+      String? genre,
+      String? artist,
+      String? album,
+      String? language,
+      String? style,
+      int? year,
+      int? decade,
+    });
 
 /// 将分类维度 [key]（field + value）映射为 getSongs 的过滤参数。
 ///

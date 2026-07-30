@@ -320,7 +320,9 @@ class SongloftMediaKitPlayer extends AudioPlayerPlatform {
       await _setMpvProperty('ao', 'audiotrack,opensles');
       await _setMpvProperty('cache-on-disk', 'no');
     } catch (e) {
-      debugPrint('[SongloftMediaKitPlayer] Android ao/cache 配置失败 (ignored): $e');
+      debugPrint(
+        '[SongloftMediaKitPlayer] Android ao/cache 配置失败 (ignored): $e',
+      );
     }
   }
 

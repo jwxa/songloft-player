@@ -63,76 +63,84 @@ class MiniPlayer extends ConsumerWidget {
             color: theme.colorScheme.surface,
             elevation: 2,
             child: Semantics(
-            label: AppLocalizations.of(context).playerExpandPlayer,
-            button: true,
-            child: InkWell(
-              onTap:
-                  onTap ??
-                  () {
-                    debugPrint(
-                      '[Player] MiniPlayer tapped, opening full player',
-                    );
-                    openFullPlayer(context);
-                  },
-              child: SizedBox(
-                height: 64,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Row(
-                    children: [
-                      // 封面
-                      _buildCover(context, song.coverUrl),
-                      const SizedBox(width: 12),
-                      // 标题和艺术家
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // 标题过长时自动滚动（songloft-org/songloft-player#25）
-                            ScrollingText(
-                              text: song.title,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Row(
-                              children: [
-                                if (ref.watch(dlnaStateProvider.select((s) => s.isCasting)))
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 4),
-                                    child: Icon(
-                                      Icons.cast_connected,
-                                      size: 12,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                  ),
-                                Expanded(
-                                  child: Text(
-                                    song.artist ??
-                                        AppLocalizations.of(
-                                          context,
-                                        ).playerUnknownArtist,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+              label: AppLocalizations.of(context).playerExpandPlayer,
+              button: true,
+              child: InkWell(
+                onTap:
+                    onTap ??
+                    () {
+                      debugPrint(
+                        '[Player] MiniPlayer tapped, opening full player',
+                      );
+                      openFullPlayer(context);
+                    },
+                child: SizedBox(
+                  height: 64,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        // 封面
+                        _buildCover(context, song.coverUrl),
+                        const SizedBox(width: 12),
+                        // 标题和艺术家
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 标题过长时自动滚动（songloft-org/songloft-player#25）
+                              ScrollingText(
+                                text: song.title,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  if (ref.watch(
+                                    dlnaStateProvider.select(
+                                      (s) => s.isCasting,
+                                    ),
+                                  ))
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 4),
+                                      child: Icon(
+                                        Icons.cast_connected,
+                                        size: 12,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
+                                  Expanded(
+                                    child: Text(
+                                      song.artist ??
+                                          AppLocalizations.of(
+                                            context,
+                                          ).playerUnknownArtist,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color:
+                                                theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      // 控制按钮（档位由偏好决定）
-                      _buildActions(context, state, notifier, controls),
-                    ],
+                        // 控制按钮（档位由偏好决定）
+                        _buildActions(context, state, notifier, controls),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
             ),
           ),
         ],

@@ -5,16 +5,17 @@ import 'package:dio/dio.dart';
 import '../../../l10n/l10n_holder.dart';
 import '../../../shared/models/song.dart';
 import '../domain/playlist.dart';
+import '../domain/repositories/playlist_repository_interface.dart';
 import 'playlist_api.dart';
 
 /// 歌单仓库
 /// 封装 API 调用，添加错误处理
-class PlaylistRepository {
+class PlaylistRepository implements IPlaylistRepository {
   final PlaylistApi playlistApi;
 
   PlaylistRepository(this.playlistApi);
 
-  /// 获取歌单列表
+  @override
   Future<PlaylistListResponse> getPlaylists({
     String? type,
     String? excludeLabels,
@@ -35,7 +36,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 创建歌单
+  @override
   Future<Playlist> createPlaylist({
     required String type,
     required String name,
@@ -54,7 +55,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 获取歌单详情
+  @override
   Future<Playlist> getPlaylist(int id) async {
     try {
       return await playlistApi.getPlaylist(id);
@@ -63,7 +64,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 更新歌单
+  @override
   Future<Playlist> updatePlaylist(
     int id, {
     String? name,
@@ -86,7 +87,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 上传歌单封面图片
+  @override
   Future<Playlist> uploadPlaylistCover(
     int playlistId, {
     Uint8List? bytes,
@@ -105,7 +106,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 删除歌单。[deleteSongs] 为 true 时一并删除仅属于本歌单的孤儿歌曲（含本地文件）。
+  @override
   Future<void> deletePlaylist(int id, {bool deleteSongs = false}) async {
     try {
       await playlistApi.deletePlaylist(id, deleteSongs: deleteSongs);
@@ -114,7 +115,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 获取歌单内歌曲
+  @override
   Future<SongListResponse> getPlaylistSongs(
     int id, {
     int limit = 20,
@@ -137,7 +138,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 向歌单添加歌曲，返回 (added, skipped)
+  @override
   Future<({int added, int skipped})> addSongsToPlaylist(
     int id,
     List<int> songIds,
@@ -149,7 +150,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 重新排序歌单内歌曲
+  @override
   Future<void> reorderPlaylistSongs(int id, List<int> songIds) async {
     try {
       await playlistApi.reorderPlaylistSongs(id, songIds);
@@ -158,7 +159,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 重新排序歌单
+  @override
   Future<void> reorderPlaylists(List<int> playlistIds) async {
     try {
       await playlistApi.reorderPlaylists(playlistIds);
@@ -167,7 +168,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 从歌单移除歌曲
+  @override
   Future<void> removeSongFromPlaylist(int playlistId, int songId) async {
     try {
       await playlistApi.removeSongFromPlaylist(playlistId, songId);
@@ -176,7 +177,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 更新歌单最后访问时间
+  @override
   Future<void> touchPlaylist(int id) async {
     try {
       await playlistApi.touchPlaylist(id);
@@ -185,7 +186,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 设置歌单可见性
+  @override
   Future<Playlist> setPlaylistVisibility(int id, {required bool hidden}) async {
     try {
       return await playlistApi.setPlaylistVisibility(id, hidden: hidden);
@@ -194,7 +195,7 @@ class PlaylistRepository {
     }
   }
 
-  /// 批量删除歌单。[deleteSongs] 为 true 时一并删除仅属于这些歌单的孤儿歌曲（含本地文件）。
+  @override
   Future<int> batchDeletePlaylists(
     List<int> ids, {
     bool deleteSongs = false,

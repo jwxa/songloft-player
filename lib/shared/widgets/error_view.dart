@@ -37,7 +37,9 @@ class ErrorView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              isNetworkError ? Icons.wifi_off_rounded : Icons.error_outline_rounded,
+              isNetworkError
+                  ? Icons.wifi_off_rounded
+                  : Icons.error_outline_rounded,
               size: iconSize,
               color: theme.colorScheme.error.withAlpha(180),
             ),

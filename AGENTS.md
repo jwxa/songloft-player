@@ -5,6 +5,7 @@
 > **详细文档**：
 > - 开发指南：[docs/development.md](docs/development.md)
 > - 架构补充：[docs/architecture.md](docs/architecture.md)
+> - Domain 层架构：[docs/cn/domain_layer.md](docs/cn/domain_layer.md)
 > - 平台注意事项：[docs/platform-notes.md](docs/platform-notes.md)
 > - 构建指南：[docs/build_guide.md](docs/build_guide.md)
 > - 版本发布：[scripts/README.md](scripts/README.md)
@@ -41,9 +42,9 @@ lib/
 │   ├── auth/              # 认证（登录/登出/Token 管理）
 │   ├── home/              # 首页 + 插件 Tab/WebView
 │   ├── jsplugin/          # JS 插件管理（安装/更新/注册表）
-│   ├── library/           # 歌曲库（分页、搜索、编辑、收藏）
-│   ├── player/            # 播放器（桌面/移动/TV/迷你 多布局 + 歌词）
-│   ├── playlist/          # 歌单管理（CRUD、排序、批量操作）
+│   ├── library/           # 歌曲库（分页、搜索、编辑、收藏）；domain/use_cases/ 含 FavoriteService
+│   ├── player/            # 播放器；domain/use_cases/ 含 PlayQueue、PlayModeResolver、RetryPolicy、QueueLoader 等
+│   ├── playlist/          # 歌单管理；domain/use_cases/ 含 PlaylistSort（支持拼音比较器）
 │   ├── settings/          # 设置（扫描/缓存/升级/Tab 配置/重复检查/多服务器/HLS 代理/HTTP 代理）
 │   └── startup/           # 启动门控（加载完成前的等待页）
 └── shared/                # 共享层
@@ -69,6 +70,16 @@ flutter test                                           # 运行测试
 # 构建脚本
 ./scripts/build-frontend.sh <platform|all>             # 多平台构建
 ./scripts/release-frontend.sh <patch|minor|major>      # 版本发布
+```
+
+---
+
+## 代码格式化（铁律）
+
+每次修改代码后**必须**格式化，提交前确认无格式差异：
+
+```bash
+dart format lib/ test/
 ```
 
 ---

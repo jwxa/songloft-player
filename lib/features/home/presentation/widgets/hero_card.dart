@@ -178,10 +178,7 @@ class HeroCard extends StatelessWidget {
                         ),
                       ),
                       // 播放按钮
-                      _PlayButton(
-                        isPlaying: isPlaying,
-                        onPressed: onPlay,
-                      ),
+                      _PlayButton(isPlaying: isPlaying, onPressed: onPlay),
                     ],
                   ),
                 ),
@@ -241,10 +238,7 @@ class _PlayButton extends StatelessWidget {
   final bool isPlaying;
   final VoidCallback onPressed;
 
-  const _PlayButton({
-    required this.isPlaying,
-    required this.onPressed,
-  });
+  const _PlayButton({required this.isPlaying, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

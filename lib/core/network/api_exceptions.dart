@@ -42,8 +42,7 @@ class ApiException implements Exception {
         );
       case DioExceptionType.unknown:
         return NetworkException(
-          message:
-              e.message ?? l10nOrNull?.coreErrorUnknownNetwork ?? '未知网络错误',
+          message: e.message ?? l10nOrNull?.coreErrorUnknownNetwork ?? '未知网络错误',
         );
       // Dio 5.10 adds transformTimeout; keep compiling with older Dio versions.
       // ignore: unreachable_switch_default
@@ -58,8 +57,7 @@ class ApiException implements Exception {
           );
         }
         return NetworkException(
-          message:
-              e.message ?? l10nOrNull?.coreErrorUnknownNetwork ?? '未知网络错误',
+          message: e.message ?? l10nOrNull?.coreErrorUnknownNetwork ?? '未知网络错误',
         );
     }
   }
@@ -75,9 +73,7 @@ class ApiException implements Exception {
   /// 后端返回格式: {"error": "...", "detail": "..."}
   factory ApiException.fromResponse(Response? response) {
     if (response == null) {
-      return ApiException(
-        message: l10nOrNull?.coreErrorNoResponse ?? '服务器无响应',
-      );
+      return ApiException(message: l10nOrNull?.coreErrorNoResponse ?? '服务器无响应');
     }
 
     final statusCode = response.statusCode;
@@ -141,8 +137,7 @@ class ApiException implements Exception {
 class UnauthorizedException extends ApiException {
   UnauthorizedException({String? message, super.statusCode = 401, super.data})
     : super(
-        message:
-            message ?? l10nOrNull?.coreErrorUnauthorized ?? '登录已过期，请重新登录',
+        message: message ?? l10nOrNull?.coreErrorUnauthorized ?? '登录已过期，请重新登录',
       );
 }
 

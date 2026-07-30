@@ -56,10 +56,7 @@ class ShortcutSettingsNotifier extends Notifier<ShortcutSettings> {
       final prefs = await ref.read(appPreferencesProvider.future);
       final enabled = prefs.getShortcutsEnabled();
       final raw = prefs.getShortcutBindings();
-      state = ShortcutSettings(
-        enabled: enabled,
-        bindings: _parseBindings(raw),
-      );
+      state = ShortcutSettings(enabled: enabled, bindings: _parseBindings(raw));
     } catch (e) {
       debugPrint('[Shortcuts] 加载快捷键偏好失败: $e');
     }
@@ -147,8 +144,8 @@ class ShortcutSettingsNotifier extends Notifier<ShortcutSettings> {
 
 final shortcutSettingsProvider =
     NotifierProvider<ShortcutSettingsNotifier, ShortcutSettings>(
-  ShortcutSettingsNotifier.new,
-);
+      ShortcutSettingsNotifier.new,
+    );
 
 /// 纯函数：给定当前按下的主键与四个修饰键状态，在绑定表中找到匹配的动作。
 ///

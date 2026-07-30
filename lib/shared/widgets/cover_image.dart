@@ -63,11 +63,7 @@ class CoverImage extends StatelessWidget {
     );
 
     if (semanticLabel != null) {
-      return Semantics(
-        image: true,
-        label: semanticLabel!,
-        child: imageWidget,
-      );
+      return Semantics(image: true, label: semanticLabel!, child: imageWidget);
     }
     return ExcludeSemantics(child: imageWidget);
   }

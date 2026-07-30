@@ -38,6 +38,10 @@ class SongTile extends StatelessWidget {
   final bool showDuration;
   final List<BrowseCardAction> menuActions;
 
+  /// 追加到副标题（艺术家）后的补充信息，形如「艺术家 · 07-29 21:30」。
+  /// 为空时副标题保持只显示艺术家。
+  final String? subtitleSuffix;
+
   final IconData placeholderIcon;
 
   final VoidCallback? onTap;
@@ -58,6 +62,7 @@ class SongTile extends StatelessWidget {
     this.showFavorite = false,
     this.showDuration = false,
     this.menuActions = const [],
+    this.subtitleSuffix,
     this.placeholderIcon = Icons.music_note,
     this.onTap,
     this.onLongPress,
@@ -72,29 +77,41 @@ class SongTile extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       tileColor: isCurrentSong ? colorScheme.secondaryContainer : null,
-      shape: isCurrentSong
-          ? RoundedRectangleBorder(borderRadius: AppRadius.mdAll)
-          : null,
+      shape:
+          isCurrentSong
+              ? RoundedRectangleBorder(borderRadius: AppRadius.mdAll)
+              : null,
       leading: _buildLeading(context),
       title: Text(
         song.title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: isCurrentSong
-            ? TextStyle(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w600,
-              )
-            : null,
+        style:
+            isCurrentSong
+                ? TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                )
+                : null,
       ),
       subtitle: Text(
-        song.artist ?? l10n.libraryUnknownArtist,
+        _subtitleText(l10n),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(color: colorScheme.onSurfaceVariant),
       ),
       trailing: _buildTrailing(context),
     );
+  }
+
+  String _subtitleText(AppLocalizations l10n) {
+    final artist = song.artist ?? l10n.libraryUnknownArtist;
+    final suffix = subtitleSuffix;
+    if (suffix == null || suffix.isEmpty) return artist;
+    // artist 可能是空串而非 null（后端该列 NOT NULL DEFAULT ''），
+    // 此时不能拼分隔符，否则副标题变成前导的 " · 07-30 01:23"。
+    if (artist.isEmpty) return suffix;
+    return '$artist · $suffix';
   }
 
   Widget? _buildLeading(BuildContext context) {
@@ -175,26 +192,28 @@ class SongTile extends StatelessWidget {
               }
             }
           },
-          itemBuilder: (context) => [
-            for (final a in menuActions)
-              PopupMenuItem<String>(
-                value: a.value,
-                child: ListTile(
-                  leading: Icon(
-                    a.icon,
-                    color: a.destructive ? colorScheme.error : null,
+          itemBuilder:
+              (context) => [
+                for (final a in menuActions)
+                  PopupMenuItem<String>(
+                    value: a.value,
+                    child: ListTile(
+                      leading: Icon(
+                        a.icon,
+                        color: a.destructive ? colorScheme.error : null,
+                      ),
+                      title: Text(
+                        a.label,
+                        style:
+                            a.destructive
+                                ? TextStyle(color: colorScheme.error)
+                                : null,
+                      ),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                  title: Text(
-                    a.label,
-                    style: a.destructive
-                        ? TextStyle(color: colorScheme.error)
-                        : null,
-                  ),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-          ],
+              ],
         ),
     ];
 

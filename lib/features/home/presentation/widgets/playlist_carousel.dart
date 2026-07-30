@@ -84,74 +84,76 @@ class _PlaylistCarouselItem extends StatelessWidget {
       button: true,
       label: AppLocalizations.of(context).homeOpenPlaylist,
       child: GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 方形封面
-            AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: colorScheme.surfaceContainerHighest,
-                  border: isCurrentPlaylist
-                      ? Border.all(color: colorScheme.primary, width: 2)
-                      : null,
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    playlist.coverImageUrl != null
-                        ? ExcludeSemantics(
-                          child: NetworkCoverImage(
-                            imageUrl: UrlHelper.buildCoverUrl(
-                              playlist.coverImageUrl!,
+        onTap: onTap,
+        child: SizedBox(
+          width: width,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 方形封面
+              AspectRatio(
+                aspectRatio: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: colorScheme.surfaceContainerHighest,
+                    border:
+                        isCurrentPlaylist
+                            ? Border.all(color: colorScheme.primary, width: 2)
+                            : null,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      playlist.coverImageUrl != null
+                          ? ExcludeSemantics(
+                            child: NetworkCoverImage(
+                              imageUrl: UrlHelper.buildCoverUrl(
+                                playlist.coverImageUrl!,
+                              ),
+                              fit: BoxFit.cover,
+                              placeholder:
+                                  (context, url) =>
+                                      _buildPlaceholder(colorScheme),
+                              errorWidget:
+                                  (context, url, error) =>
+                                      _buildPlaceholder(colorScheme),
                             ),
-                            fit: BoxFit.cover,
-                            placeholder:
-                                (context, url) => _buildPlaceholder(colorScheme),
-                            errorWidget:
-                                (context, url, error) =>
-                                    _buildPlaceholder(colorScheme),
-                          ),
-                        )
-                        : _buildPlaceholder(colorScheme),
-                    if (isCurrentPlaylist && isPlaying)
-                      Container(
-                        color: Colors.black54,
-                        child: Center(
-                          child: Icon(
-                            Icons.equalizer_rounded,
-                            size: 32,
-                            color: colorScheme.primary,
+                          )
+                          : _buildPlaceholder(colorScheme),
+                      if (isCurrentPlaylist && isPlaying)
+                        Container(
+                          color: Colors.black54,
+                          child: Center(
+                            child: Icon(
+                              Icons.equalizer_rounded,
+                              size: 32,
+                              color: colorScheme.primary,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            // 歌单名称
-            Expanded(
-              child: Text(
-                playlist.name,
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: isCurrentPlaylist ? colorScheme.primary : null,
+              const SizedBox(height: 8),
+              // 歌单名称
+              Expanded(
+                child: Text(
+                  playlist.name,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: isCurrentPlaylist ? colorScheme.primary : null,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 

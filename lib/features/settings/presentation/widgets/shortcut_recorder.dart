@@ -26,13 +26,18 @@ class ShortcutRecorderTile extends ConsumerWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _BindingChip(binding: binding, unsetLabel: l10n.settingsShortcutUnset),
+          _BindingChip(
+            binding: binding,
+            unsetLabel: l10n.settingsShortcutUnset,
+          ),
           if (binding != null)
             IconButton(
               icon: const Icon(Icons.close, size: 18),
               tooltip: l10n.settingsShortcutClear,
-              onPressed: () =>
-                  ref.read(shortcutSettingsProvider.notifier).clearBinding(action),
+              onPressed:
+                  () => ref
+                      .read(shortcutSettingsProvider.notifier)
+                      .clearBinding(action),
             ),
           Icon(Icons.edit_outlined, size: 18, color: theme.hintColor),
         ],
@@ -57,22 +62,25 @@ class ShortcutRecorderTile extends ConsumerWidget {
     if (conflict != null && context.mounted) {
       final override = await showDialog<bool>(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.settingsShortcutConflictTitle),
-          content: Text(
-            l10n.settingsShortcutConflict(shortcutActionLabel(l10n, conflict)),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(l10n.commonCancel),
+        builder:
+            (ctx) => AlertDialog(
+              title: Text(l10n.settingsShortcutConflictTitle),
+              content: Text(
+                l10n.settingsShortcutConflict(
+                  shortcutActionLabel(l10n, conflict),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: Text(l10n.commonCancel),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: Text(l10n.settingsShortcutOverride),
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(l10n.settingsShortcutOverride),
-            ),
-          ],
-        ),
       );
       if (override != true) return;
       await notifier.clearBinding(conflict);
@@ -105,10 +113,7 @@ class _BindingChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
-      child: Text(
-        formatKeyBinding(b),
-        style: theme.textTheme.labelLarge,
-      ),
+      child: Text(formatKeyBinding(b), style: theme.textTheme.labelLarge),
     );
   }
 }

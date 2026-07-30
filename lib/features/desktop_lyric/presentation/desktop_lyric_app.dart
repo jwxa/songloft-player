@@ -18,10 +18,9 @@ class DesktopLyricApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       themeMode: ThemeMode.dark,
       theme: ThemeData(scaffoldBackgroundColor: Colors.transparent),
-      builder: (context, child) => ColoredBox(
-        color: Colors.transparent,
-        child: child,
-      ),
+      builder:
+          (context, child) =>
+              ColoredBox(color: Colors.transparent, child: child),
       home: const DesktopLyricView(),
     );
   }

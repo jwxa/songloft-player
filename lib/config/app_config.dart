@@ -51,9 +51,6 @@ class AppConfig {
     defaultValue: false,
   );
 
-  /// 是否运行在电视系统上
-  static late final bool isTvMode;
-
   /// 前端版本号，通过 --dart-define=FRONTEND_VERSION=x.y.z 在构建时注入
   /// 本地开发时默认为 'dev'
   static const String frontendVersion = String.fromEnvironment(

@@ -2666,5 +2666,20 @@
     }
   },
   "playlistCacheCleared": "已清除歌单缓存",
+  "playHistory": "播放历史",
+  "playHistoryTitle": "「{name}」播放历史",
+  "@playHistoryTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "playHistoryEmpty": "还没有播放记录",
+  "playHistoryEmptyHint": "在这里播放过的歌曲会记录下来，方便下次接着听",
+  "playHistoryClear": "清空历史",
+  "playHistoryClearConfirm": "确定清空这里的播放历史吗？",
+  "playHistoryCleared": "已清空播放历史",
+  "playHistoryDeleteEntry": "删除此记录",
+  "playHistoryOperationFailed": "操作失败，请重试",
+  "playHistorySongMissing": "该歌曲已不在此列表中，已把其余歌曲加入队列",
   "scrollToTop": "回到顶部"
 }

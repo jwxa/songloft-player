@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../features/player/domain/playback_context.dart';
 import '../network/server_entry.dart';
 
 /// 应用偏好设置存储
@@ -20,6 +21,7 @@ class AppPreferences {
   static const _currentIndexKey = 'player_current_index';
   static const _positionMsKey = 'player_position_ms';
   static const _sourcePlaylistIdKey = 'player_source_playlist_id';
+  static const _sourceContextKey = 'player_source_context';
   // 热更新「忽略此版本」：分别记忆被忽略的补丁版本、被忽略的整包客户端版本
   static const _ignoredPatchVersionKey = 'ignored_patch_version';
   static const _ignoredClientVersionKey = 'ignored_client_version';
@@ -316,19 +318,69 @@ class AppPreferences {
     return _prefs.setInt(_positionMsKey, ms);
   }
 
+  /// 播放来源已泛化为 [PlaybackContext]，请改用 [getSourceContext]。
+  /// 保留仅为兼容可能残留的旧调用方。
+  @Deprecated('改用 getSourceContext()')
   int? getSourcePlaylistId() {
     return _prefs.getInt(_sourcePlaylistIdKey);
   }
 
+  /// 播放来源已泛化为 [PlaybackContext]，请改用 [setSourceContext]。
+  ///
+  /// 单独调用本方法会让新 key `player_source_context` 与旧 key 不一致，
+  /// 导致 [getSourceContext] 读回过期的上下文 —— 写入一律走 [setSourceContext]。
+  @Deprecated('改用 setSourceContext()，否则新旧 key 会不一致')
   Future<bool> setSourcePlaylistId(int? id) {
-    if (id == null) return _prefs.remove(_sourcePlaylistIdKey).then((_) => true);
+    if (id == null)
+      return _prefs.remove(_sourcePlaylistIdKey).then((_) => true);
     return _prefs.setInt(_sourcePlaylistIdKey, id);
+  }
+
+  /// 读取播放队列的来源上下文。
+  ///
+  /// 新 key 缺失时回退到旧的 `player_source_playlist_id`，让升级前保存的播放状态
+  /// 仍能恢复出歌单上下文。
+  PlaybackContext? getSourceContext() {
+    final raw = _prefs.getString(_sourceContextKey);
+    if (raw != null && raw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(raw);
+        if (decoded is Map<String, dynamic>) {
+          final ctx = PlaybackContext.fromJson(decoded);
+          if (ctx != null) return ctx;
+        }
+      } catch (_) {
+        // 损坏的 JSON 当作没有上下文，不阻塞播放状态恢复
+      }
+    }
+    final legacyId = _prefs.getInt(_sourcePlaylistIdKey);
+    return legacyId == null ? null : PlaybackContext.playlist(legacyId);
+  }
+
+  /// 写入播放队列的来源上下文。
+  ///
+  /// 同时维护旧的 `player_source_playlist_id`：Android 热更新回滚到旧版
+  /// `libapp.so` 后，旧代码只认得那个 key。
+  Future<void> setSourceContext(PlaybackContext? context) async {
+    if (context == null) {
+      await _prefs.remove(_sourceContextKey);
+      await _prefs.remove(_sourcePlaylistIdKey);
+      return;
+    }
+    await _prefs.setString(_sourceContextKey, jsonEncode(context.toJson()));
+    final playlistId = context.playlistId;
+    if (playlistId == null) {
+      await _prefs.remove(_sourcePlaylistIdKey);
+    } else {
+      await _prefs.setInt(_sourcePlaylistIdKey, playlistId);
+    }
   }
 
   Future<void> clearPlaybackState() async {
     await _prefs.remove(_currentIndexKey);
     await _prefs.remove(_positionMsKey);
     await _prefs.remove(_sourcePlaylistIdKey);
+    await _prefs.remove(_sourceContextKey);
   }
 
   static const _shortcutsEnabledKey = 'shortcuts_enabled';

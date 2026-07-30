@@ -19,7 +19,7 @@ import '../../features/player/presentation/widgets/desktop_player.dart';
 import '../../features/player/presentation/widgets/mini_player.dart';
 import '../../features/player/presentation/widgets/playlist_drawer.dart';
 import '../../features/player/presentation/widgets/side_player.dart';
-import '../../features/player/presentation/widgets/tv_player.dart';
+
 import '../../features/player/presentation/utils/full_player_route.dart';
 import '../../features/settings/data/settings_api.dart';
 import '../../features/settings/presentation/providers/settings_provider.dart';
@@ -85,8 +85,7 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
   /// 启动更新检查（热更补丁 + 整包新版本提示）。
   ///
   /// 放在 Shell 而不是首页：Shell 在整个 App 会话内常驻，延迟期间不会像 HomePage
-  /// 那样有被 dispose 的窗口；且 HomePage 与 TvHomePage 都在它下面，TV 模式
-  /// 也就一并覆盖到了（改动前 TV 从不检查热更）。
+  /// 那样有被 dispose 的窗口。
   ///
   /// **先等认证就绪，再等延迟。** 未登录时 `/login` 不在 ShellRoute 下，但 Shell 会
   /// 在认证状态定型前先挂载一次再被重定向销毁。只用 `mounted` 判定是竞态而非因果：
@@ -380,13 +379,6 @@ class _ShellLayoutState extends ConsumerState<ShellLayout> {
         // 车机/超宽屏纵向空间稀缺：改用右侧竖排常驻播放面板，AdaptiveScaffold 的
         // _buildAutoLayout 会把它摆到最右侧，而非底部横条
         return const AutoSidePlayer();
-      case ScreenType.tv:
-        // 仅在 Android TV 等真正的 TV 平台使用 TvMiniPlayer
-        // 桌面/Web 大屏使用 DesktopPlayer 以保留完整工具栏
-        if (defaultTargetPlatform == TargetPlatform.android) {
-          return const TvMiniPlayer();
-        }
-        return const DesktopPlayer();
     }
   }
 }

@@ -49,8 +49,9 @@ void main() {
     });
 
     test('playPause 为裸 Space（无修饰键）', () {
-      final b = defaultBindings(TargetPlatform.linux)[
-          PlayerShortcutAction.playPause]!;
+      final b =
+          defaultBindings(TargetPlatform.linux)[PlayerShortcutAction
+              .playPause]!;
       expect(b.keyId, LogicalKeyboardKey.space.keyId);
       expect(b.ctrl || b.alt || b.shift || b.meta, isFalse);
     });

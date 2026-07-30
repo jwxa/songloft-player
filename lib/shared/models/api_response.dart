@@ -9,11 +9,7 @@ class ApiResponse<T> {
   /// 详细错误信息
   final String? detail;
 
-  const ApiResponse({
-    this.data,
-    this.error,
-    this.detail,
-  });
+  const ApiResponse({this.data, this.error, this.detail});
 
   /// 是否成功
   bool get isSuccess => error == null;
@@ -42,7 +38,7 @@ class ApiResponse<T> {
         detail: json['detail'] as String?,
       );
     }
-    
+
     final data = json['data'];
     return ApiResponse(
       data: fromJsonT != null && data != null ? fromJsonT(data) : data as T?,

@@ -61,9 +61,13 @@ bool isRemoteNewer({
   // stable 渠道：语义化版本三段比较
   if (remoteVersion.isEmpty || remoteVersion == 'dev') return false;
   final localParts =
-      _normalize(localVersion).split('.').map((e) => int.tryParse(e) ?? 0).toList();
+      _normalize(
+        localVersion,
+      ).split('.').map((e) => int.tryParse(e) ?? 0).toList();
   final remoteParts =
-      _normalize(remoteVersion).split('.').map((e) => int.tryParse(e) ?? 0).toList();
+      _normalize(
+        remoteVersion,
+      ).split('.').map((e) => int.tryParse(e) ?? 0).toList();
   while (localParts.length < 3) {
     localParts.add(0);
   }

@@ -103,11 +103,12 @@ class _PluginWebViewPageState extends ConsumerState<PluginWebViewPage> {
       ui_web.platformViewRegistry.registerViewFactory(_viewType, (int viewId) {
         final state = _activeStates[stateKey]!;
         final theme = state._lastTheme ?? 'light';
-        final iframe = web.HTMLIFrameElement()
-          ..src = state._buildPluginUrl(theme)
-          ..style.border = 'none'
-          ..style.width = '100%'
-          ..style.height = '100%';
+        final iframe =
+            web.HTMLIFrameElement()
+              ..src = state._buildPluginUrl(theme)
+              ..style.border = 'none'
+              ..style.width = '100%'
+              ..style.height = '100%';
         state._iframe = iframe;
         // #278 抖动诊断（仅 flutter.web_debug_console=true 时生效，生产零副作用）
         attachPluginIframeDiagnostics(
@@ -168,10 +169,11 @@ class _PluginWebViewPageState extends ConsumerState<PluginWebViewPage> {
     _lastPushedStateSig = sig;
     final contentWindow = _iframe?.contentWindow;
     if (contentWindow == null) return;
-    final msg = {
-      'type': 'songloft-player-state',
-      'state': _hostDispatcher.stateToJson(state),
-    }.jsify();
+    final msg =
+        {
+          'type': 'songloft-player-state',
+          'state': _hostDispatcher.stateToJson(state),
+        }.jsify();
     contentWindow.postMessage(msg, '*'.toJS);
   }
 

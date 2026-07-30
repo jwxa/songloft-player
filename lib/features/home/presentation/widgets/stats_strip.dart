@@ -127,10 +127,6 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 28,
-      color: color.withValues(alpha: 0.2),
-    );
+    return Container(width: 1, height: 28, color: color.withValues(alpha: 0.2));
   }
 }

@@ -37,7 +37,9 @@ class FrontendVersionCheck {
   });
 
   String get latestVersionDisplay =>
-      latestVersion == 'dev' ? l10n.settingsFrontendVerDevVersion : 'v$latestVersion';
+      latestVersion == 'dev'
+          ? l10n.settingsFrontendVerDevVersion
+          : 'v$latestVersion';
 
   @override
   String toString() =>
@@ -170,7 +172,9 @@ class FrontendVersionApi {
 
   /// 获取主仓库 dev release 的 version.json，用于 git_commit / build_time 精确比较。
   /// 失败时返回 null，调用方回退到 published_at 比较。
-  Future<Map<String, dynamic>?> _fetchDevVersionInfo(String? githubProxy) async {
+  Future<Map<String, dynamic>?> _fetchDevVersionInfo(
+    String? githubProxy,
+  ) async {
     try {
       final url = _applyProxy(_devVersionJsonUrl, githubProxy);
       final response = await _dio.get(url);

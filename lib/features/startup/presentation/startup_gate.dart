@@ -262,11 +262,13 @@ class _StartupGateState extends ConsumerState<StartupGate>
           final l10n = AppLocalizations.of(context);
           final hintText = switch (_hint) {
             _StartupHint.starting => l10n.startupStarting,
-            _StartupHint.startingLocalBackend => l10n.startupStartingLocalBackend,
+            _StartupHint.startingLocalBackend =>
+              l10n.startupStartingLocalBackend,
             _StartupHint.connectingLocalBackend =>
               l10n.startupConnectingLocalBackend,
-            _StartupHint.connectingTo =>
-              l10n.startupConnectingTo(_connectingTarget),
+            _StartupHint.connectingTo => l10n.startupConnectingTo(
+              _connectingTarget,
+            ),
           };
           return Scaffold(
             body: Center(

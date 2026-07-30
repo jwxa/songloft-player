@@ -289,10 +289,9 @@ class _PluginWebViewPageState extends ConsumerState<PluginWebViewPage>
             final reason = errorResponse.reasonPhrase;
             final detail = reason == null || reason.isEmpty ? '' : ' $reason';
             _finishLoadingWithError(
-              AppLocalizations.of(context).homePluginLoadFailedHttp(
-                status.toString(),
-                detail,
-              ),
+              AppLocalizations.of(
+                context,
+              ).homePluginLoadFailedHttp(status.toString(), detail),
             );
           }
         },
@@ -315,7 +314,8 @@ class _PluginWebViewPageState extends ConsumerState<PluginWebViewPage>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              _errorMessage ?? AppLocalizations.of(context).homePluginUnknownError,
+              _errorMessage ??
+                  AppLocalizations.of(context).homePluginUnknownError,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,

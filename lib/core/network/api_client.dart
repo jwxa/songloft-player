@@ -123,7 +123,10 @@ final secureStorageProvider = Provider<SecureStorageService>((ref) {
 /// 公开 Dio Provider（无认证，用于登录）
 final publicDioProvider = Provider.family<Dio, String?>((ref, customBaseUrl) {
   final insecureTls = ref.watch(insecureTlsProvider);
-  return createPublicDio(customBaseUrl: customBaseUrl, insecureTls: insecureTls);
+  return createPublicDio(
+    customBaseUrl: customBaseUrl,
+    insecureTls: insecureTls,
+  );
 });
 
 /// 认证 Dio Provider

@@ -32,10 +32,7 @@ class RedirectResolveInterceptor extends Interceptor {
   static const String _retriedFlag = '__redirect_resolve_retried';
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     // 实时使用当前 resolved 真实地址（可能已被上次失败的重解析刷新）；
     // 未 resolve 时回退入口域名（getter 保证非空）。
     final resolved = AppConfig.resolvedBaseUrl;

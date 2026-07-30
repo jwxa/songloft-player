@@ -52,9 +52,7 @@ class LogExportService {
       }
     } catch (e) {
       final note = utf8.encode('拉取后端日志失败: $e\n');
-      archive.addFile(
-        ArchiveFile('backend-error.txt', note.length, note),
-      );
+      archive.addFile(ArchiveFile('backend-error.txt', note.length, note));
       debugPrint('[LogExport] 后端日志拉取失败: $e');
     }
 

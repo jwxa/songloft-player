@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import '../../../shared/widgets/network_cover_image.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, listEquals;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,10 +22,13 @@ import '../../../shared/widgets/scroll_to_top_fab.dart';
 import '../../../shared/widgets/song_picker_modal.dart';
 import '../../library/presentation/providers/songs_provider.dart';
 import '../../library/presentation/song_edit_page.dart';
+import '../../player/domain/playback_context.dart';
 import '../../player/presentation/providers/player_provider.dart';
+import '../../player/presentation/widgets/play_history_sheet.dart';
 import '../../settings/presentation/providers/cache_download_provider.dart';
 import '../../settings/presentation/providers/song_cache_provider.dart';
 import '../domain/playlist.dart';
+import '../domain/use_cases/playlist_sort.dart';
 import 'providers/playlist_provider.dart';
 import 'widgets/playlist_edit_dialog.dart';
 import 'widgets/playlist_song_tile.dart';
@@ -149,7 +152,10 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
       final l10n = AppLocalizations.of(context);
       if (success) {
         ref.read(playlistSongsProvider(_playlistIdInt).notifier).resetFilter();
-        ResponsiveSnackBar.showSuccess(context, message: l10n.playlistSortSaved);
+        ResponsiveSnackBar.showSuccess(
+          context,
+          message: l10n.playlistSortSaved,
+        );
       } else {
         ResponsiveSnackBar.showError(
           context,
@@ -170,17 +176,14 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     final fullSongs =
         ref.read(playlistSongsProvider(_playlistIdInt)).value?.items ?? songs;
 
-    final sorted = List<Song>.from(fullSongs);
-    sorted.sort((a, b) {
-      final result = a.title.toLowerCase().compareTo(b.title.toLowerCase());
-      return ascending ? result : -result;
-    });
+    // TODO(i18n): 启用中文拼音排序时，注入拼音比较器：
+    // PlaylistSort(compareStrings: lpinyinCompare)
+    final songIds = PlaylistSort().sortSongsByName(
+      fullSongs,
+      ascending: ascending,
+    );
 
-    final songIds = sorted.map((s) => s.id).toList();
-
-    // 检查排序前后是否有变化，避免无意义的 API 调用
-    final originalIds = fullSongs.map((s) => s.id).toList();
-    if (listEquals(songIds, originalIds)) {
+    if (songIds == null) {
       if (mounted) {
         ResponsiveSnackBar.show(
           context,
@@ -202,23 +205,15 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
         ref.read(playlistSongsProvider(_playlistIdInt).notifier).resetFilter();
         ResponsiveSnackBar.showSuccess(
           context,
-          message: ascending
-              ? l10n.playlistSortedByNameAsc
-              : l10n.playlistSortedByNameDesc,
+          message:
+              ascending
+                  ? l10n.playlistSortedByNameAsc
+                  : l10n.playlistSortedByNameDesc,
         );
       } else {
         ResponsiveSnackBar.showError(context, message: l10n.playlistSortFailed);
       }
     }
-  }
-
-  /// 提取标题中第一个出现的数字（支持开头和中间位置）
-  /// 例如: "04.校园故事" → 4, "干得漂亮 | 01 好意被辜负" → 1
-  /// 如果没有数字，返回 null
-  int? _extractFirstNumber(String title) {
-    final match = RegExp(r'(\d+)').firstMatch(title);
-    if (match == null) return null;
-    return int.tryParse(match.group(1)!);
   }
 
   /// 自动按数字前缀排序
@@ -229,30 +224,11 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     final fullSongs =
         ref.read(playlistSongsProvider(_playlistIdInt)).value?.items ?? songs;
 
-    final sorted = List<Song>.from(fullSongs);
-    sorted.sort((a, b) {
-      final numA = _extractFirstNumber(a.title);
-      final numB = _extractFirstNumber(b.title);
+    // TODO(i18n): 启用中文拼音排序时，注入拼音比较器：
+    // PlaylistSort(compareStrings: lpinyinCompare)
+    final songIds = PlaylistSort().sortSongsByNumberPrefix(fullSongs);
 
-      // 都有数字前缀：按数值排序
-      if (numA != null && numB != null) {
-        final cmp = numA.compareTo(numB);
-        if (cmp != 0) return cmp;
-        // 数值相同时按标题字母序
-        return a.title.toLowerCase().compareTo(b.title.toLowerCase());
-      }
-      // 有数字前缀的排在前面
-      if (numA != null) return -1;
-      if (numB != null) return 1;
-      // 都没有数字前缀：按标题字母序
-      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
-    });
-
-    final songIds = sorted.map((s) => s.id).toList();
-
-    // 检查排序前后是否有变化
-    final originalIds = fullSongs.map((s) => s.id).toList();
-    if (listEquals(songIds, originalIds)) {
+    if (songIds == null) {
       if (mounted) {
         ResponsiveSnackBar.show(
           context,
@@ -282,7 +258,6 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     }
   }
 
-  /// 比较两个整数列表是否相等
   /// 取消排序模式（不保存）
   void _cancelSortMode() {
     setState(() {
@@ -375,7 +350,10 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
         );
         _exitSelectMode();
       } else {
-        ResponsiveSnackBar.showError(context, message: l10n.playlistRemoveFailed);
+        ResponsiveSnackBar.showError(
+          context,
+          message: l10n.playlistRemoveFailed,
+        );
       }
     }
   }
@@ -449,7 +427,7 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     required double headerExtent,
   }) {
     final total = songsAsync.value?.total ?? 0;
-    final hide = _isSortMode || _isSelectMode || context.isTv;
+    final hide = _isSortMode || _isSelectMode;
 
     return Stack(
       children: [
@@ -460,8 +438,11 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
           headerExtent: headerExtent,
           enabled: !hide && total > 20,
           labelBuilder: (index, t) => '$index / $t',
-          onDragToUnloaded: () =>
-              ref.read(playlistSongsProvider(_playlistIdInt).notifier).loadAll(),
+          onDragToUnloaded:
+              () =>
+                  ref
+                      .read(playlistSongsProvider(_playlistIdInt).notifier)
+                      .loadAll(),
           child: scrollContent,
         ),
         if (!hide)
@@ -512,9 +493,7 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
         ),
 
         // 封面 header 区域（独立于顶栏）
-        SliverToBoxAdapter(
-          child: _buildCoverHeader(context, playlist),
-        ),
+        SliverToBoxAdapter(child: _buildCoverHeader(context, playlist)),
 
         // 歌单信息
         SliverToBoxAdapter(
@@ -527,8 +506,7 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
         ),
 
         // 搜索栏
-        if (_isSearchMode)
-          SliverToBoxAdapter(child: _buildSearchBar(context)),
+        if (_isSearchMode) SliverToBoxAdapter(child: _buildSearchBar(context)),
 
         // 歌曲列表
         songsAsync.when(
@@ -566,7 +544,7 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     );
   }
 
-  /// 宽屏布局（Desktop / TV）：左右分栏
+  /// 宽屏布局（Desktop）：左右分栏
   Widget _buildWideContent(
     BuildContext context,
     Playlist playlist,
@@ -667,28 +645,28 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  bgColor.withValues(alpha: 0.3),
-                  Colors.transparent,
-                ],
+                colors: [bgColor.withValues(alpha: 0.3), Colors.transparent],
               ),
             ),
             clipBehavior: Clip.antiAlias,
-            child: playlist.coverImageUrl != null
-                ? ExcludeSemantics(
-                    child: NetworkCoverImage(
-                      imageUrl: UrlHelper.buildCoverUrl(
-                        playlist.coverImageUrl!,
+            child:
+                playlist.coverImageUrl != null
+                    ? ExcludeSemantics(
+                      child: NetworkCoverImage(
+                        imageUrl: UrlHelper.buildCoverUrl(
+                          playlist.coverImageUrl!,
+                        ),
+                        fit: BoxFit.cover,
+                        placeholder:
+                            (context, url) => Container(
+                              color: colorScheme.surfaceContainerHighest,
+                            ),
+                        errorWidget:
+                            (context, url, error) =>
+                                _buildCoverPlaceholder(colorScheme, playlist),
                       ),
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: colorScheme.surfaceContainerHighest,
-                      ),
-                      errorWidget: (context, url, error) =>
-                          _buildCoverPlaceholder(colorScheme, playlist),
-                    ),
-                  )
-                : _buildCoverPlaceholder(colorScheme, playlist),
+                    )
+                    : _buildCoverPlaceholder(colorScheme, playlist),
           ),
           const SizedBox(height: AppSpacing.lg),
           // 歌单名称
@@ -773,17 +751,19 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
               if (_isSearchMode)
                 SliverToBoxAdapter(child: _buildSearchBar(context)),
               songsAsync.when(
-                data: (state) =>
-                    _buildSongList(context, playlist, state.items),
-                loading: () => SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < 5; i++) SkeletonLoader.listTile(),
-                    ],
-                  ),
-                ),
-                error: (error, stack) =>
-                    SliverToBoxAdapter(child: _buildError(error.toString())),
+                data: (state) => _buildSongList(context, playlist, state.items),
+                loading:
+                    () => SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          for (int i = 0; i < 5; i++) SkeletonLoader.listTile(),
+                        ],
+                      ),
+                    ),
+                error:
+                    (error, stack) => SliverToBoxAdapter(
+                      child: _buildError(error.toString()),
+                    ),
               ),
               if (songsAsync.value != null)
                 SliverToBoxAdapter(
@@ -856,7 +836,8 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     final palette = paletteAsync.value;
 
     final coverSize = isWide ? 180.0 : 140.0;
-    final bgColor = palette?.darkMutedColor ?? colorScheme.surfaceContainerHighest;
+    final bgColor =
+        palette?.darkMutedColor ?? colorScheme.surfaceContainerHighest;
 
     return Container(
       width: double.infinity,
@@ -864,10 +845,7 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            bgColor.withValues(alpha: 0.6),
-            colorScheme.surface,
-          ],
+          colors: [bgColor.withValues(alpha: 0.6), colorScheme.surface],
         ),
       ),
       padding: EdgeInsets.symmetric(
@@ -882,18 +860,24 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
             boxShadow: AppShadows.medium,
           ),
           clipBehavior: Clip.antiAlias,
-          child: playlist.coverImageUrl != null
-              ? ExcludeSemantics(
-                child: NetworkCoverImage(
-                    imageUrl: UrlHelper.buildCoverUrl(playlist.coverImageUrl!),
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        Container(color: colorScheme.surfaceContainerHighest),
-                    errorWidget: (context, url, error) =>
-                        _buildCoverPlaceholder(colorScheme, playlist),
-                  ),
-                )
-              : _buildCoverPlaceholder(colorScheme, playlist),
+          child:
+              playlist.coverImageUrl != null
+                  ? ExcludeSemantics(
+                    child: NetworkCoverImage(
+                      imageUrl: UrlHelper.buildCoverUrl(
+                        playlist.coverImageUrl!,
+                      ),
+                      fit: BoxFit.cover,
+                      placeholder:
+                          (context, url) => Container(
+                            color: colorScheme.surfaceContainerHighest,
+                          ),
+                      errorWidget:
+                          (context, url, error) =>
+                              _buildCoverPlaceholder(colorScheme, playlist),
+                    ),
+                  )
+                  : _buildCoverPlaceholder(colorScheme, playlist),
         ),
       ),
     );
@@ -973,14 +957,8 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     // 排序模式
     if (_isSortMode) {
       return [
-        TextButton(
-          onPressed: _cancelSortMode,
-          child: Text(l10n.commonCancel),
-        ),
-        TextButton(
-          onPressed: _exitSortMode,
-          child: Text(l10n.playlistDone),
-        ),
+        TextButton(onPressed: _cancelSortMode, child: Text(l10n.commonCancel)),
+        TextButton(onPressed: _exitSortMode, child: Text(l10n.playlistDone)),
       ];
     }
 
@@ -1013,35 +991,34 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
               _batchDeleteSelectedSongsFromLibrary();
             }
           },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'remove',
-              child: Text(l10n.playlistRemoveFromPlaylist),
-            ),
-            PopupMenuItem(
-              value: 'delete',
-              child: Text(
-                l10n.playlistDeleteFromLibrary,
-                style: TextStyle(color: colorScheme.error),
-              ),
-            ),
-          ],
+          itemBuilder:
+              (context) => [
+                PopupMenuItem(
+                  value: 'remove',
+                  child: Text(l10n.playlistRemoveFromPlaylist),
+                ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Text(
+                    l10n.playlistDeleteFromLibrary,
+                    style: TextStyle(color: colorScheme.error),
+                  ),
+                ),
+              ],
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               l10n.playlistActionsCount(_selectedSongIds.length),
               style: TextStyle(
-                color: _selectedSongIds.isEmpty
-                    ? colorScheme.onSurface.withValues(alpha: 0.38)
-                    : colorScheme.primary,
+                color:
+                    _selectedSongIds.isEmpty
+                        ? colorScheme.onSurface.withValues(alpha: 0.38)
+                        : colorScheme.primary,
               ),
             ),
           ),
         ),
-        TextButton(
-          onPressed: _exitSelectMode,
-          child: Text(l10n.commonCancel),
-        ),
+        TextButton(onPressed: _exitSelectMode, child: Text(l10n.commonCancel)),
       ];
     }
 
@@ -1066,8 +1043,9 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
           icon: const Icon(Icons.sort),
           tooltip: l10n.playlistSort,
           onSelected: (value) {
-            final notifier =
-                ref.read(playlistSongsProvider(_playlistIdInt).notifier);
+            final notifier = ref.read(
+              playlistSongsProvider(_playlistIdInt).notifier,
+            );
             switch (value) {
               // 视图排序（非破坏性）
               case 'view_position':
@@ -1190,6 +1168,9 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
             case 'add_songs':
               _addSongs();
               break;
+            case 'play_history':
+              _showPlayHistory(playlist);
+              break;
             case 'cache_playlist':
               _cachePlaylistToDevice();
               break;
@@ -1211,6 +1192,16 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
                 child: ListTile(
                   leading: const Icon(Icons.add),
                   title: Text(l10n.playlistAddSongs),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              // 播放历史：无条件显示（有无记录要请求才知道，空态由面板承担）
+              PopupMenuItem(
+                value: 'play_history',
+                child: ListTile(
+                  leading: const Icon(Icons.history),
+                  title: Text(l10n.playHistory),
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                 ),
@@ -1245,7 +1236,9 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
                 child: ListTile(
                   leading: const Icon(Icons.edit),
                   title: Text(
-                    isBuiltIn ? l10n.playlistEditCover : l10n.playlistEditPlaylist,
+                    isBuiltIn
+                        ? l10n.playlistEditCover
+                        : l10n.playlistEditPlaylist,
                   ),
                   dense: true,
                   contentPadding: EdgeInsets.zero,
@@ -1284,20 +1277,19 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
         autofocus: true,
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  tooltip: l10n.clearSearch,
-                  onPressed: () {
-                    _searchController.clear();
-                    ref
-                        .read(
-                          playlistSongsProvider(_playlistIdInt).notifier,
-                        )
-                        .search('');
-                  },
-                )
-              : null,
+          suffixIcon:
+              _searchController.text.isNotEmpty
+                  ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    tooltip: l10n.clearSearch,
+                    onPressed: () {
+                      _searchController.clear();
+                      ref
+                          .read(playlistSongsProvider(_playlistIdInt).notifier)
+                          .search('');
+                    },
+                  )
+                  : null,
           hintText: l10n.playlistSearchHint,
           filled: true,
           fillColor: colorScheme.surfaceContainerHighest,
@@ -1355,7 +1347,6 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
                   mobile: 200,
                   tablet: 240,
                   desktop: 280,
-                  tv: 320,
                 ),
               ),
               child: FilledButton.icon(
@@ -1550,12 +1541,16 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     if (result == null) {
-      ResponsiveSnackBar.showError(context, message: l10n.playlistAddSongsFailed);
+      ResponsiveSnackBar.showError(
+        context,
+        message: l10n.playlistAddSongsFailed,
+      );
       return;
     }
-    final msg = result.skipped > 0
-        ? l10n.playlistAddedWithSkipped(result.added, result.skipped)
-        : l10n.playlistAddedCount(result.added);
+    final msg =
+        result.skipped > 0
+            ? l10n.playlistAddedWithSkipped(result.added, result.skipped)
+            : l10n.playlistAddedCount(result.added);
     ResponsiveSnackBar.showSuccess(context, message: msg);
   }
 
@@ -1607,9 +1602,8 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
                         controlAffinity: ListTileControlAffinity.leading,
                         value: deleteSongs,
                         onChanged:
-                            (v) => setDialogState(
-                              () => deleteSongs = v ?? false,
-                            ),
+                            (v) =>
+                                setDialogState(() => deleteSongs = v ?? false),
                         title: Text(l10n.playlistDeleteWithSongs),
                       ),
                     ],
@@ -1674,13 +1668,24 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
     }
   }
 
+  /// 打开该歌单的播放历史面板（点某条历史可从那首接着往下播）
+  void _showPlayHistory(Playlist playlist) {
+    PlayHistorySheet.show(
+      context,
+      playbackContext: PlaybackContext.playlist(playlist.id),
+      title: AppLocalizations.of(context).playHistoryTitle(playlist.name),
+    );
+  }
+
   /// 播放单曲
   void _playSong(Song song, List<Song> songs, int index) {
     debugPrint('[Player] Play song: ${song.title} at index $index');
     // 从已加载分页开始播放并后台补齐整个歌单队列，避免队列被截断到已加载页
     // （songloft-org/songloft#299）。
     final state = ref.read(playlistSongsProvider(_playlistIdInt)).value;
-    ref.read(playerStateProvider.notifier).playPlaylistFromLoaded(
+    ref
+        .read(playerStateProvider.notifier)
+        .playPlaylistFromLoaded(
           loadedSongs: songs,
           startIndex: index,
           playlistId: _playlistIdInt,
@@ -1764,11 +1769,17 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
       ref.invalidate(songsListProvider);
       removeDeletedSongsFromPlayerQueue({song.id});
       if (mounted) {
-        ResponsiveSnackBar.showSuccess(context, message: l10n.playlistSongDeleted);
+        ResponsiveSnackBar.showSuccess(
+          context,
+          message: l10n.playlistSongDeleted,
+        );
       }
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context, message: l10n.playlistDeleteFailed);
+        ResponsiveSnackBar.showError(
+          context,
+          message: l10n.playlistDeleteFailed,
+        );
       }
     }
   }
@@ -1804,9 +1815,11 @@ class _PlaylistDetailPageState extends ConsumerState<PlaylistDetailPage>
       }
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context, message: l10n.playlistDeleteFailed);
+        ResponsiveSnackBar.showError(
+          context,
+          message: l10n.playlistDeleteFailed,
+        );
       }
     }
   }
-
 }

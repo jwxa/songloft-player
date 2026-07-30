@@ -54,7 +54,7 @@ const int settingsCategoryCount = 9;
 
 /// 设置分类列表（外观/播放/音乐库/扩展/缓存/网络/数据/关于/账户）。
 ///
-/// 桌面/移动 [SettingsPage] 与 TV `TvSettingsPage` 共用同一来源，避免分类漂移。
+/// 桌面/移动 [SettingsPage] 共用同一来源，避免分类漂移。
 List<SettingsCategory> buildSettingsCategories(AppLocalizations l10n) => [
   SettingsCategory(
     icon: Icons.palette_outlined,
@@ -103,7 +103,7 @@ List<SettingsCategory> buildSettingsCategories(AppLocalizations l10n) => [
   ),
 ];
 
-/// 服务器信息卡片（主从布局 header / TV 设置顶部）。
+/// 服务器信息卡片（主从布局 header）。
 class SettingsServerInfoCard extends ConsumerWidget {
   const SettingsServerInfoCard({super.key});
 
@@ -196,7 +196,7 @@ class SettingsServerInfoCard extends ConsumerWidget {
   }
 }
 
-/// 单个设置分类的内容（SectionCard 列表）。桌面/移动主从右栏与 TV push 详情共用。
+/// 单个设置分类的内容（SectionCard 列表）。桌面/移动主从右栏共用。
 class SettingsCategoryContent extends ConsumerStatefulWidget {
   /// 分类索引（对应 [buildSettingsCategories] 的顺序）。
   final int index;
@@ -559,12 +559,14 @@ class _SettingsCategoryContentState
                             children:
                                 MiniPlayerControls.values
                                     .map(
-                                      (mode) => RadioListTile<MiniPlayerControls>(
-                                        title: Text(
-                                          miniPlayerControlsLabels[mode] ?? '',
-                                        ),
-                                        value: mode,
-                                      ),
+                                      (mode) =>
+                                          RadioListTile<MiniPlayerControls>(
+                                            title: Text(
+                                              miniPlayerControlsLabels[mode] ??
+                                                  '',
+                                            ),
+                                            value: mode,
+                                          ),
                                     )
                                     .toList(),
                           ),
@@ -573,9 +575,7 @@ class _SettingsCategoryContentState
                     ),
               );
               if (picked == null) return;
-              ref
-                  .read(miniPlayerControlsProvider.notifier)
-                  .setControls(picked);
+              ref.read(miniPlayerControlsProvider.notifier).setControls(picked);
             },
           ),
           const Divider(height: 1),
@@ -597,9 +597,7 @@ class _SettingsCategoryContentState
             subtitle: Text(l10n.settingsNotificationLyricInTitleDesc),
             value: lyricInTitle,
             onChanged: (v) {
-              ref
-                  .read(notificationLyricInTitleProvider.notifier)
-                  .setEnabled(v);
+              ref.read(notificationLyricInTitleProvider.notifier).setEnabled(v);
             },
           ),
           // 键盘快捷键（仅桌面）
@@ -669,7 +667,9 @@ class _SettingsCategoryContentState
                   value: desktopLyricOpacity,
                   label: '${(desktopLyricOpacity * 100).round()}%',
                   onChanged: (v) {
-                    ref.read(desktopLyricOpacityProvider.notifier).setOpacity(v);
+                    ref
+                        .read(desktopLyricOpacityProvider.notifier)
+                        .setOpacity(v);
                   },
                 ),
               ),
@@ -1439,7 +1439,9 @@ class _SettingsCategoryContentState
     return ListTile(
       leading: const Icon(Icons.vpn_lock_outlined),
       title: Text(l10n.settingsHttpProxyTitle),
-      subtitle: Text(proxy.isEmpty ? l10n.settingsHttpProxyNotConfigured : proxy),
+      subtitle: Text(
+        proxy.isEmpty ? l10n.settingsHttpProxyNotConfigured : proxy,
+      ),
       trailing: const Icon(Icons.chevron_right),
       enabled: !proxyAsync.isLoading,
       onTap: () async {
@@ -1621,7 +1623,9 @@ class _SettingsCategoryContentState
         try {
           final result = await ref
               .read(logExportServiceProvider)
-              .exportAndShare(shareSubject: l10n.settingsExportLogsShareSubject);
+              .exportAndShare(
+                shareSubject: l10n.settingsExportLogsShareSubject,
+              );
           if (!mounted) return;
           ResponsiveSnackBar.show(
             context,
@@ -1699,7 +1703,8 @@ class _SettingsCategoryContentState
     final l10n = AppLocalizations.of(context);
     // 与设置页顶部版本标签一致：开发版显示「开发版」、正式版显示 vX.Y.Z，
     // 两者都在后面附上构建时间（缺失时省略）。
-    final versionBase = version == 'dev' ? l10n.settingsDevVersion : 'v$version';
+    final versionBase =
+        version == 'dev' ? l10n.settingsDevVersion : 'v$version';
     final versionLabel =
         buildTime != null ? '$versionBase ($buildTime)' : versionBase;
     showAboutDialog(

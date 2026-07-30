@@ -100,7 +100,9 @@ class _DesktopLyricViewState extends State<DesktopLyricView>
     final displays = await screenRetriever.getAllDisplays();
     final savedX = _prefs?.getDesktopLyricPosX() ?? -1;
     final savedY = _prefs?.getDesktopLyricPosY() ?? -1;
-    if (savedX >= 0 && savedY >= 0 && _isOnAnyDisplay(savedX, savedY, displays)) {
+    if (savedX >= 0 &&
+        savedY >= 0 &&
+        _isOnAnyDisplay(savedX, savedY, displays)) {
       return Rect.fromLTWH(
         savedX,
         savedY,
@@ -185,7 +187,9 @@ class _DesktopLyricViewState extends State<DesktopLyricView>
   }
 
   void _requestHide() {
-    unawaited(desktopLyricChannel.invokeMethod(kDesktopLyricMethodHideRequested));
+    unawaited(
+      desktopLyricChannel.invokeMethod(kDesktopLyricMethodHideRequested),
+    );
   }
 
   Future<void> _showContextMenu(Offset globalPosition) async {
@@ -226,7 +230,9 @@ class _DesktopLyricViewState extends State<DesktopLyricView>
         behavior: HitTestBehavior.opaque,
         onPanStart: _locked ? null : (_) => windowManager.startDragging(),
         onSecondaryTapUp:
-            _locked ? null : (details) => _showContextMenu(details.globalPosition),
+            _locked
+                ? null
+                : (details) => _showContextMenu(details.globalPosition),
         child: Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

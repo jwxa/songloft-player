@@ -42,10 +42,7 @@ class SectionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainer,
             borderRadius: AppRadius.lgAll,
-            border: Border.all(
-              color: colorScheme.outlineVariant,
-              width: 1,
-            ),
+            border: Border.all(color: colorScheme.outlineVariant, width: 1),
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(

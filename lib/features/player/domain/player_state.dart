@@ -1,5 +1,6 @@
-import '../../../core/storage/song_cache_service.dart' show PlaybackSource;
 import '../../../shared/models/song.dart';
+import 'playback_context.dart';
+import 'playback_source.dart';
 
 /// 播放模式
 enum PlayMode {
@@ -105,8 +106,15 @@ class PlayerState {
   final String? errorMessage; // 当前错误消息，UI 层监听后显示 SnackBar
   final String? infoMessage; // 当前信息提示（如"正在缓存"），UI 层监听后显示普通 SnackBar
   final bool isRetrying; // 是否正在重试中
-  final int? sourcePlaylistId; // 当前播放队列的来源歌单 ID
+  // 当前播放队列的来源上下文（歌单 / 歌手 / 专辑 / 其余分面维度）
+  final PlaybackContext? playbackContext;
   final PlaybackSource playbackSource; // 当前歌曲播放来源（本地缓存 / 远端流串）
+
+  /// 当前播放队列的来源歌单 ID；来源不是歌单时为 null。
+  ///
+  /// 由 [playbackContext] 派生。保留这个字段名是为了不破坏两处既有契约：
+  /// 各处「正在播放的歌单」高亮逻辑，以及 JS 插件可见的 `source_playlist_id`。
+  int? get sourcePlaylistId => playbackContext?.playlistId;
 
   const PlayerState({
     this.currentSong,
@@ -125,7 +133,7 @@ class PlayerState {
     this.errorMessage,
     this.infoMessage,
     this.isRetrying = false,
-    this.sourcePlaylistId,
+    this.playbackContext,
     this.playbackSource = PlaybackSource.unknown,
   });
 
@@ -201,14 +209,14 @@ class PlayerState {
     String? errorMessage,
     String? infoMessage,
     bool? isRetrying,
-    int? sourcePlaylistId,
+    PlaybackContext? playbackContext,
     PlaybackSource? playbackSource,
     bool clearCurrentSong = false,
     bool clearSleepTimer = false,
     bool clearPreviousVolume = false,
     bool clearErrorMessage = false,
     bool clearInfoMessage = false,
-    bool clearSourcePlaylistId = false,
+    bool clearPlaybackContext = false,
   }) {
     return PlayerState(
       currentSong: clearCurrentSong ? null : (currentSong ?? this.currentSong),
@@ -227,12 +235,12 @@ class PlayerState {
           clearPreviousVolume ? null : (previousVolume ?? this.previousVolume),
       errorMessage:
           clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
-      infoMessage:
-          clearInfoMessage ? null : (infoMessage ?? this.infoMessage),
+      infoMessage: clearInfoMessage ? null : (infoMessage ?? this.infoMessage),
       isRetrying: isRetrying ?? this.isRetrying,
-      sourcePlaylistId: clearSourcePlaylistId
-          ? null
-          : (sourcePlaylistId ?? this.sourcePlaylistId),
+      playbackContext:
+          clearPlaybackContext
+              ? null
+              : (playbackContext ?? this.playbackContext),
       playbackSource: playbackSource ?? this.playbackSource,
     );
   }

@@ -30,9 +30,10 @@ class PluginHostDispatcher {
     try {
       final ns = req['ns'] as String?;
       final method = req['method'] as String?;
-      final params = (req['params'] is Map)
-          ? Map<String, dynamic>.from(req['params'] as Map)
-          : <String, dynamic>{};
+      final params =
+          (req['params'] is Map)
+              ? Map<String, dynamic>.from(req['params'] as Map)
+              : <String, dynamic>{};
       final data = await _dispatch(ns, method, params);
       return {'ok': true, 'data': data};
     } catch (e) {

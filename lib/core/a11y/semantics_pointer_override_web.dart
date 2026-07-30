@@ -16,8 +16,7 @@ bool _styleInjected = false;
 void overrideSemanticsPointerEvents(bool block) {
   if (!_styleInjected) {
     _styleInjected = true;
-    final style =
-        web.document.createElement('style') as web.HTMLStyleElement;
+    final style = web.document.createElement('style') as web.HTMLStyleElement;
     style.textContent =
         'flt-semantics-host.sl-plugin-active,'
         'flt-semantics-host.sl-plugin-active *'

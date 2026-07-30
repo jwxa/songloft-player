@@ -49,8 +49,7 @@ class NativeContractService {
   }
 
   /// 门控前端 libapp.so 的 Dart↔原生契约哈希（空 = 未知）。
-  static Future<String> dartHash() async =>
-      (await getHashes())?['dart'] ?? '';
+  static Future<String> dartHash() async => (await getHashes())?['dart'] ?? '';
 
   /// 门控后端 libgojni.so 的 Go 导出面契约哈希（空 = 未知）。
   static Future<String> goHash() async => (await getHashes())?['go'] ?? '';

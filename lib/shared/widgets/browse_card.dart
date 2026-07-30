@@ -127,9 +127,10 @@ class BrowseCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.lgAll,
-          side: highlighted
-              ? BorderSide(color: colorScheme.primary, width: 2)
-              : BorderSide.none,
+          side:
+              highlighted
+                  ? BorderSide(color: colorScheme.primary, width: 2)
+                  : BorderSide.none,
         ),
         child: InkWell(
           onTap: isSelectionMode ? onSelect : onTap,
@@ -235,7 +236,8 @@ class BrowseCard extends StatelessWidget {
                             title,
                             style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: highlightTitle ? colorScheme.primary : null,
+                              color:
+                                  highlightTitle ? colorScheme.primary : null,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -289,9 +291,10 @@ class BrowseCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: AppRadius.mdAll,
-        side: highlighted
-            ? BorderSide(color: colorScheme.primary, width: 2)
-            : BorderSide.none,
+        side:
+            highlighted
+                ? BorderSide(color: colorScheme.primary, width: 2)
+                : BorderSide.none,
       ),
       child: InkWell(
         onTap: isSelectionMode ? onSelect : onTap,
@@ -322,9 +325,8 @@ class BrowseCard extends StatelessWidget {
                             title,
                             style: textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: highlightTitle
-                                  ? colorScheme.primary
-                                  : null,
+                              color:
+                                  highlightTitle ? colorScheme.primary : null,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -397,18 +399,18 @@ class BrowseCard extends StatelessWidget {
 
   /// grid 用：填满 AspectRatio 的封面（CoverImage 是定尺寸，这里需要 fill）。
   Widget _buildCoverFill(BuildContext context) {
-    final url = coverUrl != null && coverUrl!.isNotEmpty
-        ? UrlHelper.buildCoverUrl(coverUrl!)
-        : null;
+    final url =
+        coverUrl != null && coverUrl!.isNotEmpty
+            ? UrlHelper.buildCoverUrl(coverUrl!)
+            : null;
     if (url == null) return _buildPlaceholder(context, iconSize: 48);
     return ExcludeSemantics(
       child: NetworkCoverImage(
         imageUrl: url,
         fit: BoxFit.cover,
-        placeholder: (context, url) =>
-            _buildPlaceholder(context, iconSize: 48),
-        errorWidget: (context, url, error) =>
-            _buildPlaceholder(context, iconSize: 48),
+        placeholder: (context, url) => _buildPlaceholder(context, iconSize: 48),
+        errorWidget:
+            (context, url, error) => _buildPlaceholder(context, iconSize: 48),
       ),
     );
   }
@@ -465,9 +467,8 @@ class BrowseCard extends StatelessWidget {
         color: colorScheme.onSurface,
       ),
       padding: EdgeInsets.zero,
-      constraints: compact
-          ? const BoxConstraints(minWidth: 32, minHeight: 32)
-          : null,
+      constraints:
+          compact ? const BoxConstraints(minWidth: 32, minHeight: 32) : null,
       tooltip: menuTooltip,
       onSelected: (value) {
         for (final a in menuActions) {
@@ -477,26 +478,28 @@ class BrowseCard extends StatelessWidget {
           }
         }
       },
-      itemBuilder: (context) => [
-        for (final a in menuActions)
-          PopupMenuItem<String>(
-            value: a.value,
-            child: ListTile(
-              leading: Icon(
-                a.icon,
-                color: a.destructive ? colorScheme.error : null,
+      itemBuilder:
+          (context) => [
+            for (final a in menuActions)
+              PopupMenuItem<String>(
+                value: a.value,
+                child: ListTile(
+                  leading: Icon(
+                    a.icon,
+                    color: a.destructive ? colorScheme.error : null,
+                  ),
+                  title: Text(
+                    a.label,
+                    style:
+                        a.destructive
+                            ? TextStyle(color: colorScheme.error)
+                            : null,
+                  ),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
-              title: Text(
-                a.label,
-                style: a.destructive
-                    ? TextStyle(color: colorScheme.error)
-                    : null,
-              ),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-      ],
+          ],
     );
   }
 }

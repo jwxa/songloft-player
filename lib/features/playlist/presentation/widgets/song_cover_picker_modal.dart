@@ -127,9 +127,7 @@ class SongCoverPickerModal extends ConsumerWidget {
                             return _CoverGridItem(
                               song: song,
                               onTap: () {
-                                Navigator.of(
-                                  context,
-                                ).pop({
+                                Navigator.of(context).pop({
                                   'songId': song.id,
                                   'coverUrl': song.coverUrl,
                                 });

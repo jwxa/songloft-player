@@ -125,8 +125,8 @@ class AuthNotifier extends Notifier<AuthState> {
       // 兜底：若 resolve 与 POST 之间端口又变了，登录请求 302/连接失败时自动重解析重试
       dio.interceptors.add(
         RedirectResolveInterceptor(
-          onResolved: (url) =>
-              ref.read(resolvedBaseUrlProvider.notifier).set(url),
+          onResolved:
+              (url) => ref.read(resolvedBaseUrlProvider.notifier).set(url),
           insecureTls: AppConfig.insecureTls,
         ),
       );
@@ -219,9 +219,7 @@ class AuthNotifier extends Notifier<AuthState> {
 
     // 通知服务端吊销 token：尽力而为，失败忽略，不阻塞登出
     final repository = ref.read(authRepositoryProvider);
-    unawaited(
-      repository.logout(accessToken: accessToken).catchError((_) {}),
-    );
+    unawaited(repository.logout(accessToken: accessToken).catchError((_) {}));
   }
 
   /// 直接设置为已登录态（wallet 恢复后使用，不发请求）

@@ -109,8 +109,9 @@ class CacheApi {
 
   /// 获取缓存配置
   Future<CacheConfig> getCacheConfig() async {
-    final response =
-        await dio.get('${AppConfig.apiPrefix}/cache-manage/config');
+    final response = await dio.get(
+      '${AppConfig.apiPrefix}/cache-manage/config',
+    );
     return CacheConfig.fromJson(response.data as Map<String, dynamic>);
   }
 

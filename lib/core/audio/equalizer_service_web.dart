@@ -42,8 +42,7 @@ class WebEqualizerService implements EqualizerService {
     if (!_initialized) return;
     _jsSetEnabled(setting.enabled);
     if (setting.enabled) {
-      final jsArray =
-          setting.bands.map((g) => g.toJS).toList().toJS;
+      final jsArray = setting.bands.map((g) => g.toJS).toList().toJS;
       _jsSetBands(jsArray);
     }
   }

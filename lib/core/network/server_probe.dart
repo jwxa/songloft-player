@@ -91,7 +91,10 @@ class ServerProbe {
     }
     try {
       final res = await dio.get<dynamic>('/api/v1/health');
-      final ok = res.statusCode != null && res.statusCode! >= 200 && res.statusCode! < 300;
+      final ok =
+          res.statusCode != null &&
+          res.statusCode! >= 200 &&
+          res.statusCode! < 300;
       return ProbeResult(entry: entry, ok: ok, statusCode: res.statusCode);
     } catch (e) {
       debugPrint('[ServerProbe] ${entry.url} 不可达: $e');

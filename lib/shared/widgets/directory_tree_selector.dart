@@ -75,30 +75,36 @@ class _DirectoryTreeSelectorState extends ConsumerState<DirectoryTreeSelector> {
     if (_error != null) {
       return Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
-        child: Text(AppLocalizations.of(context).loadDirFailed('$_error'),
-            style: TextStyle(color: Theme.of(context).colorScheme.error)),
+        child: Text(
+          AppLocalizations.of(context).loadDirFailed('$_error'),
+          style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
       );
     }
 
     if (_rootDirs == null || _rootDirs!.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
-        child: Text(AppLocalizations.of(context).dirEmpty,
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant)),
+        child: Text(
+          AppLocalizations.of(context).dirEmpty,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
       );
     }
 
     return Column(
-      children: _rootDirs!.map((dir) {
-        return _DirectoryTreeNode(
-          entry: dir,
-          selectedPaths: widget.selectedPaths,
-          onTogglePath: widget.onTogglePath,
-          mode: widget.mode,
-          depth: 0,
-        );
-      }).toList(),
+      children:
+          _rootDirs!.map((dir) {
+            return _DirectoryTreeNode(
+              entry: dir,
+              selectedPaths: widget.selectedPaths,
+              onTogglePath: widget.onTogglePath,
+              mode: widget.mode,
+              depth: 0,
+            );
+          }).toList(),
     );
   }
 }
@@ -129,16 +135,14 @@ class _DirectoryTreeNodeState extends ConsumerState<_DirectoryTreeNode> {
   bool _isLoadingChildren = false;
 
   bool get _isSelected => widget.selectedPaths.contains(widget.entry.path);
-  bool get _isExcludeMode =>
-      widget.mode == DirectoryTreeSelectorMode.exclude;
+  bool get _isExcludeMode => widget.mode == DirectoryTreeSelectorMode.exclude;
 
   Future<void> _loadChildren() async {
     if (_children != null) return;
     setState(() => _isLoadingChildren = true);
     try {
       final directoryApi = ref.read(directoryApiProvider);
-      final result =
-          await directoryApi.getDirectories(path: widget.entry.path);
+      final result = await directoryApi.getDirectories(path: widget.entry.path);
       setState(() {
         _children = result.directories;
         _isLoadingChildren = false;
@@ -167,9 +171,10 @@ class _DirectoryTreeNodeState extends ConsumerState<_DirectoryTreeNode> {
 
     // 排除语义下选中显示"灰化 + 删除线 + folder_off"，纳入语义下选中显示"高亮"。
     final dimmed = _isExcludeMode && _isSelected;
-    final IconData folderIcon = dimmed
-        ? Icons.folder_off_outlined
-        : (_isExpanded ? Icons.folder_open : Icons.folder_outlined);
+    final IconData folderIcon =
+        dimmed
+            ? Icons.folder_off_outlined
+            : (_isExpanded ? Icons.folder_open : Icons.folder_outlined);
 
     return Column(
       children: [
@@ -200,7 +205,10 @@ class _DirectoryTreeNodeState extends ConsumerState<_DirectoryTreeNode> {
                 Icon(
                   folderIcon,
                   size: 20,
-                  color: dimmed ? colorScheme.onSurfaceVariant : colorScheme.primary,
+                  color:
+                      dimmed
+                          ? colorScheme.onSurfaceVariant
+                          : colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
                 // 目录名称
@@ -208,11 +216,11 @@ class _DirectoryTreeNodeState extends ConsumerState<_DirectoryTreeNode> {
                   child: Text(
                     widget.entry.name,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: dimmed
-                          ? colorScheme.onSurfaceVariant
-                          : colorScheme.onSurface,
-                      decoration:
-                          dimmed ? TextDecoration.lineThrough : null,
+                      color:
+                          dimmed
+                              ? colorScheme.onSurfaceVariant
+                              : colorScheme.onSurface,
+                      decoration: dimmed ? TextDecoration.lineThrough : null,
                     ),
                   ),
                 ),

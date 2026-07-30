@@ -33,9 +33,10 @@ class _JSPluginManagerState extends ConsumerState<JSPluginManager> {
       title: Text(l10n.jspluginAutoUpdate),
       subtitle: Text(l10n.jspluginAutoUpdateHint),
       value: autoUpdateAsync.asData?.value ?? false,
-      onChanged: autoUpdateAsync.isLoading
-          ? null
-          : (enabled) => _toggleAutoUpdate(enabled),
+      onChanged:
+          autoUpdateAsync.isLoading
+              ? null
+              : (enabled) => _toggleAutoUpdate(enabled),
     );
   }
 
@@ -111,7 +112,9 @@ class _JSPluginManagerState extends ConsumerState<JSPluginManager> {
                 child: Column(
                   children: [
                     Text(
-                      error is ApiException ? error.message : l10n.commonLoadFailed,
+                      error is ApiException
+                          ? error.message
+                          : l10n.commonLoadFailed,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                       ),
@@ -146,10 +149,11 @@ class _JSPluginManagerState extends ConsumerState<JSPluginManager> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => _JSPluginBatchUpdateDialog(
-        pluginApi: ref.read(jsPluginApiProvider),
-        onUpdateComplete: () => ref.invalidate(jsPluginsProvider),
-      ),
+      builder:
+          (context) => _JSPluginBatchUpdateDialog(
+            pluginApi: ref.read(jsPluginApiProvider),
+            onUpdateComplete: () => ref.invalidate(jsPluginsProvider),
+          ),
     );
   }
 
@@ -271,7 +275,9 @@ class _JSPluginUploadDialogState extends State<_JSPluginUploadDialog> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginPickFileFailed(e.toString()),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginPickFileFailed(e.toString()),
         );
       }
     }
@@ -372,46 +378,51 @@ class _JSPluginUploadDialogState extends State<_JSPluginUploadDialog> {
               button: true,
               label: l10n.jspluginSelectFileSemantics,
               child: InkWell(
-              onTap: _uploading ? null : _pickFile,
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  border: Border.all(
+                onTap: _uploading ? null : _pickFile,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color:
+                          _selectedFile != null
+                              ? colorScheme.primary
+                              : colorScheme.outline,
+                      width: _selectedFile != null ? 2 : 1,
+                      strokeAlign: BorderSide.strokeAlignInside,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
                     color:
                         _selectedFile != null
-                            ? colorScheme.primary
-                            : colorScheme.outline,
-                    width: _selectedFile != null ? 2 : 1,
-                    strokeAlign: BorderSide.strokeAlignInside,
+                            ? colorScheme.primaryContainer.withValues(
+                              alpha: 0.3,
+                            )
+                            : null,
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                  color:
-                      _selectedFile != null
-                          ? colorScheme.primaryContainer.withValues(alpha: 0.3)
-                          : null,
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.cloud_upload_outlined,
-                      size: 48,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(l10n.jspluginTapToSelectFile, style: theme.textTheme.bodyMedium),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.jspluginUploadHint,
-                      style: theme.textTheme.bodySmall?.copyWith(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 48,
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.jspluginTapToSelectFile,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.jspluginUploadHint,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
             ),
 
             // 已选文件信息
@@ -490,7 +501,9 @@ class _JSPluginUploadDialogState extends State<_JSPluginUploadDialog> {
                     ),
                   )
                   : const Icon(Icons.upload),
-          label: Text(_uploading ? l10n.jspluginUploading : l10n.jspluginUpload),
+          label: Text(
+            _uploading ? l10n.jspluginUploading : l10n.jspluginUpload,
+          ),
         ),
       ],
     );
@@ -527,14 +540,18 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginOperationFailed(e.message),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginOperationFailed(e.message),
         );
       }
     } catch (e) {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginOperationFailed(e.toString()),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginOperationFailed(e.toString()),
         );
       }
     } finally {
@@ -559,20 +576,21 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
   void _showUpdateDialog() {
     showDialog(
       context: context,
-      builder: (context) => _JSPluginUpdateDialog(
-        plugin: widget.plugin,
-        pluginApi: ref.read(jsPluginApiProvider),
-        onUpdateComplete: () => ref.invalidate(jsPluginsProvider),
-      ),
+      builder:
+          (context) => _JSPluginUpdateDialog(
+            plugin: widget.plugin,
+            pluginApi: ref.read(jsPluginApiProvider),
+            onUpdateComplete: () => ref.invalidate(jsPluginsProvider),
+          ),
     );
   }
 
   Future<void> _showForceUpdateDialog() async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => _ForceUpdateConfirmDialog(
-        pluginName: widget.plugin.displayName,
-      ),
+      builder:
+          (context) =>
+              _ForceUpdateConfirmDialog(pluginName: widget.plugin.displayName),
     );
     if (confirmed != true || !mounted) return;
 
@@ -597,14 +615,18 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginForceUpdateFailed(e.message),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginForceUpdateFailed(e.message),
         );
       }
     } catch (e) {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginForceUpdateFailed(e.toString()),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginForceUpdateFailed(e.toString()),
         );
       }
     } finally {
@@ -614,14 +636,14 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
 
   Future<void> _toggleKeepAlive() async {
     final settingsApi = ref.read(settingsApiProvider);
-    final currentList =
-        ref.read(pluginKeepAliveProvider).value ?? <String>[];
+    final currentList = ref.read(pluginKeepAliveProvider).value ?? <String>[];
     final entryPath = widget.plugin.entryPath;
     if (entryPath == null) return;
 
-    final List<String> newList = currentList.contains(entryPath)
-        ? currentList.where((e) => e != entryPath).toList()
-        : [...currentList, entryPath];
+    final List<String> newList =
+        currentList.contains(entryPath)
+            ? currentList.where((e) => e != entryPath).toList()
+            : [...currentList, entryPath];
 
     try {
       await settingsApi.setPluginKeepAlive(newList);
@@ -630,14 +652,18 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginOperationFailed(e.message),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginOperationFailed(e.message),
         );
       }
     } catch (e) {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginOperationFailed(e.toString()),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginOperationFailed(e.toString()),
         );
       }
     }
@@ -657,7 +683,11 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.jspluginDeleteConfirmContent(widget.plugin.displayName)),
+                  Text(
+                    l10n.jspluginDeleteConfirmContent(
+                      widget.plugin.displayName,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   CheckboxListTile(
                     value: keepData,
@@ -673,18 +703,18 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
               actions: [
                 TextButton(
                   onPressed:
-                      () => Navigator.pop(
-                        context,
-                        (confirmed: false, keepData: false),
-                      ),
+                      () => Navigator.pop(context, (
+                        confirmed: false,
+                        keepData: false,
+                      )),
                   child: Text(l10n.commonCancel),
                 ),
                 FilledButton(
                   onPressed:
-                      () => Navigator.pop(
-                        context,
-                        (confirmed: true, keepData: keepData),
-                      ),
+                      () => Navigator.pop(context, (
+                        confirmed: true,
+                        keepData: keepData,
+                      )),
                   style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.error,
                   ),
@@ -820,19 +850,19 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
                 link: true,
                 label: l10n.jspluginOpenHomepageSemantics,
                 child: GestureDetector(
-                onTap: () => _openHomepage(plugin.homepage!),
-                child: Text(
-                  plugin.homepage!,
-                  style: TextStyle(
-                    color: colorScheme.primary,
-                    decoration: TextDecoration.underline,
-                    decorationColor: colorScheme.primary,
-                    fontSize: theme.textTheme.bodySmall?.fontSize,
+                  onTap: () => _openHomepage(plugin.homepage!),
+                  child: Text(
+                    plugin.homepage!,
+                    style: TextStyle(
+                      color: colorScheme.primary,
+                      decoration: TextDecoration.underline,
+                      decorationColor: colorScheme.primary,
+                      fontSize: theme.textTheme.bodySmall?.fontSize,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
               ),
             ),
         ],
@@ -901,8 +931,7 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
     final l10n = AppLocalizations.of(context);
     final plugin = widget.plugin;
     final colorScheme = Theme.of(context).colorScheme;
-    final keepAliveList =
-        ref.watch(pluginKeepAliveProvider).value ?? [];
+    final keepAliveList = ref.watch(pluginKeepAliveProvider).value ?? [];
     final isKeepAlive = keepAliveList.contains(plugin.entryPath);
 
     final Widget switchOrLoader =
@@ -953,14 +982,13 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
                     value: 'keep_alive',
                     child: ListTile(
                       leading: Icon(
-                        isKeepAlive
-                            ? Icons.push_pin
-                            : Icons.push_pin_outlined,
+                        isKeepAlive ? Icons.push_pin : Icons.push_pin_outlined,
                       ),
                       title: Text(l10n.jspluginKeepAlive),
-                      trailing: isKeepAlive
-                          ? const Icon(Icons.check, size: 18)
-                          : null,
+                      trailing:
+                          isKeepAlive
+                              ? const Icon(Icons.check, size: 18)
+                              : null,
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -1024,11 +1052,12 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
       switchOrLoader,
       if (plugin.isActive)
         IconButton(
-          icon: Icon(
-            isKeepAlive ? Icons.push_pin : Icons.push_pin_outlined,
-          ),
+          icon: Icon(isKeepAlive ? Icons.push_pin : Icons.push_pin_outlined),
           onPressed: _toggleKeepAlive,
-          tooltip: isKeepAlive ? l10n.jspluginCancelKeepAlive : l10n.jspluginKeepAlive,
+          tooltip:
+              isKeepAlive
+                  ? l10n.jspluginCancelKeepAlive
+                  : l10n.jspluginKeepAlive,
         ),
       PopupMenuButton<String>(
         icon:
@@ -1048,26 +1077,27 @@ class _JSPluginItemState extends ConsumerState<_JSPluginItem> {
               _showForceUpdateDialog();
           }
         },
-        itemBuilder: (context) => [
-          PopupMenuItem<String>(
-            value: 'update',
-            child: ListTile(
-              leading: const Icon(Icons.system_update_alt),
-              title: Text(l10n.jspluginCheckUpdate),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          PopupMenuItem<String>(
-            value: 'force_update',
-            child: ListTile(
-              leading: const Icon(Icons.refresh),
-              title: Text(l10n.jspluginForceUpdate),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-        ],
+        itemBuilder:
+            (context) => [
+              PopupMenuItem<String>(
+                value: 'update',
+                child: ListTile(
+                  leading: const Icon(Icons.system_update_alt),
+                  title: Text(l10n.jspluginCheckUpdate),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'force_update',
+                child: ListTile(
+                  leading: const Icon(Icons.refresh),
+                  title: Text(l10n.jspluginForceUpdate),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
       ),
       IconButton(
         icon:
@@ -1129,11 +1159,19 @@ class _JSPluginUpdateDialogState extends ConsumerState<_JSPluginUpdateDialog> {
       if (mounted) setState(() => _error = e.message);
     } on TimeoutException {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginCheckUpdateTimeout);
+        setState(
+          () =>
+              _error = AppLocalizations.of(context).jspluginCheckUpdateTimeout,
+        );
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginCheckUpdateFailed(e.toString()));
+        setState(
+          () =>
+              _error = AppLocalizations.of(
+                context,
+              ).jspluginCheckUpdateFailed(e.toString()),
+        );
       }
     } finally {
       if (mounted) setState(() => _isChecking = false);
@@ -1165,15 +1203,27 @@ class _JSPluginUpdateDialogState extends ConsumerState<_JSPluginUpdateDialog> {
       }
     } on ApiException catch (e) {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginUpdateFailed(e.message));
+        setState(
+          () =>
+              _error = AppLocalizations.of(
+                context,
+              ).jspluginUpdateFailed(e.message),
+        );
       }
     } on TimeoutException {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginUpdateTimeout);
+        setState(
+          () => _error = AppLocalizations.of(context).jspluginUpdateTimeout,
+        );
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginUpdateFailed(e.toString()));
+        setState(
+          () =>
+              _error = AppLocalizations.of(
+                context,
+              ).jspluginUpdateFailed(e.toString()),
+        );
       }
     } finally {
       if (mounted) setState(() => _isUpdating = false);
@@ -1253,7 +1303,10 @@ class _JSPluginUpdateDialogState extends ConsumerState<_JSPluginUpdateDialog> {
                       const SizedBox(height: 16),
                       Text(l10n.jspluginDownloadingUpdate),
                       const SizedBox(height: 8),
-                      Text(l10n.jspluginDoNotCloseDialog, style: const TextStyle(color: Colors.grey)),
+                      Text(
+                        l10n.jspluginDoNotCloseDialog,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ],
                   ),
                 )
@@ -1457,15 +1510,28 @@ class _JSPluginBatchUpdateDialogState
       }
     } on ApiException catch (e) {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginBatchUpdateFailed(e.message));
+        setState(
+          () =>
+              _error = AppLocalizations.of(
+                context,
+              ).jspluginBatchUpdateFailed(e.message),
+        );
       }
     } on TimeoutException {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginBatchUpdateTimeout);
+        setState(
+          () =>
+              _error = AppLocalizations.of(context).jspluginBatchUpdateTimeout,
+        );
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = AppLocalizations.of(context).jspluginBatchUpdateFailed(e.toString()));
+        setState(
+          () =>
+              _error = AppLocalizations.of(
+                context,
+              ).jspluginBatchUpdateFailed(e.toString()),
+        );
       }
     } finally {
       if (mounted) setState(() => _isUpdating = false);
@@ -1529,7 +1595,10 @@ class _JSPluginBatchUpdateDialogState
                       const SizedBox(height: 16),
                       Text(l10n.jspluginBatchUpdating),
                       const SizedBox(height: 8),
-                      Text(l10n.jspluginDoNotCloseDialog, style: const TextStyle(color: Colors.grey)),
+                      Text(
+                        l10n.jspluginDoNotCloseDialog,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ],
                   ),
                 )
@@ -1560,9 +1629,21 @@ class _JSPluginBatchUpdateDialogState
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem(l10n.jspluginStatUpdated, response.updated, Colors.green),
-              _buildStatItem(l10n.jspluginStatFailed, response.failed, colorScheme.error),
-              _buildStatItem(l10n.jspluginStatSkipped, response.skipped, Colors.grey),
+              _buildStatItem(
+                l10n.jspluginStatUpdated,
+                response.updated,
+                Colors.green,
+              ),
+              _buildStatItem(
+                l10n.jspluginStatFailed,
+                response.failed,
+                colorScheme.error,
+              ),
+              _buildStatItem(
+                l10n.jspluginStatSkipped,
+                response.skipped,
+                Colors.grey,
+              ),
             ],
           ),
         ),

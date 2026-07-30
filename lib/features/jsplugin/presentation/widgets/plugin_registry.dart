@@ -25,8 +25,7 @@ class PluginRegistryPage extends ConsumerStatefulWidget {
   const PluginRegistryPage({super.key});
 
   @override
-  ConsumerState<PluginRegistryPage> createState() =>
-      _PluginRegistryPageState();
+  ConsumerState<PluginRegistryPage> createState() => _PluginRegistryPageState();
 }
 
 class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
@@ -100,9 +99,10 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
         search: _searchText.isEmpty ? null : _searchText,
         githubProxy: proxy.isEmpty ? null : proxy,
         // 「全部」模式各源用自身存储的 token，前端不传
-        token: _allSources || _selectedRegistry!.token.isEmpty
-            ? null
-            : _selectedRegistry!.token,
+        token:
+            _allSources || _selectedRegistry!.token.isEmpty
+                ? null
+                : _selectedRegistry!.token,
       );
       if (!mounted) return;
       setState(() {
@@ -126,13 +126,17 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
 
   void _markPluginInstalled(String entryPath, String version) {
     if (_pluginResponse == null) return;
-    final updatedPlugins = _pluginResponse!.plugins.map((p) {
-      if (p.entryPath == entryPath) {
-        return p.copyWith(
-            installed: true, installedVersion: version, hasUpdate: false);
-      }
-      return p;
-    }).toList();
+    final updatedPlugins =
+        _pluginResponse!.plugins.map((p) {
+          if (p.entryPath == entryPath) {
+            return p.copyWith(
+              installed: true,
+              installedVersion: version,
+              hasUpdate: false,
+            );
+          }
+          return p;
+        }).toList();
     setState(() {
       _pluginResponse = RegistryRefreshResponse(
         plugins: updatedPlugins,
@@ -181,27 +185,28 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.jspluginStoreTitle),
-          actions: [
-            if (_allSources || _selectedRegistry != null)
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                tooltip: l10n.jspluginRefreshList,
-                onPressed: _loadingPlugins ? null : _refreshPlugins,
-              ),
+      appBar: AppBar(
+        title: Text(l10n.jspluginStoreTitle),
+        actions: [
+          if (_allSources || _selectedRegistry != null)
             IconButton(
-              icon: const Icon(Icons.settings),
-              tooltip: l10n.jspluginManageRegistries,
-              onPressed: _showRegistryManagement,
+              icon: const Icon(Icons.refresh),
+              tooltip: l10n.jspluginRefreshList,
+              onPressed: _loadingPlugins ? null : _refreshPlugins,
             ),
-          ],
-        ),
-        body: _loadingRegistries
-            ? const Center(child: CircularProgressIndicator())
-            : _registries.isEmpty
-                ? _buildEmptyState(theme)
-                : _buildContent(theme),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: l10n.jspluginManageRegistries,
+            onPressed: _showRegistryManagement,
+          ),
+        ],
+      ),
+      body:
+          _loadingRegistries
+              ? const Center(child: CircularProgressIndicator())
+              : _registries.isEmpty
+              ? _buildEmptyState(theme)
+              : _buildContent(theme),
     );
   }
 
@@ -211,7 +216,11 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.store_outlined, size: 64, color: theme.colorScheme.outline),
+          Icon(
+            Icons.store_outlined,
+            size: 64,
+            color: theme.colorScheme.outline,
+          ),
           const SizedBox(height: 16),
           Text(l10n.jspluginNoRegistries, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
@@ -249,8 +258,10 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
                 decoration: InputDecoration(
                   labelText: l10n.jspluginRegistry,
                   border: const OutlineInputBorder(),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
                 isExpanded: true,
                 items: [
@@ -285,18 +296,20 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
                                 vertical: 1,
                               ),
                               decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 l10n.jspluginOfficial,
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
                                 ),
                               ),
                             ),
@@ -315,18 +328,21 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
                   hintText: l10n.jspluginSearchHint,
                   prefixIcon: const Icon(Icons.search),
                   border: const OutlineInputBorder(),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  suffixIcon: _searchText.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          tooltip: l10n.clearSearch,
-                          onPressed: () {
-                            _searchController.clear();
-                            _onSearchChanged('');
-                          },
-                        )
-                      : null,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  suffixIcon:
+                      _searchText.isNotEmpty
+                          ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            tooltip: l10n.clearSearch,
+                            onPressed: () {
+                              _searchController.clear();
+                              _onSearchChanged('');
+                            },
+                          )
+                          : null,
                 ),
                 onChanged: _onSearchChanged,
               ),
@@ -347,10 +363,7 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(
-              width: 200,
-              child: LinearProgressIndicator(),
-            ),
+            const SizedBox(width: 200, child: LinearProgressIndicator()),
             const SizedBox(height: 16),
             Text(
               l10n.jspluginLoadingList,
@@ -373,7 +386,10 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            TextButton(onPressed: _refreshPlugins, child: Text(l10n.commonRetry)),
+            TextButton(
+              onPressed: _refreshPlugins,
+              child: Text(l10n.commonRetry),
+            ),
           ],
         ),
       );
@@ -381,7 +397,9 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
     if (_pluginResponse == null || _pluginResponse!.plugins.isEmpty) {
       return Center(
         child: Text(
-          _searchText.isNotEmpty ? l10n.jspluginNoMatch : l10n.jspluginRegistryEmpty,
+          _searchText.isNotEmpty
+              ? l10n.jspluginNoMatch
+              : l10n.jspluginRegistryEmpty,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.outline,
           ),
@@ -414,14 +432,16 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
             padding: const EdgeInsets.symmetric(vertical: 8),
             itemCount: plugins.length,
             separatorBuilder: (_, _) => const Divider(height: 1, indent: 16),
-            itemBuilder: (context, index) =>
-                _RegistryPluginItem(
+            itemBuilder:
+                (context, index) => _RegistryPluginItem(
                   entry: plugins[index],
                   // 「全部」模式无法确定插件来源，token 留空（私有源需切到具体源安装）
                   token: _allSources ? '' : (_selectedRegistry?.token ?? ''),
                   onInstalled: () {
                     _markPluginInstalled(
-                        plugins[index].entryPath, plugins[index].version);
+                      plugins[index].entryPath,
+                      plugins[index].version,
+                    );
                     ref.invalidate(jsPluginsProvider);
                   },
                 ),
@@ -437,23 +457,25 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
                 IconButton(
                   icon: const Icon(Icons.chevron_left),
                   tooltip: l10n.jspluginPrevPage,
-                  onPressed: _currentPage > 1
-                      ? () {
-                          setState(() => _currentPage--);
-                          _refreshPlugins();
-                        }
-                      : null,
+                  onPressed:
+                      _currentPage > 1
+                          ? () {
+                            setState(() => _currentPage--);
+                            _refreshPlugins();
+                          }
+                          : null,
                 ),
                 Text('$_currentPage / $totalPages'),
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
                   tooltip: l10n.jspluginNextPage,
-                  onPressed: _currentPage < totalPages
-                      ? () {
-                          setState(() => _currentPage++);
-                          _refreshPlugins();
-                        }
-                      : null,
+                  onPressed:
+                      _currentPage < totalPages
+                          ? () {
+                            setState(() => _currentPage++);
+                            _refreshPlugins();
+                          }
+                          : null,
                 ),
               ],
             ),
@@ -465,31 +487,34 @@ class _PluginRegistryPageState extends ConsumerState<PluginRegistryPage> {
   void _showRegistryManagement() {
     showDialog(
       context: context,
-      builder: (context) => _RegistryManagementDialog(
-        registries: _registries,
-        onSaved: (registries) {
-          setState(() {
-            _registries = registries;
-            final enabled = registries.where((r) => r.enabled).toList();
-            // 选中的具体源被删除/禁用后回退：优先保持「全部」聚合
-            if (!_allSources &&
-                _selectedRegistry != null &&
-                !enabled.any((r) => r.url == _selectedRegistry!.url)) {
-              _selectedRegistry = null;
-              _allSources = enabled.isNotEmpty;
-            }
-            if (!_allSources && _selectedRegistry == null && enabled.isNotEmpty) {
-              _allSources = true;
-            }
-          });
-          ref.invalidate(pluginRegistriesProvider);
-          if (_allSources || _selectedRegistry != null) {
-            _refreshPlugins();
-          } else {
-            setState(() => _pluginResponse = null);
-          }
-        },
-      ),
+      builder:
+          (context) => _RegistryManagementDialog(
+            registries: _registries,
+            onSaved: (registries) {
+              setState(() {
+                _registries = registries;
+                final enabled = registries.where((r) => r.enabled).toList();
+                // 选中的具体源被删除/禁用后回退：优先保持「全部」聚合
+                if (!_allSources &&
+                    _selectedRegistry != null &&
+                    !enabled.any((r) => r.url == _selectedRegistry!.url)) {
+                  _selectedRegistry = null;
+                  _allSources = enabled.isNotEmpty;
+                }
+                if (!_allSources &&
+                    _selectedRegistry == null &&
+                    enabled.isNotEmpty) {
+                  _allSources = true;
+                }
+              });
+              ref.invalidate(pluginRegistriesProvider);
+              if (_allSources || _selectedRegistry != null) {
+                _refreshPlugins();
+              } else {
+                setState(() => _pluginResponse = null);
+              }
+            },
+          ),
     );
   }
 }
@@ -545,7 +570,9 @@ class _RegistryPluginItemState extends ConsumerState<_RegistryPluginItem> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginInstallFailed(e.toString()),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginInstallFailed(e.toString()),
         );
       }
     } finally {
@@ -588,24 +615,25 @@ class _RegistryPluginItemState extends ConsumerState<_RegistryPluginItem> {
       final isSvg = url.toLowerCase().endsWith('.svg');
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: isSvg
-            ? SvgPicture.network(
-                url,
-                width: 40,
-                height: 40,
-                fit: BoxFit.contain,
-                placeholderBuilder: (_) => _buildFallbackIcon(entry, theme),
-                errorBuilder: (_, _, _) => _buildFallbackIcon(entry, theme),
-              )
-            : ExcludeSemantics(
-              child: Image.network(
+        child:
+            isSvg
+                ? SvgPicture.network(
                   url,
                   width: 40,
                   height: 40,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
+                  placeholderBuilder: (_) => _buildFallbackIcon(entry, theme),
                   errorBuilder: (_, _, _) => _buildFallbackIcon(entry, theme),
+                )
+                : ExcludeSemantics(
+                  child: Image.network(
+                    url,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => _buildFallbackIcon(entry, theme),
+                  ),
                 ),
-              ),
       );
     }
     return _buildFallbackIcon(entry, theme);
@@ -650,10 +678,7 @@ class _RegistryPluginItemState extends ConsumerState<_RegistryPluginItem> {
         child: Text(l10n.jspluginUpdateTo(entry.version)),
       );
     }
-    return FilledButton(
-      onPressed: _install,
-      child: Text(l10n.jspluginInstall),
-    );
+    return FilledButton(onPressed: _install, child: Text(l10n.jspluginInstall));
   }
 }
 
@@ -702,7 +727,9 @@ class _RegistryManagementDialogState
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).jspluginSaveFailed(e.toString()),
+          message: AppLocalizations.of(
+            context,
+          ).jspluginSaveFailed(e.toString()),
         );
       }
     } finally {
@@ -722,11 +749,7 @@ class _RegistryManagementDialogState
       initialToken: r.token,
       onSave: (url, name, token) {
         setState(() {
-          _registries[index] = r.copyWith(
-            url: url,
-            name: name,
-            token: token,
-          );
+          _registries[index] = r.copyWith(url: url, name: name, token: token);
         });
       },
     );
@@ -745,72 +768,77 @@ class _RegistryManagementDialogState
     final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(isEdit ? l10n.jspluginEditRegistry : l10n.jspluginAddRegistry),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: urlController,
-              decoration: const InputDecoration(
-                labelText: 'URL',
-                hintText: 'https://example.com/registry.json',
-                border: OutlineInputBorder(),
-              ),
-              autofocus: !isEdit,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(
+              isEdit ? l10n.jspluginEditRegistry : l10n.jspluginAddRegistry,
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: l10n.jspluginNameOptional,
-                hintText: l10n.jspluginRegistryNameHint,
-                border: const OutlineInputBorder(),
-              ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: urlController,
+                  decoration: const InputDecoration(
+                    labelText: 'URL',
+                    hintText: 'https://example.com/registry.json',
+                    border: OutlineInputBorder(),
+                  ),
+                  autofocus: !isEdit,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: l10n.jspluginNameOptional,
+                    hintText: l10n.jspluginRegistryNameHint,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: tokenController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: l10n.jspluginTokenOptional,
+                    hintText: 'Bearer Token / GitHub PAT',
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: tokenController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: l10n.jspluginTokenOptional,
-                hintText: 'Bearer Token / GitHub PAT',
-                border: const OutlineInputBorder(),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(l10n.commonCancel),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.commonCancel),
+              FilledButton(
+                onPressed: () {
+                  final url = urlController.text.trim();
+                  if (url.isEmpty) return;
+                  if (isEdit) {
+                    onSave(
+                      url,
+                      nameController.text.trim(),
+                      tokenController.text.trim(),
+                    );
+                  } else {
+                    setState(() {
+                      _registries.add(
+                        PluginRegistryConfig(
+                          url: url,
+                          name: nameController.text.trim(),
+                          enabled: true,
+                          token: tokenController.text.trim(),
+                        ),
+                      );
+                    });
+                  }
+                  Navigator.of(ctx).pop();
+                },
+                child: Text(isEdit ? l10n.jspluginSave : l10n.jspluginAdd),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () {
-              final url = urlController.text.trim();
-              if (url.isEmpty) return;
-              if (isEdit) {
-                onSave(
-                  url,
-                  nameController.text.trim(),
-                  tokenController.text.trim(),
-                );
-              } else {
-                setState(() {
-                  _registries.add(PluginRegistryConfig(
-                    url: url,
-                    name: nameController.text.trim(),
-                    enabled: true,
-                    token: tokenController.text.trim(),
-                  ));
-                });
-              }
-              Navigator.of(ctx).pop();
-            },
-            child: Text(isEdit ? l10n.jspluginSave : l10n.jspluginAdd),
-          ),
-        ],
-      ),
     );
   }
 
@@ -863,18 +891,20 @@ class _RegistryManagementDialogState
                                 vertical: 1,
                               ),
                               decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 l10n.jspluginOfficial,
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
                                 ),
                               ),
                             ),
@@ -886,22 +916,21 @@ class _RegistryManagementDialogState
                               child: Icon(
                                 Icons.lock_outline,
                                 size: 14,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outline,
+                                color: Theme.of(context).colorScheme.outline,
                               ),
                             ),
                           ],
                         ],
                       ),
-                      subtitle: r.name.isNotEmpty
-                          ? Text(
-                              r.url,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            )
-                          : null,
+                      subtitle:
+                          r.name.isNotEmpty
+                              ? Text(
+                                r.url,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              )
+                              : null,
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -939,13 +968,14 @@ class _RegistryManagementDialogState
         ),
         FilledButton(
           onPressed: _saving ? null : _save,
-          child: _saving
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(l10n.jspluginSave),
+          child:
+              _saving
+                  ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : Text(l10n.jspluginSave),
         ),
       ],
     );

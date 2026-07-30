@@ -19,11 +19,7 @@ class AudioTrackControl extends ConsumerWidget {
   /// 仅当所在行的兄弟按钮整体为 compact（如 desktop_player 次要操作行）时才显式传 compact 保持一致。
   final VisualDensity? visualDensity;
 
-  const AudioTrackControl({
-    super.key,
-    this.iconSize = 20,
-    this.visualDensity,
-  });
+  const AudioTrackControl({super.key, this.iconSize = 20, this.visualDensity});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,7 +49,7 @@ String audioTrackLabel(BuildContext context, AudioTrack track, int index) {
   return AppLocalizations.of(context).playerAudioTrackNumbered(index + 1);
 }
 
-/// 弹出音轨选择底部抽屉。供 [AudioTrackControl] 与 TV 布局的音轨按钮共用。
+/// 弹出音轨选择底部抽屉。供 [AudioTrackControl] 共用。
 Future<void> showAudioTrackSheet(BuildContext context, WidgetRef ref) {
   return showModalBottomSheet<void>(
     context: context,

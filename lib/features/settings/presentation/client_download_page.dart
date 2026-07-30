@@ -136,13 +136,25 @@ class ClientDownloadPage extends ConsumerWidget {
           SectionCard(
             title: l10n.settingsClientDownloadStandardSection,
             icon: Icons.dns_outlined,
-            children: _buildTiles(context, _standardAssets, _standardBase, os, proxy),
+            children: _buildTiles(
+              context,
+              _standardAssets,
+              _standardBase,
+              os,
+              proxy,
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           SectionCard(
             title: l10n.settingsClientDownloadBundleSection,
             icon: Icons.phone_android_outlined,
-            children: _buildTiles(context, _bundleAssets, _bundleBase, os, proxy),
+            children: _buildTiles(
+              context,
+              _bundleAssets,
+              _bundleBase,
+              os,
+              proxy,
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
           _releasesLink(
@@ -184,7 +196,10 @@ class ClientDownloadPage extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.recommend_outlined, color: colorScheme.onPrimaryContainer),
+              Icon(
+                Icons.recommend_outlined,
+                color: colorScheme.onPrimaryContainer,
+              ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
@@ -203,8 +218,10 @@ class ClientDownloadPage extends ConsumerWidget {
             children: [
               if (standard != null)
                 FilledButton.icon(
-                  onPressed: () =>
-                      _launch(_applyProxy(proxy, '$_standardBase${standard.asset}')),
+                  onPressed:
+                      () => _launch(
+                        _applyProxy(proxy, '$_standardBase${standard.asset}'),
+                      ),
                   icon: const Icon(Icons.download_outlined, size: 18),
                   label: Text(
                     l10n.settingsClientDownloadStandardBtn(standard.label),
@@ -212,8 +229,10 @@ class ClientDownloadPage extends ConsumerWidget {
                 ),
               if (bundle != null)
                 OutlinedButton.icon(
-                  onPressed: () =>
-                      _launch(_applyProxy(proxy, '$_bundleBase${bundle.asset}')),
+                  onPressed:
+                      () => _launch(
+                        _applyProxy(proxy, '$_bundleBase${bundle.asset}'),
+                      ),
                   icon: const Icon(Icons.download_outlined, size: 18),
                   label: Text(
                     l10n.settingsClientDownloadBundleBtn(bundle.label),
@@ -245,19 +264,20 @@ class ClientDownloadPage extends ConsumerWidget {
           leading: Icon(a.icon),
           title: Text(
             a.label,
-            style: highlighted
-                ? TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.primary,
-                  )
-                : null,
+            style:
+                highlighted
+                    ? TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    )
+                    : null,
           ),
-          subtitle: a.unsigned
-              ? Text(l10n.settingsClientDownloadNoteUnsigned)
-              : null,
-          trailing: highlighted
-              ? Icon(Icons.download_outlined, color: colorScheme.primary)
-              : const Icon(Icons.download_outlined),
+          subtitle:
+              a.unsigned ? Text(l10n.settingsClientDownloadNoteUnsigned) : null,
+          trailing:
+              highlighted
+                  ? Icon(Icons.download_outlined, color: colorScheme.primary)
+                  : const Icon(Icons.download_outlined),
           onTap: () => _launch(_applyProxy(proxy, '$base${a.asset}')),
         ),
       );

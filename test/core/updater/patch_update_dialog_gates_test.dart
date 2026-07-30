@@ -164,16 +164,8 @@ void main() {
       final shown = await _runMaybeShow(tester, prefs, manual: true);
 
       expect(shown, isFalse, reason: '测试平台非 Android，无补丁可弹');
-      expect(
-        _CountingGithubProxy.reads,
-        1,
-        reason: '手动检查必须绕过两道闸真的去查',
-      );
-      expect(
-        prefs.getLastPatchCheckAt(),
-        stamp,
-        reason: '手动检查不该重置启动节流窗口',
-      );
+      expect(_CountingGithubProxy.reads, 1, reason: '手动检查必须绕过两道闸真的去查');
+      expect(prefs.getLastPatchCheckAt(), stamp, reason: '手动检查不该重置启动节流窗口');
     });
   });
 }

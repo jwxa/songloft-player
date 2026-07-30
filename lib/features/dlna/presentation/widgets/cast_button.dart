@@ -6,7 +6,6 @@ import '../../../../l10n/app_localizations.dart';
 import '../providers/dlna_provider.dart';
 import 'device_sheet.dart';
 
-
 class CastButton extends ConsumerWidget {
   final double? iconSize;
   final VisualDensity? visualDensity;
@@ -17,22 +16,19 @@ class CastButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (kIsWeb) return const SizedBox.shrink();
 
-    final isCasting = ref.watch(
-      dlnaStateProvider.select((s) => s.isCasting),
-    );
+    final isCasting = ref.watch(dlnaStateProvider.select((s) => s.isCasting));
 
     return IconButton(
       icon: Icon(
         isCasting ? Icons.cast_connected : Icons.cast,
-        color: isCasting
-            ? Theme.of(context).colorScheme.primary
-            : null,
+        color: isCasting ? Theme.of(context).colorScheme.primary : null,
       ),
       iconSize: iconSize,
       visualDensity: visualDensity,
-      tooltip: isCasting
-          ? AppLocalizations.of(context).dlnaCasting
-          : AppLocalizations.of(context).dlnaCast,
+      tooltip:
+          isCasting
+              ? AppLocalizations.of(context).dlnaCasting
+              : AppLocalizations.of(context).dlnaCast,
       onPressed: () => _onPressed(context, ref, isCasting),
     );
   }

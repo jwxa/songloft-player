@@ -81,9 +81,8 @@ class InsecureMediaProxy {
   /// [forceHlsSuffix] 为 true 时确保 name 以 `.m3u8` 结尾（供播放列表入口识别为 HLS）。
   String _entry(Uri upstream, {bool forceHlsSuffix = false}) {
     final id = _register(upstream);
-    var name = upstream.pathSegments.isNotEmpty
-        ? upstream.pathSegments.last
-        : 'res';
+    var name =
+        upstream.pathSegments.isNotEmpty ? upstream.pathSegments.last : 'res';
     if (name.isEmpty) name = 'res';
     if (forceHlsSuffix && !name.toLowerCase().endsWith('.m3u8')) {
       name = 'playlist.m3u8';
@@ -156,8 +155,10 @@ class InsecureMediaProxy {
       );
       final bytes = utf8.encode(rewritten);
       response.statusCode = HttpStatus.ok;
-      response.headers.contentType =
-          ContentType('application', 'vnd.apple.mpegurl');
+      response.headers.contentType = ContentType(
+        'application',
+        'vnd.apple.mpegurl',
+      );
       response.headers.set(HttpHeaders.contentLengthHeader, bytes.length);
       if (!isHead) response.add(bytes);
       await response.close();

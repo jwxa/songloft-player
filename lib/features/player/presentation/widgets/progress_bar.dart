@@ -100,11 +100,13 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
     final theme = Theme.of(context);
     final currentValue = (_isDragging || _isSeeking) ? _dragValue : _progress;
 
-    final displayPosition = (_isDragging || _isSeeking)
-        ? Duration(
-            milliseconds:
-                (_dragValue * widget.duration.inMilliseconds).round())
-        : widget.position;
+    final displayPosition =
+        (_isDragging || _isSeeking)
+            ? Duration(
+              milliseconds:
+                  (_dragValue * widget.duration.inMilliseconds).round(),
+            )
+            : widget.position;
 
     return Row(
       children: [
@@ -131,11 +133,12 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
               ),
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
               activeTrackColor: widget.activeColor ?? theme.colorScheme.primary,
-              inactiveTrackColor: widget.inactiveColor ??
+              inactiveTrackColor:
+                  widget.inactiveColor ??
                   theme.colorScheme.surfaceContainerHighest,
               thumbColor: widget.activeColor ?? theme.colorScheme.primary,
-              overlayColor:
-                  (widget.activeColor ?? theme.colorScheme.primary).withValues(alpha: 0.2),
+              overlayColor: (widget.activeColor ?? theme.colorScheme.primary)
+                  .withValues(alpha: 0.2),
             ),
             child: Slider(
               value: currentValue,
@@ -144,7 +147,8 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
               onChangeEnd: (value) => _onDragEnd(),
               semanticFormatterCallback: (value) {
                 final pos = Duration(
-                  milliseconds: (value * widget.duration.inMilliseconds).round(),
+                  milliseconds:
+                      (value * widget.duration.inMilliseconds).round(),
                 );
                 return '${_formatDuration(pos)} / ${_formatDuration(widget.duration)}';
               },
@@ -257,15 +261,19 @@ class _ClickableProgressBarState extends State<ClickableProgressBar> {
             final box = context.findRenderObject() as RenderBox;
             setState(() {
               _isDragging = true;
-              _dragProgress =
-                  (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
+              _dragProgress = (details.localPosition.dx / box.size.width).clamp(
+                0.0,
+                1.0,
+              );
             });
           },
           onHorizontalDragUpdate: (details) {
             final box = context.findRenderObject() as RenderBox;
             setState(() {
-              _dragProgress =
-                  (details.localPosition.dx / box.size.width).clamp(0.0, 1.0);
+              _dragProgress = (details.localPosition.dx / box.size.width).clamp(
+                0.0,
+                1.0,
+              );
             });
           },
           onHorizontalDragEnd: (_) {
@@ -316,15 +324,18 @@ class _ClickableProgressBarState extends State<ClickableProgressBar> {
                           decoration: BoxDecoration(
                             color: activeColor,
                             shape: BoxShape.circle,
-                            boxShadow: active
-                                ? [
-                                    BoxShadow(
-                                      color: activeColor.withValues(alpha: 0.3),
-                                      blurRadius: 4,
-                                      spreadRadius: 1,
-                                    ),
-                                  ]
-                                : null,
+                            boxShadow:
+                                active
+                                    ? [
+                                      BoxShadow(
+                                        color: activeColor.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        blurRadius: 4,
+                                        spreadRadius: 1,
+                                      ),
+                                    ]
+                                    : null,
                           ),
                         ),
                       ),

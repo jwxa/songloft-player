@@ -7327,6 +7327,66 @@ abstract class AppLocalizations {
   /// **'已清除歌单缓存'**
   String get playlistCacheCleared;
 
+  /// No description provided for @playHistory.
+  ///
+  /// In zh, this message translates to:
+  /// **'播放历史'**
+  String get playHistory;
+
+  /// No description provided for @playHistoryTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'「{name}」播放历史'**
+  String playHistoryTitle(String name);
+
+  /// No description provided for @playHistoryEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有播放记录'**
+  String get playHistoryEmpty;
+
+  /// No description provided for @playHistoryEmptyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'在这里播放过的歌曲会记录下来，方便下次接着听'**
+  String get playHistoryEmptyHint;
+
+  /// No description provided for @playHistoryClear.
+  ///
+  /// In zh, this message translates to:
+  /// **'清空历史'**
+  String get playHistoryClear;
+
+  /// No description provided for @playHistoryClearConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定清空这里的播放历史吗？'**
+  String get playHistoryClearConfirm;
+
+  /// No description provided for @playHistoryCleared.
+  ///
+  /// In zh, this message translates to:
+  /// **'已清空播放历史'**
+  String get playHistoryCleared;
+
+  /// No description provided for @playHistoryDeleteEntry.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除此记录'**
+  String get playHistoryDeleteEntry;
+
+  /// No description provided for @playHistoryOperationFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'操作失败，请重试'**
+  String get playHistoryOperationFailed;
+
+  /// No description provided for @playHistorySongMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'该歌曲已不在此列表中，已把其余歌曲加入队列'**
+  String get playHistorySongMissing;
+
   /// No description provided for @scrollToTop.
   ///
   /// In zh, this message translates to:

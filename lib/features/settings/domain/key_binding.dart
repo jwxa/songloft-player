@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 
 import 'player_shortcut_action.dart';
 
-/// seek 快进/快退步进（秒）。与 tv_player.dart 的进度条步进保持一致。
+/// seek 快进/快退步进（秒）。
 const int kSeekStepSeconds = 5;
 
-/// 音量增减步进（0-100 刻度）。与 tv_player.dart 音量按钮的 ±10 一致。
+/// 音量增减步进（0-100 刻度）。
 const double kVolumeStep = 10;
 
 /// 一个可序列化的按键组合：主键 + 四个修饰键状态。
@@ -95,7 +95,9 @@ Map<PlayerShortcutAction, KeyBinding> defaultBindings(TargetPlatform platform) {
   final isMac = platform == TargetPlatform.macOS;
   // 主修饰键：macOS = Cmd(meta)，其余 = Ctrl
   KeyBinding primary(int keyId) =>
-      isMac ? KeyBinding(keyId: keyId, meta: true) : KeyBinding(keyId: keyId, ctrl: true);
+      isMac
+          ? KeyBinding(keyId: keyId, meta: true)
+          : KeyBinding(keyId: keyId, ctrl: true);
   KeyBinding withShift(int keyId) => KeyBinding(keyId: keyId, shift: true);
 
   return {

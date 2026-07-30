@@ -152,9 +152,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
   /// 组顺序不固定，跟随用户已保存的分组顺序。
   List<LibraryViewEntry> _groupedFlatten(List<LibraryViewEntry> entries) {
     final buckets = _groupDrafts(entries);
-    return [
-      for (final g in _groupOrderOf(entries)) ...buckets[g]!,
-    ];
+    return [for (final g in _groupOrderOf(entries)) ...buckets[g]!];
   }
 
   /// 从条目列表推导当前的分组顺序（按各组首次出现的先后）。
@@ -194,9 +192,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
       order.removeAt(idx);
       order.insert(newIdx, group);
       final buckets = _groupDrafts(_draftViews);
-      _draftViews = [
-        for (final g in order) ...buckets[g]!,
-      ];
+      _draftViews = [for (final g in order) ...buckets[g]!];
     });
   }
 
@@ -299,7 +295,8 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
 
     String? selected = _selectedViewKey;
     // 强制选中的视图（来自 ?view=）即使被隐藏也可选中，只要它是合法视图。
-    final canUseHidden = selected != null &&
+    final canUseHidden =
+        selected != null &&
         selected == _forcedViewKey &&
         allKeys.contains(selected);
     if (selected == null ||
@@ -314,11 +311,11 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     // 把它按完整配置顺序临时插回，使其也显示对应 pill 且分组归位正确。
     final displayKeys =
         (canUseHidden && selected != null && !visibleKeys.contains(selected))
-        ? [
-            for (final k in allKeys)
-              if (k == selected || visibleKeys.contains(k)) k,
-          ]
-        : visibleKeys;
+            ? [
+              for (final k in allKeys)
+                if (k == selected || visibleKeys.contains(k)) k,
+            ]
+            : visibleKeys;
 
     return Scaffold(
       appBar: _buildAppBar(context, state, config, selected),
@@ -475,50 +472,56 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
           TextButton.icon(
             icon: const Icon(Icons.playlist_add),
             label: Text(l10n.addToPlaylist),
-            onPressed: state.selectedSongIds.isEmpty
-                ? null
-                : () => _showAddToPlaylistDialog(
-                    context,
-                    state.selectedSongIds.toList(),
-                  ),
+            onPressed:
+                state.selectedSongIds.isEmpty
+                    ? null
+                    : () => _showAddToPlaylistDialog(
+                      context,
+                      state.selectedSongIds.toList(),
+                    ),
           ),
           TextButton.icon(
             icon: Icon(
               Icons.delete,
-              color: state.selectedSongIds.isEmpty
-                  ? null
-                  : Theme.of(context).colorScheme.error,
+              color:
+                  state.selectedSongIds.isEmpty
+                      ? null
+                      : Theme.of(context).colorScheme.error,
             ),
             label: Text(
               l10n.libraryDeleteWithCount(state.selectedSongIds.length),
               style: TextStyle(
-                color: state.selectedSongIds.isEmpty
-                    ? null
-                    : Theme.of(context).colorScheme.error,
+                color:
+                    state.selectedSongIds.isEmpty
+                        ? null
+                        : Theme.of(context).colorScheme.error,
               ),
             ),
-            onPressed: state.selectedSongIds.isEmpty
-                ? null
-                : () => _showBatchDeleteConfirmDialog(context),
+            onPressed:
+                state.selectedSongIds.isEmpty
+                    ? null
+                    : () => _showBatchDeleteConfirmDialog(context),
           ),
           TextButton(
-            onPressed: state.isSelectingAll
-                ? null
-                : () {
-                    ref.read(songsListProvider.notifier).toggleSelectAll();
-                  },
-            child: state.isSelectingAll
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(
-                    (state.total > 0 &&
-                            state.selectedSongIds.length >= state.total)
-                        ? l10n.libraryDeselectAll
-                        : l10n.selectAll,
-                  ),
+            onPressed:
+                state.isSelectingAll
+                    ? null
+                    : () {
+                      ref.read(songsListProvider.notifier).toggleSelectAll();
+                    },
+            child:
+                state.isSelectingAll
+                    ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : Text(
+                      (state.total > 0 &&
+                              state.selectedSongIds.length >= state.total)
+                          ? l10n.libraryDeselectAll
+                          : l10n.selectAll,
+                    ),
           ),
         ],
       );
@@ -530,7 +533,8 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     }
 
     final isFlat = selected != null && isFlatLibraryView(selected);
-    final isFacet = selected != null &&
+    final isFacet =
+        selected != null &&
         !isFlatLibraryView(selected) &&
         !isPlaylistLibraryView(selected);
 
@@ -564,11 +568,12 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     final isGrid = ref.watch(playlistViewModeProvider) == PlaylistViewMode.grid;
     return IconButton(
       icon: Icon(isGrid ? Icons.view_list : Icons.grid_view),
-      tooltip: isGrid
-          ? l10n.playlistSwitchToListView
-          : l10n.playlistSwitchToGridView,
-      onPressed: () =>
-          ref.read(playlistViewModeProvider.notifier).toggleViewMode(),
+      tooltip:
+          isGrid
+              ? l10n.playlistSwitchToListView
+              : l10n.playlistSwitchToGridView,
+      onPressed:
+          () => ref.read(playlistViewModeProvider.notifier).toggleViewMode(),
     );
   }
 
@@ -617,9 +622,10 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
               color: count == 0 ? null : colorScheme.primary,
             ),
             label: Text(l10n.playlistPlayCount(count)),
-            onPressed: count == 0
-                ? null
-                : () => _playlistViewKey.currentState?.playSelected(),
+            onPressed:
+                count == 0
+                    ? null
+                    : () => _playlistViewKey.currentState?.playSelected(),
           ),
           TextButton.icon(
             icon: Icon(
@@ -630,13 +636,14 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
               l10n.playlistDeleteCount(count),
               style: TextStyle(color: count == 0 ? null : colorScheme.error),
             ),
-            onPressed: count == 0
-                ? null
-                : () => _playlistViewKey.currentState?.deleteSelected(),
+            onPressed:
+                count == 0
+                    ? null
+                    : () => _playlistViewKey.currentState?.deleteSelected(),
           ),
           TextButton(
-            onPressed: () =>
-                _playlistViewKey.currentState?.selectAllInSelection(),
+            onPressed:
+                () => _playlistViewKey.currentState?.selectAllInSelection(),
             child: Text(l10n.selectAll),
           ),
         ],
@@ -677,20 +684,29 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
             vs?.enterSortMode();
         }
       },
-      itemBuilder: (context) => [
-        _playlistSortItem('name_asc', Icons.sort_by_alpha, l10n.playlistSortNameAsc),
-        _playlistSortItem(
-          'name_desc',
-          Icons.sort_by_alpha,
-          l10n.playlistSortNameDesc,
-        ),
-        _playlistSortItem(
-          'number_asc',
-          Icons.format_list_numbered,
-          l10n.playlistSortNumberPrefix,
-        ),
-        _playlistSortItem('manual', Icons.drag_handle, l10n.playlistSortManual),
-      ],
+      itemBuilder:
+          (context) => [
+            _playlistSortItem(
+              'name_asc',
+              Icons.sort_by_alpha,
+              l10n.playlistSortNameAsc,
+            ),
+            _playlistSortItem(
+              'name_desc',
+              Icons.sort_by_alpha,
+              l10n.playlistSortNameDesc,
+            ),
+            _playlistSortItem(
+              'number_asc',
+              Icons.format_list_numbered,
+              l10n.playlistSortNumberPrefix,
+            ),
+            _playlistSortItem(
+              'manual',
+              Icons.drag_handle,
+              l10n.playlistSortManual,
+            ),
+          ],
     );
   }
 
@@ -730,35 +746,40 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
             _enterEditMode(config);
         }
       },
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: 'create',
-          child: ListTile(
-            leading: const Icon(Icons.add),
-            title: Text(l10n.playlistCreate),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-        PopupMenuItem(
-          value: 'toggle_hidden',
-          child: ListTile(
-            leading: Icon(showHidden ? Icons.visibility_off : Icons.visibility),
-            title: Text(
-              showHidden ? l10n.playlistHideHidden : l10n.playlistShowHidden,
+      itemBuilder:
+          (context) => [
+            PopupMenuItem(
+              value: 'create',
+              child: ListTile(
+                leading: const Icon(Icons.add),
+                title: Text(l10n.playlistCreate),
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-        const PopupMenuDivider(),
-        PopupMenuItem(
-          value: 'customize_views',
-          child: ListTile(
-            leading: const Icon(Icons.tune),
-            title: Text(l10n.libraryCustomizeViews),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      ],
+            PopupMenuItem(
+              value: 'toggle_hidden',
+              child: ListTile(
+                leading: Icon(
+                  showHidden ? Icons.visibility_off : Icons.visibility,
+                ),
+                title: Text(
+                  showHidden
+                      ? l10n.playlistHideHidden
+                      : l10n.playlistShowHidden,
+                ),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            const PopupMenuDivider(),
+            PopupMenuItem(
+              value: 'customize_views',
+              child: ListTile(
+                leading: const Icon(Icons.tune),
+                title: Text(l10n.libraryCustomizeViews),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ],
     );
   }
 
@@ -778,38 +799,39 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
         };
         ref.read(songsListProvider.notifier).setSort(sort, order);
       },
-      itemBuilder: (context) => [
-        _buildLibrarySortItem(
-          value: 'added_at',
-          icon: Icons.schedule,
-          title: l10n.librarySortAddedAt,
-          isSelected: state.sort == 'added_at',
-        ),
-        _buildLibrarySortItem(
-          value: 'file_modified_at',
-          icon: Icons.insert_drive_file_outlined,
-          title: l10n.librarySortFileTime,
-          isSelected: state.sort == 'file_modified_at',
-        ),
-        _buildLibrarySortItem(
-          value: 'title',
-          icon: Icons.sort_by_alpha,
-          title: l10n.libraryColumnTitle,
-          isSelected: state.sort == 'title',
-        ),
-        _buildLibrarySortItem(
-          value: 'artist',
-          icon: Icons.person,
-          title: l10n.libraryColumnArtist,
-          isSelected: state.sort == 'artist',
-        ),
-        _buildLibrarySortItem(
-          value: 'duration',
-          icon: Icons.timer,
-          title: l10n.libraryColumnDuration,
-          isSelected: state.sort == 'duration',
-        ),
-      ],
+      itemBuilder:
+          (context) => [
+            _buildLibrarySortItem(
+              value: 'added_at',
+              icon: Icons.schedule,
+              title: l10n.librarySortAddedAt,
+              isSelected: state.sort == 'added_at',
+            ),
+            _buildLibrarySortItem(
+              value: 'file_modified_at',
+              icon: Icons.insert_drive_file_outlined,
+              title: l10n.librarySortFileTime,
+              isSelected: state.sort == 'file_modified_at',
+            ),
+            _buildLibrarySortItem(
+              value: 'title',
+              icon: Icons.sort_by_alpha,
+              title: l10n.libraryColumnTitle,
+              isSelected: state.sort == 'title',
+            ),
+            _buildLibrarySortItem(
+              value: 'artist',
+              icon: Icons.person,
+              title: l10n.libraryColumnArtist,
+              isSelected: state.sort == 'artist',
+            ),
+            _buildLibrarySortItem(
+              value: 'duration',
+              icon: Icons.timer,
+              title: l10n.libraryColumnDuration,
+              isSelected: state.sort == 'duration',
+            ),
+          ],
     );
   }
 
@@ -839,58 +861,59 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
             _enterEditMode(config);
         }
       },
-      itemBuilder: (context) => [
-        // 歌曲管理项仅在扁平歌曲视图下有意义。
-        if (isFlat) ...[
-          PopupMenuItem(
-            value: 'add_remote',
-            child: ListTile(
-              leading: const Icon(Icons.cloud),
-              title: Text(l10n.libraryAddRemoteSong),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          PopupMenuItem(
-            value: 'add_radio',
-            child: ListTile(
-              leading: const Icon(Icons.radio),
-              title: Text(l10n.libraryAddRadio),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          PopupMenuItem(
-            value: 'toggle_hidden',
-            child: ListTile(
-              leading: Icon(
-                state.showHidden ? Icons.visibility_off : Icons.visibility,
+      itemBuilder:
+          (context) => [
+            // 歌曲管理项仅在扁平歌曲视图下有意义。
+            if (isFlat) ...[
+              PopupMenuItem(
+                value: 'add_remote',
+                child: ListTile(
+                  leading: const Icon(Icons.cloud),
+                  title: Text(l10n.libraryAddRemoteSong),
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
-              title: Text(
-                state.showHidden
-                    ? l10n.libraryHideHiddenSongs
-                    : l10n.libraryShowHiddenSongs,
+              PopupMenuItem(
+                value: 'add_radio',
+                child: ListTile(
+                  leading: const Icon(Icons.radio),
+                  title: Text(l10n.libraryAddRadio),
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
-              contentPadding: EdgeInsets.zero,
+              PopupMenuItem(
+                value: 'toggle_hidden',
+                child: ListTile(
+                  leading: Icon(
+                    state.showHidden ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  title: Text(
+                    state.showHidden
+                        ? l10n.libraryHideHiddenSongs
+                        : l10n.libraryShowHiddenSongs,
+                  ),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
+                value: 'clean',
+                child: ListTile(
+                  leading: const Icon(Icons.cleaning_services),
+                  title: Text(l10n.libraryCleanInvalidSongs),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuDivider(),
+            ],
+            PopupMenuItem(
+              value: 'customize_views',
+              child: ListTile(
+                leading: const Icon(Icons.tune),
+                title: Text(l10n.libraryCustomizeViews),
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
-          ),
-          PopupMenuItem(
-            value: 'clean',
-            child: ListTile(
-              leading: const Icon(Icons.cleaning_services),
-              title: Text(l10n.libraryCleanInvalidSongs),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          const PopupMenuDivider(),
-        ],
-        PopupMenuItem(
-          value: 'customize_views',
-          child: ListTile(
-            leading: const Icon(Icons.tune),
-            title: Text(l10n.libraryCustomizeViews),
-            contentPadding: EdgeInsets.zero,
-          ),
-        ),
-      ],
+          ],
     );
   }
 
@@ -927,8 +950,9 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
                 physics: const NeverScrollableScrollPhysics(),
                 buildDefaultDragHandles: false,
                 itemCount: buckets[groupOrder[gi]]!.length,
-                onReorderItem: (oldIndex, newIndex) =>
-                    _reorderInGroup(groupOrder[gi], oldIndex, newIndex),
+                onReorderItem:
+                    (oldIndex, newIndex) =>
+                        _reorderInGroup(groupOrder[gi], oldIndex, newIndex),
                 itemBuilder: (context, index) {
                   final v = buckets[groupOrder[gi]]![index];
                   return ListTile(
@@ -966,9 +990,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
       final item = list.removeAt(oldIndex);
       list.insert(newIndex, item);
       // 保持当前分组顺序不变（不要打回固定顺序）。
-      _draftViews = [
-        for (final g in _draftGroupOrder()) ...buckets[g]!,
-      ];
+      _draftViews = [for (final g in _draftGroupOrder()) ...buckets[g]!];
     });
   }
 
@@ -1015,16 +1037,17 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
         decoration: InputDecoration(
           hintText: l10n.librarySearchHint,
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  tooltip: l10n.clearSearch,
-                  onPressed: () {
-                    _searchController.clear();
-                    ref.read(songsListProvider.notifier).search('');
-                  },
-                )
-              : null,
+          suffixIcon:
+              _searchController.text.isNotEmpty
+                  ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    tooltip: l10n.clearSearch,
+                    onPressed: () {
+                      _searchController.clear();
+                      ref.read(songsListProvider.notifier).search('');
+                    },
+                  )
+                  : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
@@ -1257,11 +1280,11 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
                               .read(songsListProvider.notifier)
                               .toggleSongSelection(song.id);
                         },
-                        onDelete: () =>
-                            _showDeleteConfirmDialog(context, song.id),
+                        onDelete:
+                            () => _showDeleteConfirmDialog(context, song.id),
                         onEdit: () => _navigateToEditSong(context, song),
-                        onAddToPlaylist: () =>
-                            _showAddToPlaylistDialog(context, [song.id]),
+                        onAddToPlaylist:
+                            () => _showAddToPlaylistDialog(context, [song.id]),
                       );
                     },
                   ),
@@ -1282,9 +1305,8 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     return EmptyState(
       icon: isSearching ? Icons.search_off : Icons.library_music,
       title: isSearching ? l10n.libraryNoMatchingSongs : l10n.libraryEmpty,
-      subtitle: isSearching
-          ? l10n.libraryTryOtherKeywords
-          : l10n.libraryEmptyHint,
+      subtitle:
+          isSearching ? l10n.libraryTryOtherKeywords : l10n.libraryEmptyHint,
     );
   }
 
@@ -1345,31 +1367,31 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
     final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.libraryCleanTitle),
-        content: Text(l10n.libraryCleanContent),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.commonCancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.libraryCleanTitle),
+            content: Text(l10n.libraryCleanContent),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.commonCancel),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final cleaned =
+                      await ref.read(songsListProvider.notifier).cleanSongs();
+                  if (context.mounted) {
+                    ResponsiveSnackBar.show(
+                      context,
+                      message: l10n.libraryCleanedCount(cleaned),
+                    );
+                  }
+                },
+                child: Text(l10n.libraryClean),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              final cleaned = await ref
-                  .read(songsListProvider.notifier)
-                  .cleanSongs();
-              if (context.mounted) {
-                ResponsiveSnackBar.show(
-                  context,
-                  message: l10n.libraryCleanedCount(cleaned),
-                );
-              }
-            },
-            child: Text(l10n.libraryClean),
-          ),
-        ],
-      ),
     );
   }
 

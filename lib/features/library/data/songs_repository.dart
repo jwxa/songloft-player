@@ -2,15 +2,16 @@ import 'package:dio/dio.dart';
 
 import '../../../l10n/l10n_holder.dart';
 import '../../../shared/models/song.dart';
+import '../domain/repositories/songs_repository_interface.dart';
 import 'songs_api.dart';
 
 /// 歌曲仓库，封装 API 调用并添加错误处理
-class SongsRepository {
+class SongsRepository implements ISongsRepository {
   final SongsApi songsApi;
 
   SongsRepository(this.songsApi);
 
-  /// 获取歌曲列表
+  @override
   Future<SongListResponse> getSongs({
     String? type,
     String? keyword,
@@ -37,7 +38,7 @@ class SongsRepository {
     }
   }
 
-  /// 获取匹配过滤条件的歌曲 ID 列表
+  @override
   Future<List<int>> getSongIds({
     String? type,
     String? keyword,
@@ -60,7 +61,7 @@ class SongsRepository {
     }
   }
 
-  /// 获取单首歌曲
+  @override
   Future<Song> getSong(int id) async {
     try {
       return await songsApi.getSong(id);
@@ -69,7 +70,7 @@ class SongsRepository {
     }
   }
 
-  /// 创建网络歌曲
+  @override
   Future<Song> createRemoteSong({
     required String title,
     String? artist,
@@ -96,7 +97,7 @@ class SongsRepository {
     }
   }
 
-  /// 创建电台歌曲
+  @override
   Future<Song> createRadioSong({
     required String title,
     String? artist,
@@ -117,7 +118,7 @@ class SongsRepository {
     }
   }
 
-  /// 更新歌曲
+  @override
   Future<Song> updateSong(
     int id, {
     String? title,
@@ -146,7 +147,7 @@ class SongsRepository {
     }
   }
 
-  /// 更新歌曲歌词（透传 SongsApi.updateSongLyrics，包错误处理）
+  @override
   Future<({String fileWriteStatus})> updateSongLyrics(
     int id, {
     required String lyricSource,
@@ -171,7 +172,7 @@ class SongsRepository {
     }
   }
 
-  /// 写入本地歌曲标签（透传 SongsApi.writeSongTags，包错误处理）
+  @override
   Future<({String fileWrite})> writeSongTags(
     int id, {
     String? title,
@@ -192,7 +193,7 @@ class SongsRepository {
     }
   }
 
-  /// 删除歌曲
+  @override
   Future<void> deleteSong(int id, {bool deleteFiles = false}) async {
     try {
       await songsApi.deleteSong(id, deleteFiles: deleteFiles);
@@ -201,8 +202,11 @@ class SongsRepository {
     }
   }
 
-  /// 批量删除歌曲
-  Future<int> batchDeleteSongs(List<int> ids, {bool deleteFiles = false}) async {
+  @override
+  Future<int> batchDeleteSongs(
+    List<int> ids, {
+    bool deleteFiles = false,
+  }) async {
     try {
       return await songsApi.batchDeleteSongs(ids, deleteFiles: deleteFiles);
     } on DioException catch (e) {
@@ -210,7 +214,7 @@ class SongsRepository {
     }
   }
 
-  /// 清理无效歌曲
+  @override
   Future<int> cleanSongs() async {
     try {
       return await songsApi.cleanSongs();
@@ -239,7 +243,9 @@ class SongsRepository {
         case 500:
           return Exception(l10n.libraryErrorServer);
         default:
-          return Exception(l10n.libraryErrorRequestFailed(response.statusCode ?? 0));
+          return Exception(
+            l10n.libraryErrorRequestFailed(response.statusCode ?? 0),
+          );
       }
     }
     switch (e.type) {

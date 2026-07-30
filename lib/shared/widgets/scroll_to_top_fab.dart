@@ -42,7 +42,8 @@ class _ScrollToTopFabState extends State<ScrollToTopFab> {
   }
 
   void _onScroll() {
-    final shouldShow = widget.scrollController.hasClients &&
+    final shouldShow =
+        widget.scrollController.hasClients &&
         widget.scrollController.offset > widget.showThreshold;
     if (shouldShow != _show) {
       setState(() => _show = shouldShow);

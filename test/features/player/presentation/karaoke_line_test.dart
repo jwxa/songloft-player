@@ -49,9 +49,8 @@ void main() {
     addTearDown(container.dispose);
 
     // [00:00.000]<0,1000>A<1000,1000>B → A:[0,1s) B:[1s,2s)
-    final line = LyricParser.parseWordByWord(
-      '[00:00.000]<0,1000>A<1000,1000>B',
-    ).single;
+    final line =
+        LyricParser.parseWordByWord('[00:00.000]<0,1000>A<1000,1000>B').single;
 
     await tester.pumpWidget(
       UncontrolledProviderScope(

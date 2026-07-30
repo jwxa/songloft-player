@@ -43,7 +43,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
     });
 
     try {
-      await ref.read(scanProgressProvider.notifier).startScan(
+      await ref
+          .read(scanProgressProvider.notifier)
+          .startScan(
             reimport: _scanMode == 'reimport',
             paths: _selectedPaths.isEmpty ? null : List.of(_selectedPaths),
           );
@@ -51,7 +53,8 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
       setState(() => _error = e.message);
     } catch (e) {
       setState(
-        () => _error = AppLocalizations.of(context).settingsScanScanFailed('$e'),
+        () =>
+            _error = AppLocalizations.of(context).settingsScanScanFailed('$e'),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -65,7 +68,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).settingsScanCancelFailed(e.message),
+          message: AppLocalizations.of(
+            context,
+          ).settingsScanCancelFailed(e.message),
         );
       }
     } catch (e) {
@@ -280,7 +285,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
                   ? l10n.settingsScanStarting
                   : (_selectedPaths.isEmpty
                       ? l10n.settingsScanScanLocal
-                      : l10n.settingsScanScanSelectedDirs(_selectedPaths.length)),
+                      : l10n.settingsScanScanSelectedDirs(
+                        _selectedPaths.length,
+                      )),
             ),
           ),
         ),
@@ -374,8 +381,8 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () =>
-                              setState(() => _selectedPaths.clear()),
+                          onPressed:
+                              () => setState(() => _selectedPaths.clear()),
                           child: Text(l10n.settingsScanClear),
                         ),
                       ],
@@ -384,15 +391,21 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 4,
-                      children: _selectedPaths.map((path) {
-                        return InputChip(
-                          label: Text(_dirDisplayName(path)),
-                          avatar: const Icon(Icons.folder_outlined, size: 18),
-                          onDeleted: () =>
-                              setState(() => _selectedPaths.remove(path)),
-                          deleteIconColor: colorScheme.onSurfaceVariant,
-                        );
-                      }).toList(),
+                      children:
+                          _selectedPaths.map((path) {
+                            return InputChip(
+                              label: Text(_dirDisplayName(path)),
+                              avatar: const Icon(
+                                Icons.folder_outlined,
+                                size: 18,
+                              ),
+                              onDeleted:
+                                  () => setState(
+                                    () => _selectedPaths.remove(path),
+                                  ),
+                              deleteIconColor: colorScheme.onSurfaceVariant,
+                            );
+                          }).toList(),
                     ),
                   ],
                 ],
@@ -406,9 +419,10 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
   /// 取目录路径的末段作为 Chip 展示名（兼容 / 与 \ 分隔）。
   String _dirDisplayName(String path) {
     final normalized = path.replaceAll('\\', '/');
-    final trimmed = normalized.endsWith('/')
-        ? normalized.substring(0, normalized.length - 1)
-        : normalized;
+    final trimmed =
+        normalized.endsWith('/')
+            ? normalized.substring(0, normalized.length - 1)
+            : normalized;
     final idx = trimmed.lastIndexOf('/');
     final name = idx >= 0 ? trimmed.substring(idx + 1) : trimmed;
     return name.isEmpty ? path : name;
@@ -439,11 +453,14 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
         else if (isSplittingCue) ...[
           Text(
             progress.cueSplitSources > 0
-                ? l10n.settingsScanSplittingCueProgress(progress.cueSplitSources)
+                ? l10n.settingsScanSplittingCueProgress(
+                  progress.cueSplitSources,
+                )
                 : l10n.settingsScanSplittingCue,
             style: Theme.of(context).textTheme.bodySmall,
           ),
-          if (progress.currentFile != null && progress.currentFile!.isNotEmpty) ...[
+          if (progress.currentFile != null &&
+              progress.currentFile!.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               progress.currentFile!,
@@ -634,7 +651,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
           color:
               autoCreateEnabled
                   ? colorScheme.onSurfaceVariant
-                  : colorScheme.onSurfaceVariant.withValues(alpha: disabledAlpha),
+                  : colorScheme.onSurfaceVariant.withValues(
+                    alpha: disabledAlpha,
+                  ),
         ),
         title: Text(
           l10n.settingsScanPlaylistModeTitle,
@@ -657,7 +676,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
             color:
                 autoCreateEnabled
                     ? colorScheme.onSurfaceVariant
-                    : colorScheme.onSurfaceVariant.withValues(alpha: disabledAlpha),
+                    : colorScheme.onSurfaceVariant.withValues(
+                      alpha: disabledAlpha,
+                    ),
           ),
         ),
         trailing: DropdownButton<String>(
@@ -859,9 +880,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
                   Expanded(
                     child: DropdownButtonFormField<int>(
                       initialValue:
-                          _intervalOptions(l10n).containsKey(
-                                setting.intervalSeconds,
-                              )
+                          _intervalOptions(
+                                l10n,
+                              ).containsKey(setting.intervalSeconds)
                               ? setting.intervalSeconds
                               : 3600,
                       decoration: const InputDecoration(
@@ -897,7 +918,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
                                   if (mounted) {
                                     ResponsiveSnackBar.showError(
                                       context,
-                                      message: l10n.settingsScanSaveFailed('$e'),
+                                      message: l10n.settingsScanSaveFailed(
+                                        '$e',
+                                      ),
                                     );
                                   }
                                 }
@@ -934,7 +957,9 @@ class _ScanManagerState extends ConsumerState<ScanManager> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n.settingsScanCompletedSummary(progress.localSongCount),
+                      l10n.settingsScanCompletedSummary(
+                        progress.localSongCount,
+                      ),
                     ),
                     Text(
                       l10n.settingsScanCompletedStats(

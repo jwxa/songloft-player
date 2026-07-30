@@ -23,7 +23,8 @@ import 'plugin_host_dispatch.dart';
 /// 分发逻辑委托传输无关的 [PluginHostDispatcher]（与 Web/iframe 链路共用）。
 /// 两个 native 插件页面（`plugin_tab_page_native` / `plugin_webview_page_native`）
 /// 复用本 mixin，避免逻辑重复。Web 平台的 iframe 链路见 `plugin_tab_page_stub.dart`。
-mixin PluginHostBridgeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
+mixin PluginHostBridgeMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {
   static const String _handlerName = 'songloftHost';
 
   InAppWebViewController? _bridgeController;
@@ -43,9 +44,10 @@ mixin PluginHostBridgeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T
     controller.addJavaScriptHandler(
       handlerName: _handlerName,
       callback: (args) {
-        final req = (args.isNotEmpty && args[0] is Map)
-            ? Map<String, dynamic>.from(args[0] as Map)
-            : <String, dynamic>{};
+        final req =
+            (args.isNotEmpty && args[0] is Map)
+                ? Map<String, dynamic>.from(args[0] as Map)
+                : <String, dynamic>{};
         return _hostDispatcher.handleCall(req);
       },
     );
@@ -62,7 +64,8 @@ mixin PluginHostBridgeMixin<T extends ConsumerStatefulWidget> on ConsumerState<T
       if (controller == null) return;
       final json = jsonEncode(_hostDispatcher.stateToJson(next));
       controller.evaluateJavascript(
-        source: "window.postMessage({type:'songloft-player-state',state:$json},'*')",
+        source:
+            "window.postMessage({type:'songloft-player-state',state:$json},'*')",
       );
     });
   }

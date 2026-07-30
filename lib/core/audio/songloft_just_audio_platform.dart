@@ -59,7 +59,8 @@ class SongloftJustAudioPlatform extends JustAudioPlatform {
 
   @override
   Future<DisposePlayerResponse> disposePlayer(
-      DisposePlayerRequest request) async {
+    DisposePlayerRequest request,
+  ) async {
     if (_disposingPlayers.containsKey(request.id)) {
       await _disposingPlayers[request.id];
       return DisposePlayerResponse();
@@ -76,7 +77,8 @@ class SongloftJustAudioPlatform extends JustAudioPlatform {
 
   @override
   Future<DisposeAllPlayersResponse> disposeAllPlayers(
-      DisposeAllPlayersRequest request) async {
+    DisposeAllPlayersRequest request,
+  ) async {
     for (final player in _players.values) {
       await player.release();
     }

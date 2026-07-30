@@ -55,5 +55,5 @@ class VideoControllerNotifier extends Notifier<VideoController?> {
 /// 应用内视频画面控制器 Provider（实际使用 media_kit 后端的平台有效，其它恒为 null）。
 final videoControllerProvider =
     NotifierProvider<VideoControllerNotifier, VideoController?>(
-  VideoControllerNotifier.new,
-);
+      VideoControllerNotifier.new,
+    );

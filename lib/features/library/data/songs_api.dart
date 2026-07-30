@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../config/app_config.dart';
 import '../../../shared/models/song.dart';
+import '../../player/domain/playback_context.dart';
 
 /// 歌曲 API 客户端
 class SongsApi {
@@ -385,7 +386,10 @@ class SongsApi {
 
   /// 批量删除歌曲
   /// POST /api/v1/songs/batch-delete
-  Future<int> batchDeleteSongs(List<int> ids, {bool deleteFiles = false}) async {
+  Future<int> batchDeleteSongs(
+    List<int> ids, {
+    bool deleteFiles = false,
+  }) async {
     final response = await dio.post<Map<String, dynamic>>(
       '${AppConfig.apiPrefix}/songs/batch-delete',
       data: {'ids': ids, 'delete_files': deleteFiles},
@@ -395,10 +399,23 @@ class SongsApi {
 
   /// 通知后端歌曲播放事件（触发 JS 插件播放事件广播）
   /// [type] 事件类型：play（开始播放）、finish（播放完成）、skip（用户跳过）
-  Future<void> songPlayed(int id, {String type = 'finish'}) async {
+  /// [context] 播放上下文，仅 type=play 时后端会据此写入播放历史。
+  Future<void> songPlayed(
+    int id, {
+    String type = 'finish',
+    PlaybackContext? context,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'source': 'songloft-player',
+      'type': type,
+    };
+    if (context != null) {
+      queryParams['context_type'] = context.type;
+      queryParams['context_key'] = context.key;
+    }
     await dio.post(
       '${AppConfig.apiPrefix}/songs/$id/played',
-      queryParameters: {'source': 'songloft-player', 'type': type},
+      queryParameters: queryParams,
     );
   }
 

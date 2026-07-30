@@ -161,14 +161,15 @@ CoverPalette generatePaletteFromMetadata({
 /// Returns cover-extracted palette when available, otherwise metadata-derived.
 final playerBackgroundPaletteProvider =
     FutureProvider.family<CoverPalette, Song>((ref, song) async {
-  if (song.coverUrl != null && song.coverUrl!.isNotEmpty) {
-    final coverPalette =
-        await ref.watch(coverColorsProvider(song.coverUrl).future);
-    if (coverPalette != null) return coverPalette;
-  }
-  return generatePaletteFromMetadata(
-    songId: song.id,
-    title: song.title,
-    artist: song.artist,
-  );
-});
+      if (song.coverUrl != null && song.coverUrl!.isNotEmpty) {
+        final coverPalette = await ref.watch(
+          coverColorsProvider(song.coverUrl).future,
+        );
+        if (coverPalette != null) return coverPalette;
+      }
+      return generatePaletteFromMetadata(
+        songId: song.id,
+        title: song.title,
+        artist: song.artist,
+      );
+    });

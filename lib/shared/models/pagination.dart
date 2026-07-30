@@ -6,22 +6,17 @@ class PaginationParams {
   /// 偏移量
   final int offset;
 
-  const PaginationParams({
-    this.limit = 20,
-    this.offset = 0,
-  });
+  const PaginationParams({this.limit = 20, this.offset = 0});
 
   /// 转换为查询参数
   Map<String, String> toQueryParams() => {
-        'limit': limit.toString(),
-        'offset': offset.toString(),
-      };
+    'limit': limit.toString(),
+    'offset': offset.toString(),
+  };
 
   /// 获取下一页参数
-  PaginationParams nextPage() => PaginationParams(
-        limit: limit,
-        offset: offset + limit,
-      );
+  PaginationParams nextPage() =>
+      PaginationParams(limit: limit, offset: offset + limit);
 
   /// 获取上一页参数
   PaginationParams? previousPage() {
@@ -33,10 +28,8 @@ class PaginationParams {
   }
 
   /// 获取指定页参数（从 0 开始）
-  PaginationParams page(int pageIndex) => PaginationParams(
-        limit: limit,
-        offset: pageIndex * limit,
-      );
+  PaginationParams page(int pageIndex) =>
+      PaginationParams(limit: limit, offset: pageIndex * limit);
 
   /// 当前页码（从 0 开始）
   int get currentPage => offset ~/ limit;
@@ -84,10 +77,7 @@ class PaginatedResponse<T> {
   /// 获取下一页参数
   PaginationParams? nextPageParams() {
     if (!hasMore) return null;
-    return PaginationParams(
-      limit: limit,
-      offset: offset + limit,
-    );
+    return PaginationParams(limit: limit, offset: offset + limit);
   }
 
   /// 从 JSON 解析
@@ -95,11 +85,12 @@ class PaginatedResponse<T> {
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromJsonT,
   ) {
-    final items = (json['items'] as List<dynamic>?)
+    final items =
+        (json['items'] as List<dynamic>?)
             ?.map((e) => fromJsonT(e as Map<String, dynamic>))
             .toList() ??
         [];
-    
+
     return PaginatedResponse(
       items: items,
       total: json['total'] as int? ?? items.length,

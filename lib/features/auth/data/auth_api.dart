@@ -19,10 +19,7 @@ class AuthApi {
     try {
       final response = await dio.post(
         '${AppConfig.apiPrefix}/auth/login',
-        data: {
-          'username': username,
-          'password': password,
-        },
+        data: {'username': username, 'password': password},
       );
       return AuthTokens.fromJson(response.data);
     } on DioException catch (e) {
@@ -54,9 +51,10 @@ class AuthApi {
     try {
       await dio.post(
         '${AppConfig.apiPrefix}/auth/logout',
-        options: (accessToken != null && accessToken.isNotEmpty)
-            ? Options(headers: {'Authorization': 'Bearer $accessToken'})
-            : null,
+        options:
+            (accessToken != null && accessToken.isNotEmpty)
+                ? Options(headers: {'Authorization': 'Bearer $accessToken'})
+                : null,
       );
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
@@ -65,17 +63,11 @@ class AuthApi {
 
   /// 获取 Token 列表
   /// GET /api/v1/auth/tokens
-  Future<TokenListResponse> getTokens({
-    int limit = 20,
-    int offset = 0,
-  }) async {
+  Future<TokenListResponse> getTokens({int limit = 20, int offset = 0}) async {
     try {
       final response = await dio.get(
         '${AppConfig.apiPrefix}/auth/tokens',
-        queryParameters: {
-          'limit': limit,
-          'offset': offset,
-        },
+        queryParameters: {'limit': limit, 'offset': offset},
       );
       return TokenListResponse.fromJson(response.data);
     } on DioException catch (e) {
@@ -87,7 +79,9 @@ class AuthApi {
   /// GET /api/v1/auth/tokens/{token_id}
   Future<TokenInfo> getToken(String tokenId) async {
     try {
-      final response = await dio.get('${AppConfig.apiPrefix}/auth/tokens/$tokenId');
+      final response = await dio.get(
+        '${AppConfig.apiPrefix}/auth/tokens/$tokenId',
+      );
       return TokenInfo.fromJson(response.data);
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);

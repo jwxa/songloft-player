@@ -14,11 +14,13 @@ class TracelyClient {
     required this.appId,
     required this.appSecret,
     required this.host,
-  }) : _dio = Dio(BaseOptions(
-          connectTimeout: const Duration(seconds: 5),
-          receiveTimeout: const Duration(seconds: 5),
-          headers: {'Content-Type': 'application/json'},
-        ));
+  }) : _dio = Dio(
+         BaseOptions(
+           connectTimeout: const Duration(seconds: 5),
+           receiveTimeout: const Duration(seconds: 5),
+           headers: {'Content-Type': 'application/json'},
+         ),
+       );
 
   Map<String, String> _buildHeaders() {
     final timestamp =
@@ -43,7 +45,10 @@ class TracelyClient {
   }
 
   Future<void> reportEvent(
-      String eventName, Map<String, dynamic> metadata, String userId) async {
+    String eventName,
+    Map<String, dynamic> metadata,
+    String userId,
+  ) async {
     try {
       await _dio.post(
         '$host/report/event',
@@ -79,22 +84,27 @@ class TracelyClient {
   }
 
   Future<void> reportInstall(
-      String version, String platform, String userId) async {
-    await reportEvent(
-        '_app_install', {'version': version, 'platform': platform}, userId);
+    String version,
+    String platform,
+    String userId,
+  ) async {
+    await reportEvent('_app_install', {
+      'version': version,
+      'platform': platform,
+    }, userId);
   }
 
-  Future<void> reportUpgrade(String fromVersion, String toVersion,
-      String platform, String userId) async {
-    await reportEvent(
-      '_app_upgrade',
-      {
-        'version': toVersion,
-        'from_version': fromVersion,
-        'to_version': toVersion,
-        'platform': platform,
-      },
-      userId,
-    );
+  Future<void> reportUpgrade(
+    String fromVersion,
+    String toVersion,
+    String platform,
+    String userId,
+  ) async {
+    await reportEvent('_app_upgrade', {
+      'version': toVersion,
+      'from_version': fromVersion,
+      'to_version': toVersion,
+      'platform': platform,
+    }, userId);
   }
 }

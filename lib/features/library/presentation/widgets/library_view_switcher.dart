@@ -260,19 +260,21 @@ class LibraryViewRail extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? colorScheme.onSecondaryContainer.withValues(
-                            alpha: 0.12,
-                          )
-                        : colorScheme.surfaceContainerHigh,
+                    color:
+                        isSelected
+                            ? colorScheme.onSecondaryContainer.withValues(
+                              alpha: 0.12,
+                            )
+                            : colorScheme.surfaceContainerHigh,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     libraryViewIcon(key),
                     size: 20,
-                    color: isSelected
-                        ? colorScheme.onSecondaryContainer
-                        : colorScheme.onSurfaceVariant,
+                    color:
+                        isSelected
+                            ? colorScheme.onSecondaryContainer
+                            : colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm + 4),
@@ -281,7 +283,8 @@ class LibraryViewRail extends StatelessWidget {
                     libraryViewLabel(l10n, key),
                     style: textTheme.bodyMedium?.copyWith(
                       fontWeight: isSelected ? FontWeight.w600 : null,
-                      color: isSelected ? colorScheme.onSecondaryContainer : null,
+                      color:
+                          isSelected ? colorScheme.onSecondaryContainer : null,
                     ),
                   ),
                 ),

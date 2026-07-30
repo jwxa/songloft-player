@@ -78,10 +78,13 @@ class _KaraokeLineState extends ConsumerState<KaraokeLine>
 
   void _onTick(Duration elapsed) {
     _lastElapsed = elapsed;
-    final est = _playing
-        ? _anchorPos +
-            Duration(microseconds: elapsed.inMicroseconds - _anchorElapsedMicros)
-        : _anchorPos;
+    final est =
+        _playing
+            ? _anchorPos +
+                Duration(
+                  microseconds: elapsed.inMicroseconds - _anchorElapsedMicros,
+                )
+            : _anchorPos;
     // 变化超过约一帧才重绘，避免无谓 setState。
     if ((est.inMicroseconds - _estimated.inMicroseconds).abs() >= 16000) {
       setState(() => _estimated = est);

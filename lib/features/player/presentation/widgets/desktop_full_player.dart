@@ -260,34 +260,40 @@ class _DesktopFullPlayerState extends ConsumerState<DesktopFullPlayer>
                                       ),
                                     ),
                                     const SizedBox(height: 24),
-                                // 歌曲标题
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.md,
-                                  ),
-                                  child: Text(
-                                    song.title,
-                                    style: theme.textTheme.headlineSmall
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                // 艺术家名
-                                Text(
-                                  song.artist ??
-                                      AppLocalizations.of(
-                                        context,
-                                      ).playerUnknownArtist,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                ),
+                                    // 歌曲标题
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: AppSpacing.md,
+                                      ),
+                                      child: Text(
+                                        song.title,
+                                        style: theme.textTheme.headlineSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // 艺术家名
+                                    Text(
+                                      song.artist ??
+                                          AppLocalizations.of(
+                                            context,
+                                          ).playerUnknownArtist,
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                            color:
+                                                theme
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ],
                                 ),
                               );
@@ -372,9 +378,10 @@ class _DesktopFullPlayerState extends ConsumerState<DesktopFullPlayer>
         PopupMenuButton<String>(
           icon: Icon(
             Icons.more_horiz_rounded,
-            color: state.sleepTimer != null
-                ? Theme.of(context).colorScheme.primary
-                : Colors.white,
+            color:
+                state.sleepTimer != null
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white,
           ),
           onSelected: (value) {
             switch (value) {
@@ -421,7 +428,8 @@ class _DesktopFullPlayerState extends ConsumerState<DesktopFullPlayer>
             final runMode = ref.watch(runModeProvider);
             final canCache =
                 song != null && canCacheLocally(song, runMode: runMode);
-            final isCached = song != null &&
+            final isCached =
+                song != null &&
                 ref.read(songCacheProvider.notifier).isCached(song.id);
             return [
               // 均衡器依赖 libmpv，Web 无 libmpv 不生效，故 Web 隐藏
@@ -494,10 +502,7 @@ class _DesktopFullPlayerState extends ConsumerState<DesktopFullPlayer>
               PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
-                  leading: Icon(
-                    Icons.delete_outline,
-                    color: colorScheme.error,
-                  ),
+                  leading: Icon(Icons.delete_outline, color: colorScheme.error),
                   title: Text(
                     AppLocalizations.of(context).playerDeleteCurrentSong,
                     style: TextStyle(color: colorScheme.error),
@@ -529,9 +534,10 @@ class _DesktopFullPlayerState extends ConsumerState<DesktopFullPlayer>
       decoration: BoxDecoration(
         borderRadius: AppRadius.xlAll,
         color: theme.colorScheme.surfaceContainerHighest,
-        boxShadow: glowColor != null
-            ? AppEffects.primaryGlow(glowColor)
-            : AppEffects.softGlow(theme.colorScheme.onSurface),
+        boxShadow:
+            glowColor != null
+                ? AppEffects.primaryGlow(glowColor)
+                : AppEffects.softGlow(theme.colorScheme.onSurface),
       ),
       clipBehavior: Clip.antiAlias,
       child:
@@ -569,7 +575,11 @@ class _DesktopFullPlayerState extends ConsumerState<DesktopFullPlayer>
           width: 48,
           height: 48,
           child: Center(
-            child: FavoriteButton(songId: state.currentSong!.id, songType: state.currentSong!.type, size: 24),
+            child: FavoriteButton(
+              songId: state.currentSong!.id,
+              songType: state.currentSong!.type,
+              size: 24,
+            ),
           ),
         ),
         // 播放模式

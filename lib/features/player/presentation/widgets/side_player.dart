@@ -100,9 +100,10 @@ class AutoSidePlayer extends ConsumerWidget {
                 constraints: const BoxConstraints(maxWidth: 280),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: song.isVideo
-                      ? Colors.black
-                      : theme.colorScheme.surfaceContainerHighest,
+                  color:
+                      song.isVideo
+                          ? Colors.black
+                          : theme.colorScheme.surfaceContainerHighest,
                 ),
                 clipBehavior: Clip.antiAlias,
                 // 视频歌曲在支持的桌面平台渲染画面，否则回退封面/占位图；

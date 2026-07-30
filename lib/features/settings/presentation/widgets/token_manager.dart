@@ -137,18 +137,16 @@ class _TokenItemState extends ConsumerState<_TokenItem> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).settingsTokenRevokeFailed(
-            e.message,
-          ),
+          message: AppLocalizations.of(
+            context,
+          ).settingsTokenRevokeFailed(e.message),
         );
       }
     } catch (e) {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(
-            context,
-          ).settingsTokenRevokeFailed('$e'),
+          message: AppLocalizations.of(context).settingsTokenRevokeFailed('$e'),
         );
       }
     } finally {

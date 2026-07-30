@@ -99,19 +99,19 @@ class EqualizerPanel extends ConsumerWidget {
       height: 36,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: EqualizerSetting.presetOrder.map((key) {
-          final isSelected = setting.preset == key;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(equalizerPresetLabel(l10n, key)),
-              selected: isSelected,
-              onSelected: key == 'custom'
-                  ? null
-                  : (_) => notifier.setPreset(key),
-            ),
-          );
-        }).toList(),
+        children:
+            EqualizerSetting.presetOrder.map((key) {
+              final isSelected = setting.preset == key;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: Text(equalizerPresetLabel(l10n, key)),
+                  selected: isSelected,
+                  onSelected:
+                      key == 'custom' ? null : (_) => notifier.setPreset(key),
+                ),
+              );
+            }).toList(),
       ),
     );
   }
@@ -164,9 +164,10 @@ class _BandSlider extends StatelessWidget {
         Text(
           '${gain.round()}',
           style: theme.textTheme.labelSmall?.copyWith(
-            color: enabled
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.onSurface.withValues(alpha: 0.38),
+            color:
+                enabled
+                    ? theme.colorScheme.onSurface
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.38),
           ),
         ),
         Expanded(
@@ -175,9 +176,7 @@ class _BandSlider extends StatelessWidget {
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 trackHeight: 3,
-                thumbShape: const RoundSliderThumbShape(
-                  enabledThumbRadius: 6,
-                ),
+                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
               ),
               child: Slider(
                 value: gain,
@@ -191,9 +190,10 @@ class _BandSlider extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.labelSmall?.copyWith(
-            color: enabled
-                ? theme.colorScheme.onSurfaceVariant
-                : theme.colorScheme.onSurface.withValues(alpha: 0.38),
+            color:
+                enabled
+                    ? theme.colorScheme.onSurfaceVariant
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.38),
           ),
         ),
       ],
@@ -205,9 +205,10 @@ void showEqualizerSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    builder: (context) => const Padding(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, 32),
-      child: EqualizerPanel(),
-    ),
+    builder:
+        (context) => const Padding(
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 32),
+          child: EqualizerPanel(),
+        ),
   );
 }

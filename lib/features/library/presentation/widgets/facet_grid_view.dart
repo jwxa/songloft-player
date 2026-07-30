@@ -12,6 +12,7 @@ import '../../../../shared/widgets/browse_card.dart';
 import '../../../../shared/widgets/browse_collection_view.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/widgets/error_view.dart';
+import '../../../player/domain/playback_context.dart';
 import '../../../player/presentation/providers/player_provider.dart';
 import '../../../playlist/presentation/providers/playlist_view_provider.dart';
 import '../providers/category_provider.dart';
@@ -80,7 +81,13 @@ class _FacetGridViewState extends ConsumerState<FacetGridView> {
       ResponsiveSnackBar.show(context, message: l10n.libraryNoPlayableSongs);
       return;
     }
-    ref.read(playerStateProvider.notifier).playPlaylist(songs, startIndex: 0);
+    ref
+        .read(playerStateProvider.notifier)
+        .playPlaylist(
+          songs,
+          startIndex: 0,
+          context: PlaybackContext(widget.field, value),
+        );
     if (!mounted) return;
     ResponsiveSnackBar.show(
       context,
@@ -99,10 +106,12 @@ class _FacetGridViewState extends ConsumerState<FacetGridView> {
           child: asyncState.when(
             data: (state) => _buildContent(context, state),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, _) => ErrorView(
-              message: error.toString(),
-              onRetry: () => ref.invalidate(facetListProvider(widget.field)),
-            ),
+            error:
+                (error, _) => ErrorView(
+                  message: error.toString(),
+                  onRetry:
+                      () => ref.invalidate(facetListProvider(widget.field)),
+                ),
           ),
         ),
       ],
@@ -116,7 +125,6 @@ class _FacetGridViewState extends ConsumerState<FacetGridView> {
       mobile: AppSpacing.md,
       tablet: AppSpacing.lg,
       desktop: AppSpacing.xl,
-      tv: AppSpacing.xxl,
     );
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -130,18 +138,19 @@ class _FacetGridViewState extends ConsumerState<FacetGridView> {
         decoration: InputDecoration(
           hintText: l10n.categorySearchHint(fieldLabel),
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  tooltip: l10n.clearSearch,
-                  onPressed: () {
-                    _searchController.clear();
-                    ref
-                        .read(facetListProvider(widget.field).notifier)
-                        .search('');
-                  },
-                )
-              : null,
+          suffixIcon:
+              _searchController.text.isNotEmpty
+                  ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    tooltip: l10n.clearSearch,
+                    onPressed: () {
+                      _searchController.clear();
+                      ref
+                          .read(facetListProvider(widget.field).notifier)
+                          .search('');
+                    },
+                  )
+                  : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
@@ -171,9 +180,10 @@ class _FacetGridViewState extends ConsumerState<FacetGridView> {
       );
     }
 
-    final layout = ref.watch(playlistViewModeProvider) == PlaylistViewMode.list
-        ? BrowseCardLayout.list
-        : BrowseCardLayout.grid;
+    final layout =
+        ref.watch(playlistViewModeProvider) == PlaylistViewMode.list
+            ? BrowseCardLayout.list
+            : BrowseCardLayout.grid;
 
     return BrowseCollectionView(
       layout: layout,

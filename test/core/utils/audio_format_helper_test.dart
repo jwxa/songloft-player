@@ -78,10 +78,7 @@ void main() {
 
     test('其他格式不兼容，filePath 优先', () {
       expect(AudioFormatHelper.isWebCompatibleVideo('mkv', null), isFalse);
-      expect(
-        AudioFormatHelper.isWebCompatibleVideo('mkv', 'a/b.mp4'),
-        isTrue,
-      );
+      expect(AudioFormatHelper.isWebCompatibleVideo('mkv', 'a/b.mp4'), isTrue);
       expect(AudioFormatHelper.isWebCompatibleVideo(null, null), isFalse);
     });
   });

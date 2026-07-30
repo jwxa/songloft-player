@@ -59,9 +59,10 @@ class _VolumeControlState extends State<VolumeControl> {
       return IconButton(
         onPressed: _toggleMute,
         icon: Icon(_volumeIcon),
-        tooltip: widget.volume > 0
-            ? AppLocalizations.of(context).playerMute
-            : AppLocalizations.of(context).playerUnmute,
+        tooltip:
+            widget.volume > 0
+                ? AppLocalizations.of(context).playerMute
+                : AppLocalizations.of(context).playerUnmute,
       );
     }
 
@@ -70,7 +71,6 @@ class _VolumeControlState extends State<VolumeControl> {
       mobile: 80,
       tablet: 80,
       desktop: 140,
-      tv: 200,
     );
 
     // 响应式滑块尺寸
@@ -78,19 +78,16 @@ class _VolumeControlState extends State<VolumeControl> {
       mobile: 6,
       tablet: 6,
       desktop: 6,
-      tv: 10,
     );
     final overlayRadius = context.responsive<double>(
       mobile: 12,
       tablet: 12,
       desktop: 12,
-      tv: 18,
     );
     final trackHeight = context.responsive<double>(
       mobile: 4,
       tablet: 4,
       desktop: 4,
-      tv: 6,
     );
 
     return Row(
@@ -99,9 +96,10 @@ class _VolumeControlState extends State<VolumeControl> {
         IconButton(
           onPressed: _toggleMute,
           icon: Icon(_volumeIcon),
-          tooltip: widget.volume > 0
-            ? AppLocalizations.of(context).playerMute
-            : AppLocalizations.of(context).playerUnmute,
+          tooltip:
+              widget.volume > 0
+                  ? AppLocalizations.of(context).playerMute
+                  : AppLocalizations.of(context).playerUnmute,
           style: IconButton.styleFrom(
             foregroundColor: theme.colorScheme.onSurfaceVariant,
           ),
@@ -135,8 +133,10 @@ class _VolumeControlState extends State<VolumeControl> {
                 min: 0,
                 max: 100,
                 onChanged: widget.onVolumeChanged,
-                semanticFormatterCallback: (value) =>
-                    AppLocalizations.of(context).playerVolumePercent(value.round()),
+                semanticFormatterCallback:
+                    (value) => AppLocalizations.of(
+                      context,
+                    ).playerVolumePercent(value.round()),
               ),
             ),
           ),
@@ -272,7 +272,8 @@ class ResponsiveVolumeControl extends StatelessWidget {
       builder: (context, constraints) {
         // 宽度足够时显示完整的音量控制；
         // 无界约束（FittedBox / 横向滚动等场景）下退化为弹出式，避免内部 Flexible 报错
-        if (constraints.maxWidth.isFinite && constraints.maxWidth >= threshold) {
+        if (constraints.maxWidth.isFinite &&
+            constraints.maxWidth >= threshold) {
           return VolumeControl(
             volume: volume,
             onVolumeChanged: onVolumeChanged,
@@ -353,39 +354,33 @@ class _VolumeOverlayPanelState extends State<_VolumeOverlayPanel> {
       mobile: 56,
       tablet: 60,
       desktop: 64,
-      tv: 80,
     );
     final panelHeight = context.responsive<double>(
       mobile: 180,
       tablet: 200,
       desktop: 200,
-      tv: 240,
     );
 
-    // 响应式滑块尺寸（TV 模式下更大便于操作）
+    // 响应式滑块尺寸
     final thumbRadius = context.responsive<double>(
       mobile: 8,
       tablet: 8,
       desktop: 8,
-      tv: 12,
     );
     final overlayRadius = context.responsive<double>(
       mobile: 14,
       tablet: 14,
       desktop: 14,
-      tv: 20,
     );
     final trackHeight = context.responsive<double>(
       mobile: 4,
       tablet: 4,
       desktop: 4,
-      tv: 6,
     );
     final iconSize = context.responsive<double>(
       mobile: 20,
       tablet: 20,
       desktop: 20,
-      tv: 28,
     );
 
     // 计算面板位置（居中对齐按钮）
@@ -434,67 +429,73 @@ class _VolumeOverlayPanelState extends State<_VolumeOverlayPanel> {
               child: FocusScope(
                 autofocus: true,
                 child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 顶部：音量百分比
-                  Text(
-                    '${_currentVolume.round()}%',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // 顶部：音量百分比
+                    Text(
+                      '${_currentVolume.round()}%',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  // 中间：垂直滑块
-                  Expanded(
-                    child: RotatedBox(
-                      quarterTurns: 3, // 旋转270度，让滑块垂直显示
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          trackHeight: trackHeight,
-                          thumbShape: RoundSliderThumbShape(
-                            enabledThumbRadius: thumbRadius,
+                    const SizedBox(height: 8),
+                    // 中间：垂直滑块
+                    Expanded(
+                      child: RotatedBox(
+                        quarterTurns: 3, // 旋转270度，让滑块垂直显示
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            trackHeight: trackHeight,
+                            thumbShape: RoundSliderThumbShape(
+                              enabledThumbRadius: thumbRadius,
+                            ),
+                            overlayShape: RoundSliderOverlayShape(
+                              overlayRadius: overlayRadius,
+                            ),
+                            activeTrackColor: theme.colorScheme.primary,
+                            inactiveTrackColor:
+                                theme.colorScheme.surfaceContainerHighest,
+                            thumbColor: theme.colorScheme.primary,
+                            overlayColor: theme.colorScheme.primary.withValues(
+                              alpha: 0.2,
+                            ),
                           ),
-                          overlayShape: RoundSliderOverlayShape(
-                            overlayRadius: overlayRadius,
+                          child: Slider(
+                            value: _currentVolume,
+                            min: 0,
+                            max: 100,
+                            onChanged: (value) {
+                              setState(() => _currentVolume = value);
+                              widget.onVolumeChanged(value);
+                            },
+                            semanticFormatterCallback:
+                                (value) => AppLocalizations.of(
+                                  context,
+                                ).playerVolumePercent(value.round()),
                           ),
-                          activeTrackColor: theme.colorScheme.primary,
-                          inactiveTrackColor:
-                              theme.colorScheme.surfaceContainerHighest,
-                          thumbColor: theme.colorScheme.primary,
-                          overlayColor: theme.colorScheme.primary.withValues(
-                            alpha: 0.2,
-                          ),
-                        ),
-                        child: Slider(
-                          value: _currentVolume,
-                          min: 0,
-                          max: 100,
-                          onChanged: (value) {
-                            setState(() => _currentVolume = value);
-                            widget.onVolumeChanged(value);
-                          },
-                          semanticFormatterCallback: (value) =>
-                    AppLocalizations.of(context).playerVolumePercent(value.round()),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  // 底部：静音按钮
-                  IconButton(
-                    onPressed: widget.onToggleMute,
-                    icon: Icon(_volumeIcon, color: theme.colorScheme.onSurface),
-                    iconSize: iconSize,
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    tooltip: _currentVolume > 0
-                        ? AppLocalizations.of(context).playerMute
-                        : AppLocalizations.of(context).playerUnmute,
-                  ),
-                ],
-              ),
+                    const SizedBox(height: 8),
+                    // 底部：静音按钮
+                    IconButton(
+                      onPressed: widget.onToggleMute,
+                      icon: Icon(
+                        _volumeIcon,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                      iconSize: iconSize,
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      tooltip:
+                          _currentVolume > 0
+                              ? AppLocalizations.of(context).playerMute
+                              : AppLocalizations.of(context).playerUnmute,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

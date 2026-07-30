@@ -300,7 +300,10 @@ class SongsListNotifier extends Notifier<SongsListState> {
     final selectedIds = state.selectedSongIds.toList();
 
     try {
-      final deleted = await _repository.batchDeleteSongs(selectedIds, deleteFiles: deleteFiles);
+      final deleted = await _repository.batchDeleteSongs(
+        selectedIds,
+        deleteFiles: deleteFiles,
+      );
 
       // 如果服务端返回的数量与选中数量不一致，状态可能已脏，直接全量刷新列表
       if (deleted != selectedIds.length) {

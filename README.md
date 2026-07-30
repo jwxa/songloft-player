@@ -48,16 +48,15 @@ https://github.com/songloft-org/songloft/issues/6
 
 ## 功能特性
 
-- **跨平台支持**: iOS、Android（手机/平板/TV）、macOS、Windows、Linux、Web
+- **跨平台支持**: iOS、Android（手机/平板）、macOS、Windows、Linux、Web
 - **Bundle 本地模式**: 内嵌 Go 后端，无需服务器，支持本地/远程双模式切换
-- **响应式布局**: 4 级断点自适应（Mobile < 600px, Tablet 600-900px, Desktop 900-1920px, TV 1920px+）
-- **自适应导航**: 手机底栏、平板侧栏、桌面侧边菜单、TV 顶部 Tab
+- **响应式布局**: 3 级断点自适应（Mobile < 600px, Tablet 600-900px, Desktop 900px+）
+- **自适应导航**: 手机底栏、平板侧栏、桌面侧边菜单
 - **音乐播放**: 基于 just_audio，支持本地和网络歌曲，后台播放
 - **歌单管理**: 创建、编辑、删除歌单，添加/移除歌曲
 - **歌曲库**: 分页加载、搜索过滤、歌曲编辑
 - **主题切换**: 亮色/暗色/跟随系统
 - **JWT 认证**: 双 Token 机制，安全存储（自动降级）
-- **TV 适配**: D-Pad 焦点导航，大按钮/大字体
 
 ## 环境要求
 
@@ -132,7 +131,7 @@ lib/
 │   ├── jsplugin/    # JS 插件管理
 │   ├── startup/     # 启动流程（本地/远程模式自动引导）
 │   ├── library/     # 歌曲库
-│   ├── player/      # 播放器（桌面/移动/TV/迷你）
+│   ├── player/      # 播放器（桌面/移动/迷你）
 │   ├── playlist/    # 歌单管理
 │   └── settings/    # 设置（主题/扫描/插件/升级）
 ├── shared/          # 共享层

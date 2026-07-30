@@ -1132,9 +1132,8 @@ class DesktopLyricEnabledNotifier extends Notifier<bool> {
           await prefs.setDesktopLyricEnabled(false);
           return;
         }
-        final opened = await ref
-            .read(androidFloatingLyricControllerProvider)
-            .open();
+        final opened =
+            await ref.read(androidFloatingLyricControllerProvider).open();
         state = opened;
         if (!opened) {
           // 权限够但悬浮窗没建成功（部分厂商 ROM 限制等），别让开关显示假的开启状态

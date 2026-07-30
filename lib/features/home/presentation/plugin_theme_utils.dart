@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-String resolveEffectiveTheme(
-  ThemeMode mode,
-  Brightness platformBrightness,
-) {
+String resolveEffectiveTheme(ThemeMode mode, Brightness platformBrightness) {
   switch (mode) {
     case ThemeMode.light:
       return 'light';

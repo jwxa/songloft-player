@@ -4065,5 +4065,37 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playlistCacheCleared => '已清除歌单缓存';
 
   @override
+  String get playHistory => '播放历史';
+
+  @override
+  String playHistoryTitle(String name) {
+    return '「$name」播放历史';
+  }
+
+  @override
+  String get playHistoryEmpty => '还没有播放记录';
+
+  @override
+  String get playHistoryEmptyHint => '在这里播放过的歌曲会记录下来，方便下次接着听';
+
+  @override
+  String get playHistoryClear => '清空历史';
+
+  @override
+  String get playHistoryClearConfirm => '确定清空这里的播放历史吗？';
+
+  @override
+  String get playHistoryCleared => '已清空播放历史';
+
+  @override
+  String get playHistoryDeleteEntry => '删除此记录';
+
+  @override
+  String get playHistoryOperationFailed => '操作失败，请重试';
+
+  @override
+  String get playHistorySongMissing => '该歌曲已不在此列表中，已把其余歌曲加入队列';
+
+  @override
   String get scrollToTop => '回到顶部';
 }

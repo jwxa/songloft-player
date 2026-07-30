@@ -1,8 +1,5 @@
 package com.songloft.songloft_flutter
 
-import android.app.UiModeManager
-import android.content.Context
-import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.Bundle
 import io.flutter.embedding.engine.FlutterEngine
@@ -11,8 +8,6 @@ import com.ryanheise.audioservice.AudioServiceActivity
 
 class MainActivity : AudioServiceActivity() {
     companion object {
-        private const val CHANNEL = "com.songloft/tv_detector"
-
         // 原生契约哈希闸（见 docs/cn/backend_hotupdate.md「原生契约哈希闸」）。
         // asset 由 CI 用 scripts/compute_native_contract.sh 在打包前生成，内容形如
         // {"dart":"<sha>","go":"<sha>"}。热更客户端运行时读它与 manifest 比对，
@@ -28,15 +23,6 @@ class MainActivity : AudioServiceActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            if (call.method == "isTvMode") {
-                val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-                val isTv = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
-                result.success(isTv)
-            } else {
-                result.notImplemented()
-            }
-        }
 
         // 原生契约哈希：读打包进 APK 的 asset 原文返回（缺失/异常 → 空串，客户端降级不拦截）
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CONTRACT_CHANNEL).setMethodCallHandler { call, result ->

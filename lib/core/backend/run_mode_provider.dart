@@ -10,10 +10,7 @@ import '../../config/app_config.dart';
 /// 构建下成立。与 servers_page 的 showLocalMode 判定保持一致。
 const bool _localModeSupported = !kIsWeb && AppConfig.hasEmbeddedBackend;
 
-enum RunMode {
-  remote,
-  local,
-}
+enum RunMode { remote, local }
 
 const _kRunModeKey = 'songloft_run_mode';
 const _kLocalMusicDirKey = 'songloft_local_music_dir';

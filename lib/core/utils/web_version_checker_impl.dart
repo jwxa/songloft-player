@@ -13,9 +13,10 @@ import 'package:web/web.dart' as web;
 Future<({String version, String buildTime})?> fetchDeployedVersion() async {
   try {
     final url = '${_getBasePath()}version.json';
-    final resp = await web.window
-        .fetch(url.toJS, web.RequestInit(cache: 'no-store'))
-        .toDart;
+    final resp =
+        await web.window
+            .fetch(url.toJS, web.RequestInit(cache: 'no-store'))
+            .toDart;
     if (!resp.ok) return null;
     final text = (await resp.text().toDart).toDart;
     final data = jsonDecode(text);

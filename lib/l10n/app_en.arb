@@ -2561,5 +2561,20 @@
     }
   },
   "playlistCacheCleared": "Playlist cache cleared",
+  "playHistory": "Play history",
+  "playHistoryTitle": "Play history · {name}",
+  "@playHistoryTitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "playHistoryEmpty": "No play history yet",
+  "playHistoryEmptyHint": "Songs you play here get recorded, so you can pick up where you left off",
+  "playHistoryClear": "Clear history",
+  "playHistoryClearConfirm": "Clear the play history here?",
+  "playHistoryCleared": "Play history cleared",
+  "playHistoryDeleteEntry": "Remove this entry",
+  "playHistoryOperationFailed": "Operation failed, please try again",
+  "playHistorySongMissing": "This song is no longer in the list; the rest have been added to the queue",
   "scrollToTop": "Scroll to top"
 }

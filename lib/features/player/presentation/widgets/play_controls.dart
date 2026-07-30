@@ -104,9 +104,10 @@ class PlayControls extends StatelessWidget {
     } else {
       button = Semantics(
         button: true,
-        label: isPlaying
-            ? AppLocalizations.of(context).playerPause
-            : AppLocalizations.of(context).playerPlay,
+        label:
+            isPlaying
+                ? AppLocalizations.of(context).playerPause
+                : AppLocalizations.of(context).playerPlay,
         child: Material(
           color: theme.colorScheme.primary,
           borderRadius: borderRadius,
@@ -133,9 +134,8 @@ class PlayControls extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
         borderRadius: borderRadius,
-        boxShadow: isPlaying
-            ? AppEffects.primaryGlow(theme.colorScheme.primary)
-            : [],
+        boxShadow:
+            isPlaying ? AppEffects.primaryGlow(theme.colorScheme.primary) : [],
       ),
       child: button,
     );
@@ -188,9 +188,10 @@ class CompactPlayButton extends StatelessWidget {
         isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
         size: size * 0.6,
       ),
-      tooltip: isPlaying
-          ? AppLocalizations.of(context).playerPause
-          : AppLocalizations.of(context).playerPlay,
+      tooltip:
+          isPlaying
+              ? AppLocalizations.of(context).playerPause
+              : AppLocalizations.of(context).playerPlay,
       style: IconButton.styleFrom(foregroundColor: theme.colorScheme.primary),
     );
   }

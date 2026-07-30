@@ -35,13 +35,21 @@ routerProvider (redirect 守卫)
 
 ### PlayerNotifier 生命周期
 
-`PlayerNotifier` 是项目中最复杂的 Notifier（~1600 行），关键内部机制：
+`PlayerNotifier` 的核心业务逻辑已提取到 `domain/use_cases/` 纯 Dart 层（详见 [Domain 层架构](domain_layer.md)）：
 
-- **播放代次 `_playGeneration`**：用户快速切歌时，旧的 `playByIndex()` 协程在 await 后检测 generation 变化后退出，避免竞态
-- **预拉取 `_prefetchCancelToken`**：播放过程中提前请求下一首歌的元数据，剩余 30s 触发保险预拉取（`_lateStagePrefetchFired`）
-- **随机去重 `_playedIndices`**：随机模式下记录已播索引，全部播完后重置
+- **PlayQueue**：队列增删改查，正确维护 currentIndex
+- **PlayModeResolver**：5 种播放模式的 next/prev 计算，随机去重
+- **PlaybackRetryPolicy**：本地/网络歌曲重试策略（指数退避）、连续失败阈值
+- **SongCompletionRouter**：歌曲播完后的动作路由
+- **SleepTimerLogic**：睡眠定时器（按时长/按歌曲数）
+- **QueueLoader**：后台分批加载 + generation 竞态取消 + 环形拼装
+- **PrefetchStrategy**：预加载决策逻辑
+
+Notifier 本身保留的职责：
+- **播放代次 `_playGeneration`**：用户快速切歌时，旧协程在 await 后检测 generation 变化后退出
+- **平台交互**：调用 `SongloftAudioHandler`（音频播放）、`VolumeController`（系统音量）
+- **State 更新**：驱动 UI 重建
 - **播放状态持久化**：`_saveDebounceTimer` 防抖保存队列，`_positionSaveTimer` 每 10s 保存播放进度
-- **失败重试**：单曲最多重试 2 次，连续跳过 3 首后停止
 
 ---
 

@@ -22,8 +22,9 @@ class VideoFullscreenPage extends ConsumerStatefulWidget {
     return Navigator.of(context).push(
       PageRouteBuilder(
         opaque: true,
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            VideoFullscreenPage(song: song),
+        pageBuilder:
+            (context, animation, secondaryAnimation) =>
+                VideoFullscreenPage(song: song),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },

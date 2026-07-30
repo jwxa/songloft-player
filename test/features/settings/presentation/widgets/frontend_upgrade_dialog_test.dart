@@ -15,9 +15,6 @@ import 'package:songloft_flutter/l10n/app_localizations.dart';
 /// （见 FrontendVersionApi._isNewerVersion：本地 build_time 为 unknown → false）。
 /// 本文件覆盖「已是最新 / 检查失败时仍能拿到完整安装包下载入口」这条退路。
 void main() {
-  // 对话框经 context.responsiveDialogMaxWidth → isTv 读取 AppConfig.isTvMode（late final）
-  AppConfig.isTvMode = false;
-
   const launcherChannel = MethodChannel('plugins.flutter.io/url_launcher');
   String? launchedUrl;
 
@@ -29,8 +26,7 @@ void main() {
             case 'canLaunch':
               return true;
             case 'launch':
-              launchedUrl =
-                  (call.arguments as Map)['url'] as String?;
+              launchedUrl = (call.arguments as Map)['url'] as String?;
               return true;
           }
           return null;
@@ -52,7 +48,9 @@ void main() {
         overrides: [
           frontendVersionApiProvider.overrideWithValue(api),
           // 对话框静默读取「设置 → 网络设置」的全局 GitHub 代理，测试中避免真实网络请求
-          githubProxyProvider.overrideWith(() => _FakeGithubProxyNotifier(proxy)),
+          githubProxyProvider.overrideWith(
+            () => _FakeGithubProxyNotifier(proxy),
+          ),
         ],
         child: const MaterialApp(
           locale: Locale('zh'),
@@ -79,7 +77,10 @@ void main() {
     await tester.tap(find.text('下载完整安装包'));
     await tester.pumpAndSettle();
 
-    expect(launchedUrl, 'https://github.com/songloft-org/songloft-player/releases/tag/dev');
+    expect(
+      launchedUrl,
+      'https://github.com/songloft-org/songloft-player/releases/tag/dev',
+    );
   });
 
   testWidgets('全局配置 GitHub 代理后跳转地址带代理前缀', (tester) async {
@@ -107,7 +108,10 @@ void main() {
     await tester.pumpAndSettle();
 
     // dev 渠道兜底必须是 releases/tag/dev，而非 releases/latest（正式版页面）
-    expect(AppConfig.frontendUpdateChannelReleaseUrl, endsWith('/releases/tag/dev'));
+    expect(
+      AppConfig.frontendUpdateChannelReleaseUrl,
+      endsWith('/releases/tag/dev'),
+    );
     expect(launchedUrl, AppConfig.frontendUpdateChannelReleaseUrl);
   });
 }
@@ -115,7 +119,8 @@ void main() {
 /// dev tag 的 GitHub release 响应（tag_name=dev → 与本地 'dev' 同渠道且判定为最新）
 Map<String, dynamic> _releaseJson() => {
   'tag_name': 'dev',
-  'html_url': 'https://github.com/songloft-org/songloft-player/releases/tag/dev',
+  'html_url':
+      'https://github.com/songloft-org/songloft-player/releases/tag/dev',
   'body': '- :bug: fix something',
   'published_at': '2026-07-01T00:00:00Z',
   'assets': <dynamic>[],

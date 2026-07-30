@@ -64,7 +64,9 @@ Widget _labelChip(BuildContext context, String label) {
     ),
     child: Text(
       displayLabel,
-      style: textTheme.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
+      style: textTheme.labelSmall?.copyWith(
+        color: colorScheme.onSurfaceVariant,
+      ),
     ),
   );
 }

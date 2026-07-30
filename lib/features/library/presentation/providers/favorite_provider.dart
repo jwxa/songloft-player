@@ -7,6 +7,7 @@ import '../../../auth/domain/auth_state.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../playlist/data/playlist_api.dart';
 import '../../../playlist/domain/playlist.dart';
+import '../../domain/use_cases/favorite_service.dart';
 
 /// 内置收藏歌单名称
 const String _favoriteSongPlaylistName = '收藏';
@@ -61,6 +62,9 @@ class FavoriteNotifier extends Notifier<FavoriteState> {
   late PlaylistApi _playlistApi;
   bool _disposed = false;
 
+  final FavoriteService _songFavoriteService = FavoriteService();
+  final FavoriteService _radioFavoriteService = FavoriteService();
+
   @override
   FavoriteState build() {
     _playlistApi = ref.watch(favoritePlaylistApiProvider);
@@ -68,6 +72,8 @@ class FavoriteNotifier extends Notifier<FavoriteState> {
 
     ref.onDispose(() {
       _disposed = true;
+      _songFavoriteService.reset();
+      _radioFavoriteService.reset();
     });
 
     // 仅在已认证时自动调度初始化，避免在 auth unknown 阶段发起无效 API 请求
@@ -88,56 +94,33 @@ class FavoriteNotifier extends Notifier<FavoriteState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      // 1. 获取所有歌单
-      final response = await _playlistApi.getPlaylists(limit: 1000);
-      if (_disposed) return;
-      final playlists = response.playlists;
-
-      // 2. 查找歌曲收藏歌单（优先查找内置的）
-      Playlist? songFavorite = _findPlaylist(
-        playlists,
-        _favoriteSongPlaylistName,
-        'normal',
+      // 初始化歌曲收藏服务
+      await _songFavoriteService.initialize(
+        findOrCreatePlaylist: () => _findOrCreatePlaylist(
+          _favoriteSongPlaylistName,
+          'normal',
+          '我喜欢的歌曲',
+        ),
+        loadSongIds: _loadPlaylistSongIds,
       );
-
-      // 3. 查找电台收藏歌单（优先查找内置的）
-      Playlist? radioFavorite = _findPlaylist(
-        playlists,
-        _favoriteRadioPlaylistName,
-        'radio',
-      );
-
-      // 4. 如果歌曲收藏歌单不存在，创建它
-      if (songFavorite == null) {
-        songFavorite = await _playlistApi.createPlaylist(
-          type: 'normal',
-          name: _favoriteSongPlaylistName,
-          description: '我喜欢的歌曲',
-        );
-        if (_disposed) return;
-      }
-
-      // 5. 如果电台收藏歌单不存在，创建它
-      if (radioFavorite == null) {
-        radioFavorite = await _playlistApi.createPlaylist(
-          type: 'radio',
-          name: _favoriteRadioPlaylistName,
-          description: '我喜欢的电台',
-        );
-        if (_disposed) return;
-      }
-
-      // 6. 加载收藏歌单中的歌曲 ID
-      final songIds = await _loadPlaylistSongIds(songFavorite.id);
       if (_disposed) return;
-      final radioIds = await _loadPlaylistSongIds(radioFavorite.id);
+
+      // 初始化电台收藏服务
+      await _radioFavoriteService.initialize(
+        findOrCreatePlaylist: () => _findOrCreatePlaylist(
+          _favoriteRadioPlaylistName,
+          'radio',
+          '我喜欢的电台',
+        ),
+        loadSongIds: _loadPlaylistSongIds,
+      );
       if (_disposed) return;
 
       state = state.copyWith(
-        favoriteSongPlaylistId: songFavorite.id,
-        favoriteRadioPlaylistId: radioFavorite.id,
-        favoriteSongIds: songIds,
-        favoriteRadioIds: radioIds,
+        favoriteSongPlaylistId: _songFavoriteService.playlistId,
+        favoriteRadioPlaylistId: _radioFavoriteService.playlistId,
+        favoriteSongIds: _songFavoriteService.favoriteIds,
+        favoriteRadioIds: _radioFavoriteService.favoriteIds,
         initialized: true,
         isLoading: false,
       );
@@ -146,6 +129,30 @@ class FavoriteNotifier extends Notifier<FavoriteState> {
       debugPrint('[Favorite] initialize error: $e');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  /// 查找或创建指定名称和类型的歌单，返回其 ID
+  Future<int> _findOrCreatePlaylist(
+    String name,
+    String type,
+    String description,
+  ) async {
+    final response = await _playlistApi.getPlaylists(limit: 1000);
+    if (_disposed) throw StateError('disposed');
+    final playlists = response.playlists;
+
+    Playlist? found = _findPlaylist(playlists, name, type);
+
+    if (found == null) {
+      found = await _playlistApi.createPlaylist(
+        type: type,
+        name: name,
+        description: description,
+      );
+      if (_disposed) throw StateError('disposed');
+    }
+
+    return found.id;
   }
 
   /// 查找歌单（优先查找内置的，然后按名称和类型查找）
@@ -190,35 +197,30 @@ class FavoriteNotifier extends Notifier<FavoriteState> {
 
   /// 切换歌曲收藏状态
   Future<bool> toggleFavorite(int songId) async {
-    if (state.favoriteSongPlaylistId == null) {
+    if (!_songFavoriteService.isInitialized) {
       await initialize();
     }
 
-    if (state.favoriteSongPlaylistId == null) {
+    if (!_songFavoriteService.isInitialized) {
       throw Exception(l10n.libraryFavoritePlaylistNotFound);
     }
 
-    final isFavorited = state.favoriteSongIds.contains(songId);
-
     try {
-      if (isFavorited) {
-        await _playlistApi.removeSongFromPlaylist(
-          state.favoriteSongPlaylistId!,
-          songId,
-        );
-        state = state.copyWith(
-          favoriteSongIds: Set<int>.from(state.favoriteSongIds)..remove(songId),
-        );
-        return false;
-      } else {
-        await _playlistApi.addSongsToPlaylist(state.favoriteSongPlaylistId!, [
-          songId,
-        ]);
-        state = state.copyWith(
-          favoriteSongIds: Set<int>.from(state.favoriteSongIds)..add(songId),
-        );
-        return true;
-      }
+      final isFavorited = await _songFavoriteService.toggle(
+        songId: songId,
+        addSong: (playlistId, sid) async {
+          await _playlistApi.addSongsToPlaylist(playlistId, [sid]);
+        },
+        removeSong: (playlistId, sid) async {
+          await _playlistApi.removeSongFromPlaylist(playlistId, sid);
+        },
+      );
+
+      state = state.copyWith(
+        favoriteSongIds: _songFavoriteService.favoriteIds,
+      );
+
+      return isFavorited;
     } catch (e) {
       state = state.copyWith(error: e.toString());
       rethrow;
@@ -227,36 +229,30 @@ class FavoriteNotifier extends Notifier<FavoriteState> {
 
   /// 切换电台收藏状态
   Future<bool> toggleRadioFavorite(int radioId) async {
-    if (state.favoriteRadioPlaylistId == null) {
+    if (!_radioFavoriteService.isInitialized) {
       await initialize();
     }
 
-    if (state.favoriteRadioPlaylistId == null) {
+    if (!_radioFavoriteService.isInitialized) {
       throw Exception(l10n.libraryRadioFavoritePlaylistNotFound);
     }
 
-    final isFavorited = state.favoriteRadioIds.contains(radioId);
-
     try {
-      if (isFavorited) {
-        await _playlistApi.removeSongFromPlaylist(
-          state.favoriteRadioPlaylistId!,
-          radioId,
-        );
-        state = state.copyWith(
-          favoriteRadioIds: Set<int>.from(state.favoriteRadioIds)
-            ..remove(radioId),
-        );
-        return false;
-      } else {
-        await _playlistApi.addSongsToPlaylist(state.favoriteRadioPlaylistId!, [
-          radioId,
-        ]);
-        state = state.copyWith(
-          favoriteRadioIds: Set<int>.from(state.favoriteRadioIds)..add(radioId),
-        );
-        return true;
-      }
+      final isFavorited = await _radioFavoriteService.toggle(
+        songId: radioId,
+        addSong: (playlistId, sid) async {
+          await _playlistApi.addSongsToPlaylist(playlistId, [sid]);
+        },
+        removeSong: (playlistId, sid) async {
+          await _playlistApi.removeSongFromPlaylist(playlistId, sid);
+        },
+      );
+
+      state = state.copyWith(
+        favoriteRadioIds: _radioFavoriteService.favoriteIds,
+      );
+
+      return isFavorited;
     } catch (e) {
       state = state.copyWith(error: e.toString());
       rethrow;
@@ -264,10 +260,11 @@ class FavoriteNotifier extends Notifier<FavoriteState> {
   }
 
   /// 检查歌曲是否已收藏
-  bool isFavorite(int songId) => state.favoriteSongIds.contains(songId);
+  bool isFavorite(int songId) => _songFavoriteService.isFavorite(songId);
 
   /// 检查电台是否已收藏
-  bool isRadioFavorite(int radioId) => state.favoriteRadioIds.contains(radioId);
+  bool isRadioFavorite(int radioId) =>
+      _radioFavoriteService.isFavorite(radioId);
 
   /// 清除错误
   void clearError() {

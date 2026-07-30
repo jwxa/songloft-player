@@ -23,7 +23,8 @@ class DesktopBackendService {
 
     // macOS 也检查 Resources 目录
     if (Platform.isMacOS) {
-      final resourcePath = '${exeFile.parent.parent.path}${Platform.pathSeparator}Resources${Platform.pathSeparator}$name';
+      final resourcePath =
+          '${exeFile.parent.parent.path}${Platform.pathSeparator}Resources${Platform.pathSeparator}$name';
       if (File(resourcePath).existsSync()) return resourcePath;
     }
 
@@ -68,18 +69,24 @@ class DesktopBackendService {
 
     final portReady = Completer<int>();
 
-    process.stdout.transform(utf8.decoder).transform(const LineSplitter()).listen((line) {
-      debugPrint('[GoBackend] $line');
-      final match = RegExp(r'http://localhost:(\d+)').firstMatch(line);
-      if (match != null) {
-        _port = int.parse(match.group(1)!);
-        if (!portReady.isCompleted) portReady.complete(_port);
-      }
-    });
+    process.stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          debugPrint('[GoBackend] $line');
+          final match = RegExp(r'http://localhost:(\d+)').firstMatch(line);
+          if (match != null) {
+            _port = int.parse(match.group(1)!);
+            if (!portReady.isCompleted) portReady.complete(_port);
+          }
+        });
 
-    process.stderr.transform(utf8.decoder).transform(const LineSplitter()).listen((line) {
-      debugPrint('[GoBackend:err] $line');
-    });
+    process.stderr
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          debugPrint('[GoBackend:err] $line');
+        });
 
     process.exitCode.then((code) {
       debugPrint('[GoBackend] 进程退出, code=$code');

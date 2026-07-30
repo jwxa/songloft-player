@@ -69,7 +69,8 @@ class _UpgradeDialogState extends ConsumerState<UpgradeDialog> {
     } on TimeoutException {
       if (mounted) {
         setState(
-          () => _error = AppLocalizations.of(context).settingsUpgradeCheckTimeout,
+          () =>
+              _error = AppLocalizations.of(context).settingsUpgradeCheckTimeout,
         );
       }
     } catch (e) {
@@ -326,7 +327,10 @@ class _UpgradeDialogState extends ConsumerState<UpgradeDialog> {
 
         // 版本选择（多个可用更新时显示，仅 Docker 环境）
         if (check.isDocker && check.availableUpdates.length > 1) ...[
-          Text(l10n.settingsUpgradeSelectVersion, style: theme.textTheme.titleSmall),
+          Text(
+            l10n.settingsUpgradeSelectVersion,
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 8),
           RadioGroup<int>(
             groupValue: _selectedVersionIndex,
@@ -393,7 +397,10 @@ class _UpgradeDialogState extends ConsumerState<UpgradeDialog> {
           if (selectedVersion.releaseNotes != null &&
               selectedVersion.releaseNotes!.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Text(l10n.settingsUpgradeReleaseNotes, style: theme.textTheme.titleSmall),
+            Text(
+              l10n.settingsUpgradeReleaseNotes,
+              style: theme.textTheme.titleSmall,
+            ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(12),

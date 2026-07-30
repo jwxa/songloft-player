@@ -35,13 +35,21 @@ Core principle: `dioProvider` watches `baseUrlProvider` via `ref.watch`. When ba
 
 ### PlayerNotifier Lifecycle
 
-`PlayerNotifier` is the most complex Notifier in the project (~1600 lines). Key internal mechanisms:
+`PlayerNotifier`'s core business logic has been extracted into `domain/use_cases/` pure Dart layer (see [Domain Layer Architecture](domain_layer.md)):
 
-- **Play generation `_playGeneration`**: When the user skips tracks rapidly, old `playByIndex()` coroutines detect a generation change after each `await` and exit, preventing race conditions
-- **Prefetch `_prefetchCancelToken`**: Fetches the next song's metadata while the current song is playing; a safety prefetch fires at 30s remaining (`_lateStagePrefetchFired`)
-- **Shuffle deduplication `_playedIndices`**: In shuffle mode, tracks played indices and resets when all songs have been played
-- **Playback state persistence**: `_saveDebounceTimer` debounces queue saves; `_positionSaveTimer` saves playback position every 10s
-- **Failure retry**: Retries a single track up to 2 times; stops after 3 consecutive skips
+- **PlayQueue**: Queue add/insert/remove/move with correct currentIndex tracking
+- **PlayModeResolver**: next/prev index calculation for 5 play modes, shuffle deduplication
+- **PlaybackRetryPolicy**: Local/network song retry strategy (exponential backoff), consecutive failure threshold
+- **SongCompletionRouter**: Song completed → action routing
+- **SleepTimerLogic**: Sleep timer (by duration / by song count)
+- **QueueLoader**: Background batch loading + generation-based race cancellation + ring assembly
+- **PrefetchStrategy**: Prefetch decision logic
+
+The Notifier itself retains:
+- **Play generation `_playGeneration`**: Old coroutines detect generation change after each `await` and exit
+- **Platform interaction**: Calls to `SongloftAudioHandler` (audio), `VolumeController` (system volume)
+- **State updates**: Drives UI rebuilds
+- **Playback state persistence**: `_saveDebounceTimer` debounces queue saves; `_positionSaveTimer` saves position every 10s
 
 ---
 

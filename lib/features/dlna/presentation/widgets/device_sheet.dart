@@ -63,10 +63,7 @@ class _DlnaDeviceSheetState extends ConsumerState<DlnaDeviceSheet> {
             ),
           if (dlnaState.isCasting && dlnaState.activeDevice != null)
             ListTile(
-              leading: Icon(
-                Icons.cast_connected,
-                color: colorScheme.primary,
-              ),
+              leading: Icon(Icons.cast_connected, color: colorScheme.primary),
               title: Text(dlnaState.activeDevice!.name),
               subtitle: Text(l10n.dlnaConnected),
               trailing: IconButton(
@@ -83,9 +80,10 @@ class _DlnaDeviceSheetState extends ConsumerState<DlnaDeviceSheet> {
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height * 0.4,
               ),
-              child: dlnaState.devices.isEmpty
-                  ? _buildEmptyState(dlnaState.isDiscovering)
-                  : _buildDeviceList(dlnaState.devices),
+              child:
+                  dlnaState.devices.isEmpty
+                      ? _buildEmptyState(dlnaState.isDiscovering)
+                      : _buildDeviceList(dlnaState.devices),
             ),
           ],
           if (dlnaState.isDiscovering)
@@ -128,8 +126,8 @@ class _DlnaDeviceSheetState extends ConsumerState<DlnaDeviceSheet> {
                   ? AppLocalizations.of(context).dlnaSearchingLan
                   : AppLocalizations.of(context).dlnaNoDevices,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),

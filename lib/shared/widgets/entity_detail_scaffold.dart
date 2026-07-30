@@ -54,24 +54,23 @@ class EntityDetailScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final body = context.useWideLayout
-        ? _buildWide(context, ref)
-        : _buildNarrow(context, ref);
+    final body =
+        context.useWideLayout
+            ? _buildWide(context, ref)
+            : _buildNarrow(context, ref);
 
     return Scaffold(
-      body: onRefresh != null
-          ? RefreshIndicator(onRefresh: onRefresh!, child: body)
-          : body,
+      body:
+          onRefresh != null
+              ? RefreshIndicator(onRefresh: onRefresh!, child: body)
+              : body,
     );
   }
 
   Widget? _effectiveLeading(BuildContext context) {
     if (leading != null) return leading;
     if (onBack != null) {
-      return IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: onBack,
-      );
+      return IconButton(icon: const Icon(Icons.arrow_back), onPressed: onBack);
     }
     return null;
   }
@@ -170,17 +169,18 @@ class EntityDetailScaffold extends ConsumerWidget {
           const SizedBox(height: AppSpacing.lg),
           DefaultTextStyle.merge(
             textAlign: TextAlign.center,
-            child: titleWidget is Text
-                ? Text(
-                    (titleWidget as Text).data ?? '',
-                    style: textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  )
-                : titleWidget,
+            child:
+                titleWidget is Text
+                    ? Text(
+                      (titleWidget as Text).data ?? '',
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    )
+                    : titleWidget,
           ),
           if (description?.isNotEmpty == true) ...[
             const SizedBox(height: AppSpacing.sm),

@@ -30,42 +30,41 @@ class VideoSubtitleOverlay extends ConsumerWidget {
     final enabled = ref.watch(subtitleEnabledProvider);
     if (!enabled) return const SizedBox.shrink();
 
-    final line = ref.watch(
-      lyricStateProvider.select((s) => s.currentLine),
-    );
+    final line = ref.watch(lyricStateProvider.select((s) => s.currentLine));
 
     final hasText = line != null && line.text.isNotEmpty;
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
-      child: !hasText
-          ? const SizedBox.shrink()
-          : line.hasWords
+      child:
+          !hasText
+              ? const SizedBox.shrink()
+              : line.hasWords
               // 逐字 K 歌字幕:已唱=高亮色,未唱=白色,均带描边
               ? KaraokeLine(
-                  key: ValueKey('kw_${line.time.inMilliseconds}'),
-                  line: line,
-                  activeColor: Theme.of(context).colorScheme.primary,
-                  inactiveColor: Colors.white,
+                key: ValueKey('kw_${line.time.inMilliseconds}'),
+                line: line,
+                activeColor: Theme.of(context).colorScheme.primary,
+                inactiveColor: Colors.white,
+                fontSize: fontSize,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+                shadows: _outline,
+              )
+              : Text(
+                line.text,
+                key: ValueKey(line.text),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white,
                   fontSize: fontSize,
                   fontWeight: FontWeight.w600,
                   height: 1.3,
                   shadows: _outline,
-                )
-              : Text(
-                  line.text,
-                  key: ValueKey(line.text),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w600,
-                    height: 1.3,
-                    shadows: _outline,
-                  ),
                 ),
+              ),
     );
   }
 }

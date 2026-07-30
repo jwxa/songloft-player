@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,19 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/domain/auth_state.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../config/app_config.dart';
+
 import '../../features/home/presentation/home_page.dart';
-import '../../features/home/presentation/tv_home_page.dart';
 import '../../features/home/presentation/plugin_webview_page.dart';
 import '../../features/library/presentation/library_page.dart';
-import '../../features/library/presentation/tv_library_page.dart';
 import '../../features/library/presentation/category_songs_page.dart';
-import '../../features/library/presentation/tv_category_songs_page.dart';
 import '../../features/playlist/presentation/playlist_detail_page.dart';
-import '../../features/playlist/presentation/tv_playlist_detail_page.dart';
 import '../../features/settings/presentation/servers_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
-import '../../features/settings/presentation/tv_settings_page.dart';
 import '../../features/settings/presentation/tab_config_page.dart';
 import '../../features/jsplugin/presentation/widgets/plugin_registry.dart';
 import '../../features/settings/presentation/duplicate_check_page.dart';
@@ -28,7 +21,6 @@ import '../../features/settings/presentation/client_download_page.dart';
 import '../../features/settings/presentation/widgets/settings_category_content.dart';
 import '../../features/player/presentation/widgets/mobile_player.dart';
 import '../../features/player/presentation/widgets/desktop_full_player.dart';
-import '../../features/player/presentation/widgets/tv_player.dart';
 import '../../shared/layouts/shell_layout.dart';
 import '../theme/responsive.dart';
 import '../../l10n/app_localizations.dart';
@@ -125,7 +117,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 全屏播放器（独立顶层路由，全屏无导航栏，与 /login、/plugin 同级）。
       // 做成真实路由而非命令式 Navigator.push，让浏览器/系统返回键在 Web 上
-      // 也能关闭播放器。按屏幕类型分派 Mobile/Tv/Desktop 三种全屏播放器，
+      // 也能关闭播放器。按屏幕类型分派 Mobile/Desktop 两种全屏播放器，
       // 分派规则与 shell_layout 的 _openFullPlayerForScreen 一致。
       GoRoute(
         path: AppRoutes.player,
@@ -133,14 +125,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           final page =
               int.tryParse(state.uri.queryParameters['page'] ?? '') ?? 0;
           final screenType = context.screenType;
-          final bool isTv =
-              screenType == ScreenType.tv &&
-              defaultTargetPlatform == TargetPlatform.android;
           final Widget child;
           if (screenType == ScreenType.mobile) {
             child = MobilePlayer(initialPage: page);
-          } else if (isTv) {
-            child = const TvPlayer();
           } else {
             child = const DesktopFullPlayer();
           }
@@ -150,16 +137,15 @@ final routerProvider = Provider<GoRouter>((ref) {
             transitionDuration: const Duration(milliseconds: 300),
             reverseTransitionDuration: const Duration(milliseconds: 300),
             transitionsBuilder: (context, animation, secondaryAnimation, c) {
-              // TV 保持淡入（复刻 TvPlayer 原行为），其余下往上滑入。
-              if (isTv) {
-                return FadeTransition(opacity: animation, child: c);
-              }
               return SlideTransition(
                 position: Tween<Offset>(
                   begin: const Offset(0, 1),
                   end: Offset.zero,
                 ).animate(
-                  CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
                 ),
                 child: c,
               );
@@ -177,11 +163,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.home,
             pageBuilder:
-                (context, state) => NoTransitionPage(
-                  child: AppConfig.isTvMode
-                      ? const TvHomePage()
-                      : const HomePage(),
-                ),
+                (context, state) => const NoTransitionPage(child: HomePage()),
           ),
 
           // 曲库
@@ -189,13 +171,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.library,
             pageBuilder:
                 (context, state) => NoTransitionPage(
-                  child: AppConfig.isTvMode
-                      ? TvLibraryPage(
-                          initialViewKey: state.uri.queryParameters['view'],
-                        )
-                      : LibraryPage(
-                          initialViewKey: state.uri.queryParameters['view'],
-                        ),
+                  child: LibraryPage(
+                    initialViewKey: state.uri.queryParameters['view'],
+                  ),
                 ),
           ),
 
@@ -207,17 +185,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               final field = state.pathParameters['field'] ?? '';
               final value = state.uri.queryParameters['value'] ?? '';
               final cover = state.uri.queryParameters['cover'];
-              return AppConfig.isTvMode
-                  ? TvCategorySongsPage(
-                      field: field,
-                      value: value,
-                      coverUrl: cover,
-                    )
-                  : CategorySongsPage(
-                      field: field,
-                      value: value,
-                      coverUrl: cover,
-                    );
+              return CategorySongsPage(
+                field: field,
+                value: value,
+                coverUrl: cover,
+              );
             },
           ),
 
@@ -233,9 +205,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.playlistDetail,
             builder: (context, state) {
               final id = state.pathParameters['id'] ?? '';
-              return AppConfig.isTvMode
-                  ? TvPlaylistDetailPage(playlistId: id)
-                  : PlaylistDetailPage(playlistId: id);
+              return PlaylistDetailPage(playlistId: id);
             },
           ),
 
@@ -243,11 +213,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.settings,
             pageBuilder:
-                (context, state) => NoTransitionPage(
-                  child: AppConfig.isTvMode
-                      ? const TvSettingsPage()
-                      : const SettingsPage(),
-                ),
+                (context, state) =>
+                    const NoTransitionPage(child: SettingsPage()),
           ),
 
           // 服务器列表管理

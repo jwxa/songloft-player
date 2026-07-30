@@ -30,8 +30,9 @@ final jsPluginsProvider = FutureProvider<List<JSPlugin>>((ref) async {
 // ============================================================================
 
 /// 获取插件订阅源列表
-final pluginRegistriesProvider =
-    FutureProvider<List<PluginRegistryConfig>>((ref) async {
+final pluginRegistriesProvider = FutureProvider<List<PluginRegistryConfig>>((
+  ref,
+) async {
   final api = ref.watch(settingsApiProvider);
   return api.getPluginRegistries();
 });

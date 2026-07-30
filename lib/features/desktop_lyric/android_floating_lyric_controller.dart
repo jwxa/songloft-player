@@ -138,5 +138,5 @@ class AndroidFloatingLyricController {
 /// 全局单例：整个 App 生命周期内只有一个悬浮歌词 Controller。
 final androidFloatingLyricControllerProvider =
     Provider<AndroidFloatingLyricController>((ref) {
-  return AndroidFloatingLyricController(ref);
-});
+      return AndroidFloatingLyricController(ref);
+    });

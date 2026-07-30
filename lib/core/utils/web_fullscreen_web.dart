@@ -26,10 +26,10 @@ Future<void> exitWebFullscreen() async {
 }
 
 void Function() onWebFullscreenExit(void Function() callback) {
-  final listener = (web.Event _) {
-    if (web.document.fullscreenElement == null) callback();
-  }.toJS;
+  final listener =
+      (web.Event _) {
+        if (web.document.fullscreenElement == null) callback();
+      }.toJS;
   web.document.addEventListener('fullscreenchange', listener);
-  return () =>
-      web.document.removeEventListener('fullscreenchange', listener);
+  return () => web.document.removeEventListener('fullscreenchange', listener);
 }

@@ -26,9 +26,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final prefs = await AppPreferences.create();
     container = ProviderContainer(
-      overrides: [
-        appPreferencesProvider.overrideWith((ref) async => prefs),
-      ],
+      overrides: [appPreferencesProvider.overrideWith((ref) async => prefs)],
     );
   });
 
@@ -60,8 +58,8 @@ void main() {
     await container2.read(appPreferencesProvider.future);
     await Future<void>.delayed(Duration.zero);
     expect(
-      container2.read(shortcutSettingsProvider).bindings[
-          PlayerShortcutAction.playPause],
+      container2.read(shortcutSettingsProvider).bindings[PlayerShortcutAction
+          .playPause],
       custom,
     );
   });
@@ -116,8 +114,9 @@ void main() {
 
   group('matchShortcutAction', () {
     final bindings = {
-      PlayerShortcutAction.playPause:
-          KeyBinding(keyId: LogicalKeyboardKey.space.keyId),
+      PlayerShortcutAction.playPause: KeyBinding(
+        keyId: LogicalKeyboardKey.space.keyId,
+      ),
       PlayerShortcutAction.playNext: KeyBinding(
         keyId: LogicalKeyboardKey.arrowRight.keyId,
         ctrl: true,

@@ -48,16 +48,15 @@ Download the latest version from [GitHub Releases](https://github.com/songloft-o
 
 ## Features
 
-- **Cross-platform**: iOS, Android (phone/tablet/TV), macOS, Windows, Linux, Web
+- **Cross-platform**: iOS, Android (phone/tablet), macOS, Windows, Linux, Web
 - **Bundle local mode**: Embedded Go backend, no server needed, supports local/remote mode switching
-- **Responsive layout**: 4-level breakpoints (Mobile < 600px, Tablet 600-900px, Desktop 900-1920px, TV 1920px+)
-- **Adaptive navigation**: Bottom bar on mobile, sidebar on tablet, side menu on desktop, top tab on TV
+- **Responsive layout**: 3-level breakpoints (Mobile < 600px, Tablet 600-900px, Desktop 900px+)
+- **Adaptive navigation**: Bottom bar on mobile, sidebar on tablet, side menu on desktop
 - **Music playback**: Powered by just_audio, supports local and network songs, background playback
 - **Playlist management**: Create, edit, delete playlists, add/remove songs
 - **Song library**: Paginated loading, search/filter, song editing
 - **Theme**: Light / Dark / System
 - **JWT authentication**: Dual-token mechanism with secure storage (auto-fallback)
-- **TV support**: D-Pad focus navigation, large buttons and fonts
 
 ## Requirements
 
@@ -132,7 +131,7 @@ lib/
 │   ├── jsplugin/    # JS plugin management
 │   ├── startup/     # Startup flow (local/remote mode auto-bootstrap)
 │   ├── library/     # Song library
-│   ├── player/      # Player (desktop/mobile/TV/mini)
+│   ├── player/      # Player (desktop/mobile/mini)
 │   ├── playlist/    # Playlist management
 │   └── settings/    # Settings (theme/scan/plugins/upgrade)
 ├── shared/          # Shared layer

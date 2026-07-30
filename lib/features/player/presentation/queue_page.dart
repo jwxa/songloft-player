@@ -253,7 +253,12 @@ class _QueueBottomSheetState extends ConsumerState<QueueBottomSheet>
           index: index,
           isCurrentSong: isCurrentSong,
           isPlaying: isPlaying,
-          onTap: () => notifier.playPlaylist(state.playlist, startIndex: index),
+          onTap:
+              () => notifier.playPlaylist(
+                state.playlist,
+                startIndex: index,
+                keepContext: true,
+              ),
           onRemove: () => _removeSong(context, notifier, index, song),
         );
       },
@@ -389,7 +394,8 @@ class _QueueSongItem extends StatelessWidget {
                             placeholder:
                                 (_, _) => _buildCoverPlaceholder(colorScheme),
                             errorWidget:
-                                (_, _, _) => _buildCoverPlaceholder(colorScheme),
+                                (_, _, _) =>
+                                    _buildCoverPlaceholder(colorScheme),
                           ),
                         )
                       else

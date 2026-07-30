@@ -111,7 +111,10 @@ class _VideoPlayerSurfaceState extends ConsumerState<VideoPlayerSurface> {
     final notifier = ref.read(playerStateProvider.notifier);
 
     // 暂停时常驻控制层;恢复播放后重新计时隐藏。
-    ref.listen<bool>(playerStateProvider.select((s) => s.isPlaying), (_, playing) {
+    ref.listen<bool>(playerStateProvider.select((s) => s.isPlaying), (
+      _,
+      playing,
+    ) {
       if (!playing) {
         _hideTimer?.cancel();
         if (!_controlsVisible) setState(() => _controlsVisible = true);
@@ -197,7 +200,10 @@ class _VideoPlayerSurfaceState extends ConsumerState<VideoPlayerSurface> {
             left: 0,
             right: 0,
             height: 120,
-            child: _ScrimGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            child: _ScrimGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
           // 底部渐变遮罩
           const Positioned(
@@ -205,7 +211,10 @@ class _VideoPlayerSurfaceState extends ConsumerState<VideoPlayerSurface> {
             left: 0,
             right: 0,
             height: 200,
-            child: _ScrimGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter),
+            child: _ScrimGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+            ),
           ),
           SafeArea(
             child: Column(
@@ -278,10 +287,16 @@ class _VideoPlayerSurfaceState extends ConsumerState<VideoPlayerSurface> {
               _pokeControls();
             },
             icon: Icon(
-              subtitleOn ? Icons.subtitles_rounded : Icons.subtitles_off_rounded,
+              subtitleOn
+                  ? Icons.subtitles_rounded
+                  : Icons.subtitles_off_rounded,
             ),
-            color: subtitleOn ? Theme.of(context).colorScheme.primary : Colors.white,
-            tooltip: subtitleOn ? l10n.playerSubtitleOff : l10n.playerSubtitleOn,
+            color:
+                subtitleOn
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white,
+            tooltip:
+                subtitleOn ? l10n.playerSubtitleOff : l10n.playerSubtitleOn,
           ),
           // 全屏(仅移动端)
           if (PlatformUtils.isMobile || kIsWeb)
@@ -293,94 +308,101 @@ class _VideoPlayerSurfaceState extends ConsumerState<VideoPlayerSurface> {
                     : Icons.fullscreen_rounded,
               ),
               color: Colors.white,
-              tooltip: widget.isFullscreen
-                  ? l10n.playerExitFullscreen
-                  : l10n.playerEnterFullscreen,
+              tooltip:
+                  widget.isFullscreen
+                      ? l10n.playerExitFullscreen
+                      : l10n.playerEnterFullscreen,
             ),
           // 更多(弹出菜单用回原始主题,避免继承黑底浅色前景导致菜单文字看不清)
           Theme(
             data: baseTheme,
             child: PopupMenuButton<String>(
-            icon: Icon(
-              Icons.more_horiz_rounded,
-              color: state.sleepTimer != null
-                  ? baseTheme.colorScheme.primary
-                  : Colors.white,
-            ),
-            onSelected: (value) {
-              switch (value) {
-                case 'equalizer':
-                  showEqualizerSheet(context);
-                case 'audio_track':
-                  showAudioTrackSheet(context, ref);
-                case 'sleep_timer':
-                  SleepTimerSheet.show(
-                    context,
-                    status: state.sleepTimer,
-                    isLive: widget.song.isLive,
-                    onSetDuration: notifier.setSleepTimerByDuration,
-                    onSetAfterSongs: notifier.setSleepTimerAfterSongs,
-                    onCancel: notifier.cancelSleepTimer,
-                  );
-                case 'delete':
-                  deleteCurrentSongFromPlayer(context, ref);
-              }
-            },
-            itemBuilder: (context) {
-              final colorScheme = Theme.of(context).colorScheme;
-              final hasTimer = state.sleepTimer != null;
-              return [
-                // 均衡器依赖 libmpv，Web 无 libmpv 不生效，故 Web 隐藏
-                if (!kIsWeb)
+              icon: Icon(
+                Icons.more_horiz_rounded,
+                color:
+                    state.sleepTimer != null
+                        ? baseTheme.colorScheme.primary
+                        : Colors.white,
+              ),
+              onSelected: (value) {
+                switch (value) {
+                  case 'equalizer':
+                    showEqualizerSheet(context);
+                  case 'audio_track':
+                    showAudioTrackSheet(context, ref);
+                  case 'sleep_timer':
+                    SleepTimerSheet.show(
+                      context,
+                      status: state.sleepTimer,
+                      isLive: widget.song.isLive,
+                      onSetDuration: notifier.setSleepTimerByDuration,
+                      onSetAfterSongs: notifier.setSleepTimerAfterSongs,
+                      onCancel: notifier.cancelSleepTimer,
+                    );
+                  case 'delete':
+                    deleteCurrentSongFromPlayer(context, ref);
+                }
+              },
+              itemBuilder: (context) {
+                final colorScheme = Theme.of(context).colorScheme;
+                final hasTimer = state.sleepTimer != null;
+                return [
+                  // 均衡器依赖 libmpv，Web 无 libmpv 不生效，故 Web 隐藏
+                  if (!kIsWeb)
+                    PopupMenuItem(
+                      value: 'equalizer',
+                      child: ListTile(
+                        leading: const Icon(Icons.equalizer_rounded),
+                        title: Text(l10n.playerEqualizer),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  // 音轨切换：多音轨时才显示（与均衡器同为次要功能，统一收进菜单）
+                  if (ref.read(audioTrackProvider).hasMultiple)
+                    PopupMenuItem(
+                      value: 'audio_track',
+                      child: ListTile(
+                        leading: const Icon(Icons.multitrack_audio_rounded),
+                        title: Text(l10n.playerAudioTrack),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
                   PopupMenuItem(
-                    value: 'equalizer',
+                    value: 'sleep_timer',
                     child: ListTile(
-                      leading: const Icon(Icons.equalizer_rounded),
-                      title: Text(l10n.playerEqualizer),
+                      leading: Icon(
+                        Icons.bedtime_outlined,
+                        color: hasTimer ? colorScheme.primary : null,
+                      ),
+                      title: Text(
+                        hasTimer
+                            ? l10n.playerSleepTimerOn
+                            : l10n.playerSleepTimer,
+                      ),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
-                // 音轨切换：多音轨时才显示（与均衡器同为次要功能，统一收进菜单）
-                if (ref.read(audioTrackProvider).hasMultiple)
+                  const PopupMenuDivider(),
                   PopupMenuItem(
-                    value: 'audio_track',
+                    value: 'delete',
                     child: ListTile(
-                      leading: const Icon(Icons.multitrack_audio_rounded),
-                      title: Text(l10n.playerAudioTrack),
+                      leading: Icon(
+                        Icons.delete_outline,
+                        color: colorScheme.error,
+                      ),
+                      title: Text(
+                        l10n.playerDeleteCurrentSong,
+                        style: TextStyle(color: colorScheme.error),
+                      ),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
-                PopupMenuItem(
-                  value: 'sleep_timer',
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.bedtime_outlined,
-                      color: hasTimer ? colorScheme.primary : null,
-                    ),
-                    title: Text(
-                      hasTimer ? l10n.playerSleepTimerOn : l10n.playerSleepTimer,
-                    ),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                const PopupMenuDivider(),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: ListTile(
-                    leading: Icon(Icons.delete_outline, color: colorScheme.error),
-                    title: Text(
-                      l10n.playerDeleteCurrentSong,
-                      style: TextStyle(color: colorScheme.error),
-                    ),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ];
-            },
+                ];
+              },
             ),
           ),
         ],

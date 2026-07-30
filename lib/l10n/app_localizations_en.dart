@@ -4240,5 +4240,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playlistCacheCleared => 'Playlist cache cleared';
 
   @override
+  String get playHistory => 'Play history';
+
+  @override
+  String playHistoryTitle(String name) {
+    return 'Play history · $name';
+  }
+
+  @override
+  String get playHistoryEmpty => 'No play history yet';
+
+  @override
+  String get playHistoryEmptyHint =>
+      'Songs you play here get recorded, so you can pick up where you left off';
+
+  @override
+  String get playHistoryClear => 'Clear history';
+
+  @override
+  String get playHistoryClearConfirm => 'Clear the play history here?';
+
+  @override
+  String get playHistoryCleared => 'Play history cleared';
+
+  @override
+  String get playHistoryDeleteEntry => 'Remove this entry';
+
+  @override
+  String get playHistoryOperationFailed => 'Operation failed, please try again';
+
+  @override
+  String get playHistorySongMissing =>
+      'This song is no longer in the list; the rest have been added to the queue';
+
+  @override
   String get scrollToTop => 'Scroll to top';
 }

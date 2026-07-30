@@ -20,8 +20,8 @@ class ApiMediaBrowseDataSource implements MediaBrowseDataSource {
   ApiMediaBrowseDataSource({
     required SongsApi songsApi,
     required PlaylistApi playlistApi,
-  })  : _songsApi = songsApi,
-        _playlistApi = playlistApi;
+  }) : _songsApi = songsApi,
+       _playlistApi = playlistApi;
 
   @override
   Future<List<Song>> getRecentSongs({int limit = 50}) async {
@@ -43,12 +43,11 @@ class ApiMediaBrowseDataSource implements MediaBrowseDataSource {
   }
 
   @override
-  Future<List<Song>> getPlaylistSongs(
-    int playlistId, {
-    int limit = 100,
-  }) async {
-    final response =
-        await _playlistApi.getPlaylistSongs(playlistId, limit: limit);
+  Future<List<Song>> getPlaylistSongs(int playlistId, {int limit = 100}) async {
+    final response = await _playlistApi.getPlaylistSongs(
+      playlistId,
+      limit: limit,
+    );
     return response.songs;
   }
 

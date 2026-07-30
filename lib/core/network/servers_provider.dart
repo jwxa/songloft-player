@@ -58,23 +58,28 @@ class ServersNotifier extends AsyncNotifier<List<ServerEntry>> {
   }
 
   /// 更新指定服务器的保存凭证（登录成功后调用）
-  Future<void> updateCredentials(String url, {String? username, String? password}) async {
+  Future<void> updateCredentials(
+    String url, {
+    String? username,
+    String? password,
+  }) async {
     final current = state.value ?? const <ServerEntry>[];
-    final next = current.map((e) {
-      if (e.url != url) return e;
-      return e.copyWith(
-        usernameOverride: () => username,
-        passwordOverride: () => password,
-      );
-    }).toList();
+    final next =
+        current.map((e) {
+          if (e.url != url) return e;
+          return e.copyWith(
+            usernameOverride: () => username,
+            passwordOverride: () => password,
+          );
+        }).toList();
     await _save(next);
   }
 }
 
 final serversProvider =
     AsyncNotifierProvider<ServersNotifier, List<ServerEntry>>(
-  ServersNotifier.new,
-);
+      ServersNotifier.new,
+    );
 
 /// 探测状态：ServerEntry id → ProbeStatus
 class ProbeStatusNotifier extends Notifier<Map<String, ProbeStatus>> {
@@ -90,8 +95,8 @@ class ProbeStatusNotifier extends Notifier<Map<String, ProbeStatus>> {
 
 final probeStatusProvider =
     NotifierProvider<ProbeStatusNotifier, Map<String, ProbeStatus>>(
-  ProbeStatusNotifier.new,
-);
+      ProbeStatusNotifier.new,
+    );
 
 /// 启动探测结果。StartupGate 写入；首屏读取后置回 idle 避免重复弹。
 class ProbeOutcomeNotifier extends Notifier<ProbeOutcome> {
@@ -103,8 +108,8 @@ class ProbeOutcomeNotifier extends Notifier<ProbeOutcome> {
 
 final probeOutcomeProvider =
     NotifierProvider<ProbeOutcomeNotifier, ProbeOutcome>(
-  ProbeOutcomeNotifier.new,
-);
+      ProbeOutcomeNotifier.new,
+    );
 
 /// 切换到指定服务器（统一入口）：
 /// 存档当前 session → 切换 baseUrl → 恢复目标 session → 判断登录态
@@ -126,7 +131,9 @@ Future<void> applyServerSelection(WidgetRef ref, ServerEntry entry) async {
   );
   ref.read(resolvedBaseUrlProvider.notifier).set(resolved);
   // 3. 恢复目标 session
-  final restored = await storage.restoreWallet(SecureStorageService.walletKey(entry.url));
+  final restored = await storage.restoreWallet(
+    SecureStorageService.walletKey(entry.url),
+  );
   if (restored && !await storage.isAccessTokenExpired()) {
     debugPrint('[Servers] 恢复 ${entry.displayName} 的登录态');
     ref.read(authStateProvider.notifier).setAuthenticated();

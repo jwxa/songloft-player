@@ -60,10 +60,7 @@ class AppEffects {
 
   /// 主色发光 — 播放按钮、封面强调
   static List<BoxShadow> primaryGlow(Color primaryColor) => [
-    BoxShadow(
-      color: primaryColor.withValues(alpha: 0.30),
-      spreadRadius: 1,
-    ),
+    BoxShadow(color: primaryColor.withValues(alpha: 0.30), spreadRadius: 1),
     BoxShadow(
       color: primaryColor.withValues(alpha: 0.45),
       blurRadius: 40,
@@ -80,10 +77,7 @@ class AppEffects {
 
   /// 柔和发光 — 封面、浮动卡片
   static List<BoxShadow> softGlow(Color onSurfaceColor) => [
-    BoxShadow(
-      color: onSurfaceColor.withValues(alpha: 0.08),
-      spreadRadius: 1,
-    ),
+    BoxShadow(color: onSurfaceColor.withValues(alpha: 0.08), spreadRadius: 1),
     const BoxShadow(
       color: Color.fromRGBO(0, 0, 0, 0.55),
       blurRadius: 60,

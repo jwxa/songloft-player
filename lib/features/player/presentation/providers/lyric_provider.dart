@@ -123,14 +123,19 @@ class LyricNotifier extends Notifier<LyricState> {
         state.currentLyricText,
         state.nextLyricText,
       );
-      ref.read(audioHandlerProvider).updateNowPlayingLyric(
-        state.currentLyricText,
-        inTitle: ref.read(notificationLyricInTitleProvider),
-      );
+      ref
+          .read(audioHandlerProvider)
+          .updateNowPlayingLyric(
+            state.currentLyricText,
+            inTitle: ref.read(notificationLyricInTitleProvider),
+          );
     }
   }
 
-  Future<void> _loadLyrics(String? lyricUrl, {bool forceRefresh = false}) async {
+  Future<void> _loadLyrics(
+    String? lyricUrl, {
+    bool forceRefresh = false,
+  }) async {
     if (lyricUrl == null || lyricUrl.isEmpty) {
       _lastLoadedUrl = null;
       state = const LyricState();
@@ -165,9 +170,10 @@ class LyricNotifier extends Notifier<LyricState> {
       }
       final response = await Dio().get<Map<String, dynamic>>(fullUrl);
 
-      final body = response.data is Map<String, dynamic>
-          ? response.data as Map<String, dynamic>
-          : const <String, dynamic>{};
+      final body =
+          response.data is Map<String, dynamic>
+              ? response.data as Map<String, dynamic>
+              : const <String, dynamic>{};
 
       _applyPayload(lyricUrl, body);
 
@@ -204,9 +210,10 @@ class LyricNotifier extends Notifier<LyricState> {
       wbwSource = main;
     }
 
-    var lyrics = wbwSource.isNotEmpty
-        ? LyricParser.parseWordByWord(wbwSource)
-        : LyricParser.parse(main);
+    var lyrics =
+        wbwSource.isNotEmpty
+            ? LyricParser.parseWordByWord(wbwSource)
+            : LyricParser.parse(main);
 
     // 逐字解析失败但主歌词是带时间轴的普通 LRC → 退回普通 LRC 解析，
     // 避免把含 [mm:ss] 的正常歌词误判为纯文本（否则会把方括号当正文显示）。
@@ -241,10 +248,12 @@ class LyricNotifier extends Notifier<LyricState> {
       state.currentLyricText,
       state.nextLyricText,
     );
-    ref.read(audioHandlerProvider).updateNowPlayingLyric(
-      state.currentLyricText,
-      inTitle: ref.read(notificationLyricInTitleProvider),
-    );
+    ref
+        .read(audioHandlerProvider)
+        .updateNowPlayingLyric(
+          state.currentLyricText,
+          inTitle: ref.read(notificationLyricInTitleProvider),
+        );
   }
 
   /// 解析缓存字符串：新格式为 payload JSON；旧格式为纯 LRC 文本（降级到 lyric 字段）。

@@ -287,8 +287,9 @@ class DesktopPlayer extends ConsumerWidget {
           ref.watch(songCacheProvider);
           final runMode = ref.watch(runModeProvider);
           final canCache = canCacheLocally(song, runMode: runMode);
-          final isCached =
-              ref.read(songCacheProvider.notifier).isCached(song.id);
+          final isCached = ref
+              .read(songCacheProvider.notifier)
+              .isCached(song.id);
           final l10n = AppLocalizations.of(context);
           return PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert_rounded, size: 20),
@@ -310,33 +311,36 @@ class DesktopPlayer extends ConsumerWidget {
                   );
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'song_info',
-                child: ListTile(
-                  leading: const Icon(Icons.info_outline_rounded),
-                  title: Text(l10n.songCacheInfo),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              if (canCache)
-                PopupMenuItem(
-                  value: 'cache_song',
-                  child: ListTile(
-                    leading: Icon(
-                      isCached
-                          ? Icons.download_done_rounded
-                          : Icons.download_for_offline_outlined,
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'song_info',
+                    child: ListTile(
+                      leading: const Icon(Icons.info_outline_rounded),
+                      title: Text(l10n.songCacheInfo),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
                     ),
-                    title: Text(
-                      isCached ? l10n.songCacheRemove : l10n.songCacheCacheSong,
-                    ),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
                   ),
-                ),
-            ],
+                  if (canCache)
+                    PopupMenuItem(
+                      value: 'cache_song',
+                      child: ListTile(
+                        leading: Icon(
+                          isCached
+                              ? Icons.download_done_rounded
+                              : Icons.download_for_offline_outlined,
+                        ),
+                        title: Text(
+                          isCached
+                              ? l10n.songCacheRemove
+                              : l10n.songCacheCacheSong,
+                        ),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                ],
           );
         },
       ),

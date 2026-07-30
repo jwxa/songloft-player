@@ -28,7 +28,9 @@ class MusicPathSetting {
           (json['exclude_paths'] as List?)?.map((e) => e as String).toList() ??
           <String>[],
       autoCreateExcludeDirs:
-          (json['auto_create_exclude_dirs'] as List?)?.map((e) => e as String).toList() ??
+          (json['auto_create_exclude_dirs'] as List?)
+              ?.map((e) => e as String)
+              .toList() ??
           <String>[],
     );
   }
@@ -114,13 +116,12 @@ class PluginRegistryConfig {
     String? name,
     bool? enabled,
     String? token,
-  }) =>
-      PluginRegistryConfig(
-        url: url ?? this.url,
-        name: name ?? this.name,
-        enabled: enabled ?? this.enabled,
-        token: token ?? this.token,
-      );
+  }) => PluginRegistryConfig(
+    url: url ?? this.url,
+    name: name ?? this.name,
+    enabled: enabled ?? this.enabled,
+    token: token ?? this.token,
+  );
 }
 
 /// 插件 Tab 条目
@@ -225,10 +226,8 @@ class LibraryViewEntry {
 
   Map<String, dynamic> toJson() => {'key': key, 'visible': visible};
 
-  LibraryViewEntry copyWith({String? key, bool? visible}) => LibraryViewEntry(
-    key: key ?? this.key,
-    visible: visible ?? this.visible,
-  );
+  LibraryViewEntry copyWith({String? key, bool? visible}) =>
+      LibraryViewEntry(key: key ?? this.key, visible: visible ?? this.visible);
 }
 
 /// 曲库浏览视图的显示与顺序配置。
@@ -259,9 +258,10 @@ class LibraryBrowseConfig {
   ];
 
   factory LibraryBrowseConfig.defaultConfig() => LibraryBrowseConfig(
-    views: defaultOrder
-        .map((k) => LibraryViewEntry(key: k, visible: true))
-        .toList(),
+    views:
+        defaultOrder
+            .map((k) => LibraryViewEntry(key: k, visible: true))
+            .toList(),
   );
 
   factory LibraryBrowseConfig.fromJson(Map<String, dynamic> json) {
@@ -822,9 +822,7 @@ class SettingsApi {
     }
   }
 
-  Future<UserPreferences> updateUserPreferences(
-    UserPreferences prefs,
-  ) async {
+  Future<UserPreferences> updateUserPreferences(UserPreferences prefs) async {
     try {
       final response = await dio.put(
         '${AppConfig.apiPrefix}/settings/user-preferences',
@@ -949,7 +947,8 @@ class MetadataRefreshProgress {
 
   bool get isIdle => status == 'idle';
   bool get isRunning => status == 'running' || status == 'cancelling';
-  bool get isDone => status == 'done' || status == 'cancelled' || status == 'failed';
+  bool get isDone =>
+      status == 'done' || status == 'cancelled' || status == 'failed';
   int get completedCount => processed + failed;
   double get progress => total > 0 ? completedCount / total : 0;
 }

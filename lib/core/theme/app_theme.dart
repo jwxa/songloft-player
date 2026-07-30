@@ -21,9 +21,7 @@ class AppTheme {
 
   /// 构建主题的统一方法
   static ThemeData _buildTheme(Brightness brightness, ScreenType screenType) {
-    final isTv = screenType == ScreenType.tv;
-    final isDesktopOrTv =
-        screenType == ScreenType.desktop || screenType == ScreenType.tv;
+    final isDesktop = screenType == ScreenType.desktop;
 
     return ThemeData(
       useMaterial3: true,
@@ -47,68 +45,38 @@ class AppTheme {
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       ),
       // 响应式 SnackBar 主题
-      // contentTextStyle 在 ResponsiveSnackBar widget 层控制，避免双重定义冲突
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            isDesktopOrTv ? (isTv ? AppRadius.md : AppRadius.sm) : AppRadius.sm,
-          ),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         insetPadding:
-            isDesktopOrTv
-                ? (isTv
-                    ? const EdgeInsets.symmetric(horizontal: 48, vertical: 24)
-                    : const EdgeInsets.symmetric(horizontal: 24, vertical: 12))
+            isDesktop
+                ? const EdgeInsets.symmetric(horizontal: 24, vertical: 12)
                 : null,
-        width: isDesktopOrTv ? (isTv ? 600 : 480) : null,
+        width: isDesktop ? 480 : null,
       ),
       // 响应式 FilledButton 主题
       filledButtonTheme:
-          isDesktopOrTv
+          isDesktop
               ? FilledButtonThemeData(
-                style: FilledButton.styleFrom(
-                  minimumSize: isTv ? const Size(120, 56) : const Size(88, 44),
-                  textStyle:
-                      isTv
-                          ? const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          )
-                          : null,
-                ),
+                style: FilledButton.styleFrom(minimumSize: const Size(88, 44)),
               )
               : null,
       // 响应式 OutlinedButton 主题
       outlinedButtonTheme:
-          isDesktopOrTv
+          isDesktop
               ? OutlinedButtonThemeData(
                 style: OutlinedButton.styleFrom(
-                  minimumSize: isTv ? const Size(120, 56) : const Size(88, 44),
-                  textStyle:
-                      isTv
-                          ? const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          )
-                          : null,
+                  minimumSize: const Size(88, 44),
                 ),
               )
               : null,
       // 响应式 TextButton 主题
       textButtonTheme:
-          isDesktopOrTv
+          isDesktop
               ? TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  minimumSize: isTv ? const Size(120, 56) : const Size(88, 44),
-                  textStyle:
-                      isTv
-                          ? const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          )
-                          : null,
-                ),
+                style: TextButton.styleFrom(minimumSize: const Size(88, 44)),
               )
               : null,
     );

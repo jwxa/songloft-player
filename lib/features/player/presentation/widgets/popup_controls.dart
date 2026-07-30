@@ -159,25 +159,21 @@ class _PlayModeOverlayPanel extends StatelessWidget {
       mobile: 44,
       tablet: 48,
       desktop: 48,
-      tv: 56,
     );
     final panelWidth = context.responsive<double>(
       mobile: 140,
       tablet: 160,
       desktop: 160,
-      tv: 200,
     );
     final iconSize = context.responsive<double>(
       mobile: 20,
       tablet: 20,
       desktop: 20,
-      tv: 24,
     );
     final fontSize = context.responsive<double>(
       mobile: 14,
       tablet: 14,
       desktop: 14,
-      tv: 16,
     );
 
     final panelHeight = PlayMode.values.length * itemHeight + 16;
@@ -282,7 +278,7 @@ class _PlayModeOverlayPanel extends StatelessWidget {
   }
 }
 
-/// 睡眠定时入口按钮：桌面/平板/TV 用按钮上方浮层；移动端用底部抽屉 BottomSheet
+/// 睡眠定时入口按钮：桌面/平板用按钮上方浮层；移动端用底部抽屉 BottomSheet
 class PopupSleepTimerControl extends StatefulWidget {
   final SleepTimerStatus? status;
 
@@ -390,14 +386,14 @@ class _PopupSleepTimerControlState extends State<PopupSleepTimerControl> {
           widget.status == null
               ? AppLocalizations.of(context).playerSleepTimer
               : AppLocalizations.of(context).playerSleepTimerWithStatus(
-                  sleepTimerStatusLabel(widget.status!),
-                ),
+                sleepTimerStatusLabel(widget.status!),
+              ),
       visualDensity: VisualDensity.compact,
     );
   }
 }
 
-/// 睡眠定时浮层（桌面/平板/TV）
+/// 睡眠定时浮层（桌面/平板）
 class _SleepTimerOverlayPanel extends StatelessWidget {
   final SleepTimerStatus? status;
   final bool isLive;
@@ -440,8 +436,10 @@ class _SleepTimerOverlayPanel extends StatelessWidget {
     final spaceBelow =
         screenSize.height - anchorPosition.dy - anchorSize.height - 16;
     final preferAbove = spaceAbove >= 240 || spaceAbove >= spaceBelow;
-    final availableHeight =
-        (preferAbove ? spaceAbove : spaceBelow).clamp(120.0, _maxPanelHeight);
+    final availableHeight = (preferAbove ? spaceAbove : spaceBelow).clamp(
+      120.0,
+      _maxPanelHeight,
+    );
 
     return Stack(
       children: [
@@ -459,9 +457,7 @@ class _SleepTimerOverlayPanel extends StatelessWidget {
           left: left,
           top: preferAbove ? null : anchorPosition.dy + anchorSize.height + 8,
           bottom:
-              preferAbove
-                  ? screenSize.height - anchorPosition.dy + 8
-                  : null,
+              preferAbove ? screenSize.height - anchorPosition.dy + 8 : null,
           child: Material(
             elevation: 8,
             borderRadius: BorderRadius.circular(12),
@@ -534,8 +530,7 @@ class SleepTimerContent extends StatelessWidget {
   // 时长档位不高亮：倒计时会让 remaining 秒级递减，与档位的稳定值不再相等；
   // 用户选完档位浮层即关闭，反馈通过顶部状态条「剩余 X:XX」给出。
   bool _isSongCountSelected(int n) =>
-      status?.mode == SleepTimerMode.afterSongs &&
-      status?.remainingSongs == n;
+      status?.mode == SleepTimerMode.afterSongs && status?.remainingSongs == n;
 
   @override
   Widget build(BuildContext context) {
@@ -553,8 +548,11 @@ class SleepTimerContent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 4, 8, 4),
             child: Row(
               children: [
-                Icon(Icons.alarm_on_rounded,
-                    size: 18, color: colorScheme.primary),
+                Icon(
+                  Icons.alarm_on_rounded,
+                  size: 18,
+                  color: colorScheme.primary,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -718,7 +716,9 @@ Future<int?> _showNumberInputDialog(
               return null;
             }
             if (v < min || v > max) {
-              setState(() => errorText = l10n.playerEnterIntegerInRange(min, max));
+              setState(
+                () => errorText = l10n.playerEnterIntegerInRange(min, max),
+              );
               return null;
             }
             return v;

@@ -130,10 +130,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> {
 
     final saved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => LyricAdjustPage(
-          song: song,
-          originalLyric: lyricText,
-        ),
+        builder: (_) => LyricAdjustPage(song: song, originalLyric: lyricText),
       ),
     );
 
@@ -150,9 +147,7 @@ class _LyricsViewState extends ConsumerState<LyricsView> {
   /// 当前歌曲是否允许（重新）抓取歌词。
   /// 本地歌曲即使后端未返回 lyricUrl 也允许——客户端可由歌曲 ID 拼接端点触发搜索。
   bool get _canRefetch {
-    final song = ref.watch(
-      playerStateProvider.select((s) => s.currentSong),
-    );
+    final song = ref.watch(playerStateProvider.select((s) => s.currentSong));
     if (song == null) return false;
     if (song.type == 'local') return true;
     final url = song.lyricUrl;
@@ -186,8 +181,12 @@ class _LyricsViewState extends ConsumerState<LyricsView> {
 
   /// 构建单行：主歌词（当前行有逐字数据时用 [KaraokeLine] 逐字高亮，否则行级高亮）
   /// + 可选翻译 / 罗马音子行。
-  Widget _buildLine(ThemeData theme, LyricLine lyric, bool isCurrent,
-      {bool plain = false}) {
+  Widget _buildLine(
+    ThemeData theme,
+    LyricLine lyric,
+    bool isCurrent, {
+    bool plain = false,
+  }) {
     final primary = theme.colorScheme.primary;
     final dim = theme.colorScheme.onSurface.withValues(alpha: 0.5);
     // 纯文本歌词无「当前行」概念，整体用较高可读性的中性色静态展示。
@@ -221,29 +220,33 @@ class _LyricsViewState extends ConsumerState<LyricsView> {
     final romaji = lyric.romaji;
     // 罗马音置于原文与译文之间，符合常见排版
     if (romaji != null) {
-      children.add(Text(
-        romaji,
-        style: TextStyle(
-          fontSize: isCurrent ? 13 : 12,
-          color: (isCurrent ? primary : dim).withValues(alpha: 0.75),
+      children.add(
+        Text(
+          romaji,
+          style: TextStyle(
+            fontSize: isCurrent ? 13 : 12,
+            color: (isCurrent ? primary : dim).withValues(alpha: 0.75),
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        textAlign: TextAlign.center,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ));
+      );
     }
     if (translation != null) {
-      children.add(Text(
-        translation,
-        style: TextStyle(
-          fontSize: isCurrent ? 14 : 13,
-          fontWeight: isCurrent ? FontWeight.w500 : FontWeight.normal,
-          color: (isCurrent ? primary : dim).withValues(alpha: 0.85),
+      children.add(
+        Text(
+          translation,
+          style: TextStyle(
+            fontSize: isCurrent ? 14 : 13,
+            fontWeight: isCurrent ? FontWeight.w500 : FontWeight.normal,
+            color: (isCurrent ? primary : dim).withValues(alpha: 0.85),
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        textAlign: TextAlign.center,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ));
+      );
     }
 
     if (children.length == 1) return main;
@@ -302,7 +305,9 @@ class _LyricsViewState extends ConsumerState<LyricsView> {
 
     // 当行索引变化时自动滚动
     final currentIndex = lyricState.currentIndex;
-    if (currentIndex != _lastScrolledIndex && !_isUserScrolling && currentIndex >= 0) {
+    if (currentIndex != _lastScrolledIndex &&
+        !_isUserScrolling &&
+        currentIndex >= 0) {
       _lastScrolledIndex = currentIndex;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && !_isUserScrolling) {
@@ -317,7 +322,8 @@ class _LyricsViewState extends ConsumerState<LyricsView> {
     // 统一行高：轨道含翻译/罗马音时为所有行预留对应行高，保持等距，滚动定位精确。
     final hasTranslations = lyrics.any((l) => l.translation != null);
     final hasRomaji = lyrics.any((l) => l.romaji != null);
-    _lineHeight = _mainRowHeight +
+    _lineHeight =
+        _mainRowHeight +
         (hasTranslations ? _translationRowHeight : 0) +
         (hasRomaji ? _romajiRowHeight : 0);
 

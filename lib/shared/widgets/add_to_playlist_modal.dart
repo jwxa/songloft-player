@@ -107,13 +107,14 @@ class _AddToPlaylistModalState extends ConsumerState<AddToPlaylistModal> {
         ResponsiveSnackBar.showError(context, message: l10n.addFailed);
       } else {
         Navigator.of(context).pop();
-        final msg = result.skipped > 0
-            ? l10n.addedToPlaylistWithSkip(
-              result.added,
-              playlist.name,
-              result.skipped,
-            )
-            : l10n.addedToPlaylist(result.added, playlist.name);
+        final msg =
+            result.skipped > 0
+                ? l10n.addedToPlaylistWithSkip(
+                  result.added,
+                  playlist.name,
+                  result.skipped,
+                )
+                : l10n.addedToPlaylist(result.added, playlist.name);
         ResponsiveSnackBar.show(context, message: msg);
       }
     } catch (e) {
@@ -193,9 +194,14 @@ class _AddToPlaylistModalState extends ConsumerState<AddToPlaylistModal> {
         if (result != null) {
           Navigator.of(context).pop();
           final l10n2 = AppLocalizations.of(context);
-          final msg = result.skipped > 0
-              ? l10n2.createdPlaylistWithSkip(name, result.added, result.skipped)
-              : l10n2.createdPlaylistAdded(name, result.added);
+          final msg =
+              result.skipped > 0
+                  ? l10n2.createdPlaylistWithSkip(
+                    name,
+                    result.added,
+                    result.skipped,
+                  )
+                  : l10n2.createdPlaylistAdded(name, result.added);
           ResponsiveSnackBar.show(context, message: msg);
         }
       } else if (mounted) {
@@ -208,7 +214,9 @@ class _AddToPlaylistModalState extends ConsumerState<AddToPlaylistModal> {
       if (mounted) {
         ResponsiveSnackBar.showError(
           context,
-          message: AppLocalizations.of(context).createPlaylistFailedDetail('$e'),
+          message: AppLocalizations.of(
+            context,
+          ).createPlaylistFailedDetail('$e'),
         );
       }
     } finally {
@@ -308,7 +316,7 @@ class _AddToPlaylistModalState extends ConsumerState<AddToPlaylistModal> {
                           return ListTile(
                             leading: CoverImage(
                               coverUrl: playlist.coverImageUrl,
-                              
+
                               size: 48,
                               placeholderIcon: Icons.playlist_play,
                             ),

@@ -40,10 +40,7 @@ class _MetadataRefreshManagerState
 
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildRemoteTitleSourceTile(theme),
-        refreshTile,
-      ],
+      children: [_buildRemoteTitleSourceTile(theme), refreshTile],
     );
   }
 
@@ -59,36 +56,38 @@ class _MetadataRefreshManagerState
       ),
       title: Text(l10n.settingsMetadataUseTagTitle),
       subtitle: Text(
-        isTag
-            ? l10n.settingsMetadataUseTagOn
-            : l10n.settingsMetadataUseTagOff,
+        isTag ? l10n.settingsMetadataUseTagOn : l10n.settingsMetadataUseTagOff,
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
       value: isTag,
-      onChanged: asyncValue.isLoading
-          ? null
-          : (value) async {
-              try {
-                await ref
-                    .read(remoteTitleSourceProvider.notifier)
-                    .setValue(value ? 'tag' : 'filename');
-                if (mounted) {
-                  ResponsiveSnackBar.show(context,
-                      message: AppLocalizations.of(context)
-                          .settingsMetadataSaved);
+      onChanged:
+          asyncValue.isLoading
+              ? null
+              : (value) async {
+                try {
+                  await ref
+                      .read(remoteTitleSourceProvider.notifier)
+                      .setValue(value ? 'tag' : 'filename');
+                  if (mounted) {
+                    ResponsiveSnackBar.show(
+                      context,
+                      message:
+                          AppLocalizations.of(context).settingsMetadataSaved,
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ResponsiveSnackBar.showError(
+                      context,
+                      message: AppLocalizations.of(
+                        context,
+                      ).settingsMetadataSaveFailed(e.toString()),
+                    );
+                  }
                 }
-              } catch (e) {
-                if (mounted) {
-                  ResponsiveSnackBar.showError(
-                    context,
-                    message: AppLocalizations.of(context)
-                        .settingsMetadataSaveFailed(e.toString()),
-                  );
-                }
-              }
-            },
+              },
     );
   }
 
@@ -110,14 +109,12 @@ class _MetadataRefreshManagerState
     );
   }
 
-  Widget _buildRunningState(
-    MetadataRefreshProgress progress,
-    ThemeData theme,
-  ) {
+  Widget _buildRunningState(MetadataRefreshProgress progress, ThemeData theme) {
     final l10n = AppLocalizations.of(context);
-    final label = progress.total > 0
-        ? '${progress.completedCount} / ${progress.total}'
-        : l10n.settingsMetadataPreparing;
+    final label =
+        progress.total > 0
+            ? '${progress.completedCount} / ${progress.total}'
+            : l10n.settingsMetadataPreparing;
     return ListTile(
       leading: SizedBox(
         width: 24,
@@ -150,21 +147,24 @@ class _MetadataRefreshManagerState
 
   Widget _buildDoneState(MetadataRefreshProgress progress, ThemeData theme) {
     final l10n = AppLocalizations.of(context);
-    final statusText = progress.status == 'cancelled'
-        ? l10n.settingsMetadataStatusCancelled
-        : progress.status == 'failed'
+    final statusText =
+        progress.status == 'cancelled'
+            ? l10n.settingsMetadataStatusCancelled
+            : progress.status == 'failed'
             ? l10n.settingsMetadataStatusFailed
             : l10n.settingsMetadataStatusDone;
-    final detail = l10n.settingsMetadataSuccess(progress.processed) +
+    final detail =
+        l10n.settingsMetadataSuccess(progress.processed) +
         (progress.failed > 0
             ? l10n.settingsMetadataFailedCount(progress.failed)
             : '');
     return ListTile(
       leading: Icon(
         progress.status == 'done' ? Icons.check_circle : Icons.info_outlined,
-        color: progress.status == 'done'
-            ? theme.colorScheme.primary
-            : theme.colorScheme.outline,
+        color:
+            progress.status == 'done'
+                ? theme.colorScheme.primary
+                : theme.colorScheme.outline,
       ),
       title: Text(l10n.settingsMetadataRefreshResult(statusText)),
       subtitle: Text(detail),

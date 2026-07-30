@@ -57,8 +57,7 @@ class _LyricAdjustPageState extends ConsumerState<LyricAdjustPage> {
   }
 
   bool get _hasChanges =>
-      _globalOffsetMs != 0 ||
-      _perLineDeltaMs.values.any((v) => v != 0);
+      _globalOffsetMs != 0 || _perLineDeltaMs.values.any((v) => v != 0);
 
   void _resetAll() {
     setState(() {
@@ -124,7 +123,11 @@ class _LyricAdjustPageState extends ConsumerState<LyricAdjustPage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).playerSaveFailedDetail('$e'))),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).playerSaveFailedDetail('$e'),
+          ),
+        ),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -136,20 +139,21 @@ class _LyricAdjustPageState extends ConsumerState<LyricAdjustPage> {
     final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.playerDiscardChangesTitle),
-        content: Text(l10n.playerDiscardChangesContent),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.playerContinueEditing),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(l10n.playerDiscardChangesTitle),
+            content: Text(l10n.playerDiscardChangesContent),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(l10n.playerContinueEditing),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(l10n.playerDiscard),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.playerDiscard),
-          ),
-        ],
-      ),
     );
     return ok ?? false;
   }
@@ -167,7 +171,10 @@ class _LyricAdjustPageState extends ConsumerState<LyricAdjustPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.playerGlobalOffset, style: theme.textTheme.titleSmall),
+                Text(
+                  l10n.playerGlobalOffset,
+                  style: theme.textTheme.titleSmall,
+                ),
                 Text(
                   '$sign$_globalOffsetMs ms',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -187,8 +194,8 @@ class _LyricAdjustPageState extends ConsumerState<LyricAdjustPage> {
               ),
               label: '$sign$_globalOffsetMs ms',
               onChanged: (v) => setState(() => _globalOffsetMs = v.round()),
-              semanticFormatterCallback: (value) =>
-                  l10n.playerLyricOffsetSemantics(value.round()),
+              semanticFormatterCallback:
+                  (value) => l10n.playerLyricOffsetSemantics(value.round()),
             ),
             Wrap(
               spacing: 8,
@@ -255,9 +262,7 @@ class _LyricAdjustPageState extends ConsumerState<LyricAdjustPage> {
                 ),
                 if (delta != 0)
                   Text(
-                    l10n.playerLineOffset(
-                      '${delta > 0 ? '+' : ''}${delta}ms',
-                    ),
+                    l10n.playerLineOffset('${delta > 0 ? '+' : ''}${delta}ms'),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.tertiary,
                     ),
@@ -314,30 +319,32 @@ class _LyricAdjustPageState extends ConsumerState<LyricAdjustPage> {
             ),
             TextButton(
               onPressed: (_saving || !_hasChanges) ? null : _save,
-              child: _saving
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.playerSave),
+              child:
+                  _saving
+                      ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : Text(l10n.playerSave),
             ),
           ],
         ),
-        body: _baseLines.isEmpty
-            ? Center(child: Text(l10n.playerNoLyricsToAdjust))
-            : Column(
-                children: [
-                  _buildGlobalOffsetCard(theme),
-                  const Divider(height: 1),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _baseLines.length,
-                      itemBuilder: (_, i) => _buildLine(i, theme),
+        body:
+            _baseLines.isEmpty
+                ? Center(child: Text(l10n.playerNoLyricsToAdjust))
+                : Column(
+                  children: [
+                    _buildGlobalOffsetCard(theme),
+                    const Divider(height: 1),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _baseLines.length,
+                        itemBuilder: (_, i) => _buildLine(i, theme),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
       ),
     );
   }

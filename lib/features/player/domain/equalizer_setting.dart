@@ -46,7 +46,16 @@ class EqualizerSetting {
   static const int bandCount = 10;
 
   static const List<int> frequencies = [
-    31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000,
+    31,
+    62,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000,
+    8000,
+    16000,
   ];
 
   static String frequencyLabel(int index) {

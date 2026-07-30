@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/theme/responsive.dart';
-import '../../core/theme/tv_theme.dart';
 import '../../l10n/app_localizations.dart';
 
 /// 导航目的地定义
@@ -51,8 +48,6 @@ class AdaptiveScaffold extends StatelessWidget {
         return _buildDesktopLayout(context);
       case ScreenType.auto_:
         return _buildAutoLayout(context);
-      case ScreenType.tv:
-        return _buildTvLayout(context);
     }
   }
 
@@ -87,9 +82,8 @@ class AdaptiveScaffold extends StatelessWidget {
       );
     }
 
-    final barSelectedIndex = currentIndex < _mobileRealSlots
-        ? currentIndex
-        : _mobileRealSlots;
+    final barSelectedIndex =
+        currentIndex < _mobileRealSlots ? currentIndex : _mobileRealSlots;
 
     return Scaffold(
       body: body,
@@ -172,9 +166,8 @@ class AdaptiveScaffold extends StatelessWidget {
     return ListTile(
       leading: IconTheme(
         data: IconThemeData(
-          color: isSelected
-              ? colorScheme.primary
-              : colorScheme.onSurfaceVariant,
+          color:
+              isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
         ),
         child: isSelected ? dest.selectedIcon : dest.icon,
       ),
@@ -187,9 +180,7 @@ class AdaptiveScaffold extends StatelessWidget {
       ),
       selected: isSelected,
       selectedTileColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onTap: () {
         Navigator.pop(sheetContext);
         onDestinationSelected(originalIndex);
@@ -296,9 +287,7 @@ class AdaptiveScaffold extends StatelessWidget {
                                       ? colorScheme.primary
                                       : colorScheme.onSurfaceVariant,
                             ),
-                            child: isSelected
-                                ? dest.selectedIcon
-                                : dest.icon,
+                            child: isSelected ? dest.selectedIcon : dest.icon,
                           ),
                           title: Text(
                             dest.label,
@@ -369,271 +358,6 @@ class AdaptiveScaffold extends StatelessWidget {
       ),
     );
   }
-
-  /// TV: 顶部 Tab 导航布局
-  Widget _buildTvLayout(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        final router = GoRouter.of(context);
-        if (router.canPop()) {
-          router.pop();
-        }
-        // 一级页面不做任何操作，防止退出应用
-      },
-      child: Scaffold(
-        body: Column(
-          children: [
-            // 顶部导航栏
-            Container(
-              height: TvTheme.navBarHeight,
-              padding: const EdgeInsets.symmetric(
-                horizontal: TvTheme.contentPadding,
-                vertical: TvTheme.spacingSmall,
-              ),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                border: Border(
-                  bottom: BorderSide(
-                    color: colorScheme.outlineVariant,
-                    width: 1,
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  // Logo 和标题
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(
-                      'assets/icons/app_icon.png',
-                      width: 40,
-                      height: 40,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    'Songloft',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: TvTheme.fontSizeTitle,
-                    ),
-                  ),
-                  const SizedBox(width: TvTheme.spacingXLarge),
-                  // 导航按钮
-                  Expanded(
-                    child: FocusTraversalGroup(
-                      policy: OrderedTraversalPolicy(),
-                      child: Row(
-                        children:
-                            destinations.asMap().entries.map((entry) {
-                              final index = entry.key;
-                              final dest = entry.value;
-                              final isSelected = index == currentIndex;
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  right: TvTheme.spacingMedium,
-                                ),
-                                child: _TvNavButton(
-                                  icon:
-                                      isSelected
-                                          ? dest.selectedIcon
-                                          : dest.icon,
-                                  label: dest.label,
-                                  isSelected: isSelected,
-                                  onPressed: () => onDestinationSelected(index),
-                                  autofocus: index == 0,
-                                ),
-                              );
-                            }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // 主内容区域
-            Expanded(
-              child: FocusTraversalGroup(
-                child: Row(
-                  children: [
-                    Expanded(child: body),
-                    if (playlistDrawer != null) playlistDrawer!,
-                  ],
-                ),
-              ),
-            ),
-            // 底部播放器
-            if (bottomPlayer != null) bottomPlayer!,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// TV 导航按钮组件
-///
-/// 支持 D-Pad 焦点导航的大尺寸导航按钮
-class _TvNavButton extends StatefulWidget {
-  final Widget icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onPressed;
-  final bool autofocus;
-
-  const _TvNavButton({
-    required this.icon,
-    required this.label,
-    required this.isSelected,
-    required this.onPressed,
-    this.autofocus = false,
-  });
-
-  @override
-  State<_TvNavButton> createState() => _TvNavButtonState();
-}
-
-class _TvNavButtonState extends State<_TvNavButton> {
-  bool _hasFocus = false;
-
-  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) {
-      return KeyEventResult.ignored;
-    }
-
-    if (event.logicalKey == LogicalKeyboardKey.enter ||
-        event.logicalKey == LogicalKeyboardKey.select ||
-        event.logicalKey == LogicalKeyboardKey.gameButtonA ||
-        event.logicalKey == LogicalKeyboardKey.space) {
-      widget.onPressed();
-      return KeyEventResult.handled;
-    }
-
-    return KeyEventResult.ignored;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Focus(
-      autofocus: widget.autofocus,
-      onKeyEvent: _handleKeyEvent,
-      onFocusChange: (hasFocus) {
-        setState(() {
-          _hasFocus = hasFocus;
-        });
-      },
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: AnimatedScale(
-          scale: _hasFocus ? TvTheme.focusScale : 1.0,
-          duration: TvTheme.focusAnimationDuration,
-          curve: Curves.easeOutCubic,
-          child: AnimatedContainer(
-            duration: TvTheme.focusAnimationDuration,
-            curve: Curves.easeOutCubic,
-            constraints: const BoxConstraints(
-              minHeight: TvTheme.tabItemMinHeight,
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: TvTheme.spacingLarge,
-              vertical: TvTheme.spacingMedium,
-            ),
-            decoration: BoxDecoration(
-              color:
-                  widget.isSelected
-                      ? colorScheme.primaryContainer.withValues(alpha: 0.3)
-                      : (_hasFocus
-                          ? colorScheme.surfaceContainerHighest
-                          : null),
-              borderRadius: BorderRadius.circular(12),
-              border:
-                  _hasFocus
-                      ? Border.all(
-                        color: colorScheme.primary,
-                        width: TvTheme.focusBorderWidth,
-                      )
-                      : null,
-              boxShadow:
-                  _hasFocus
-                      ? [
-                        BoxShadow(
-                          color: colorScheme.primary.withValues(
-                            alpha: TvTheme.focusGlowOpacity,
-                          ),
-                          blurRadius: TvTheme.focusShadowBlurRadius,
-                          spreadRadius: TvTheme.focusGlowSpreadRadius,
-                        ),
-                        BoxShadow(
-                          color: colorScheme.primary.withValues(alpha: 0.2),
-                          blurRadius: TvTheme.focusShadowBlurRadius * 2,
-                          spreadRadius: 0,
-                        ),
-                      ]
-                      : null,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconTheme(
-                      data: IconThemeData(
-                        size: 28,
-                        color:
-                            widget.isSelected || _hasFocus
-                                ? colorScheme.primary
-                                : colorScheme.onSurfaceVariant,
-                      ),
-                      child: SizedBox(
-                        width: 28,
-                        height: 28,
-                        child: widget.icon,
-                      ),
-                    ),
-                    const SizedBox(width: TvTheme.spacingSmall),
-                    Text(
-                      widget.label,
-                      style: TextStyle(
-                        fontSize: TvTheme.fontSizeButton,
-                        color:
-                            widget.isSelected || _hasFocus
-                                ? colorScheme.primary
-                                : colorScheme.onSurfaceVariant,
-                        fontWeight:
-                            widget.isSelected
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                // 选中指示条
-                AnimatedContainer(
-                  duration: TvTheme.focusAnimationDuration,
-                  height: widget.isSelected ? 3 : 0,
-                  width: 24,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(1.5),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Auto/Car 模式左侧 Dock 导航组件
@@ -686,9 +410,10 @@ class _AutoDock extends StatelessWidget {
                 final dest = destinations[index];
                 final isSelected = index == currentIndex;
                 return Material(
-                  color: isSelected
-                      ? colorScheme.secondaryContainer
-                      : Colors.transparent,
+                  color:
+                      isSelected
+                          ? colorScheme.secondaryContainer
+                          : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
@@ -701,24 +426,25 @@ class _AutoDock extends StatelessWidget {
                           IconTheme(
                             data: IconThemeData(
                               size: 26,
-                              color: isSelected
-                                  ? colorScheme.onSecondaryContainer
-                                  : colorScheme.onSurfaceVariant,
+                              color:
+                                  isSelected
+                                      ? colorScheme.onSecondaryContainer
+                                      : colorScheme.onSurfaceVariant,
                             ),
-                            child: isSelected
-                                ? dest.selectedIcon
-                                : dest.icon,
+                            child: isSelected ? dest.selectedIcon : dest.icon,
                           ),
                           const SizedBox(height: 2),
                           Text(
                             dest.label,
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: isSelected
-                                  ? colorScheme.onSecondaryContainer
-                                  : colorScheme.onSurfaceVariant,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
+                              color:
+                                  isSelected
+                                      ? colorScheme.onSecondaryContainer
+                                      : colorScheme.onSurfaceVariant,
+                              fontWeight:
+                                  isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

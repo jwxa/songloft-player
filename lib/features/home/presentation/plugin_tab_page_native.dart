@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../config/app_config.dart';
 import '../../../core/storage/secure_storage.dart';
-import '../../../core/theme/responsive.dart';
 import '../../../core/utils/webview_environment.dart';
 import '../../../core/utils/window_visibility.dart';
 import '../../../l10n/app_localizations.dart';
@@ -195,18 +194,11 @@ class _PluginTabPageState extends ConsumerState<PluginTabPage>
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        // 在任何 await 之前同步读取布局类型，避免跨 async gap 使用 context。
-        final isTv = context.screenType == ScreenType.tv;
         final controller = _webViewController;
         if (controller != null && await controller.canGoBack()) {
           await controller.goBack();
           return;
         }
-        // WebView 无更多历史：复现各布局一级页面的既有返回语义，避免 regression。
-        // TV 布局的 AdaptiveScaffold 外层刻意用 PopScope 让一级页面「不退出」，
-        // 这里对齐——TV 下不退出；其余布局（手机/车机等）与普通一级 Tab 一致，
-        // 交还系统退出应用。
-        if (isTv) return;
         await SystemNavigator.pop();
       },
       child: SafeArea(
@@ -292,10 +284,9 @@ class _PluginTabPageState extends ConsumerState<PluginTabPage>
             final reason = errorResponse.reasonPhrase;
             final detail = reason == null || reason.isEmpty ? '' : ' $reason';
             _finishLoadingWithError(
-              AppLocalizations.of(context).homePluginLoadFailedHttp(
-                status.toString(),
-                detail,
-              ),
+              AppLocalizations.of(
+                context,
+              ).homePluginLoadFailedHttp(status.toString(), detail),
             );
           }
         },
@@ -318,7 +309,8 @@ class _PluginTabPageState extends ConsumerState<PluginTabPage>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              _errorMessage ?? AppLocalizations.of(context).homePluginUnknownError,
+              _errorMessage ??
+                  AppLocalizations.of(context).homePluginUnknownError,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,

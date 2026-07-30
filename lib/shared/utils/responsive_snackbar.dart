@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// 响应式 SnackBar 辅助工具
 ///
 /// 根据屏幕类型自动调整 SnackBar 的字体大小、内边距和宽度，
-/// 确保在 TV 和大屏幕设备上具有良好的可读性。
+/// 确保在大屏幕设备上具有良好的可读性。
 class ResponsiveSnackBar {
   ResponsiveSnackBar._();
 

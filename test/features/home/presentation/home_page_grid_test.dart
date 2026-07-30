@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:songloft_flutter/config/app_config.dart';
 import 'package:songloft_flutter/features/home/domain/home_grid_config.dart';
 import 'package:songloft_flutter/features/home/presentation/home_page.dart';
 import 'package:songloft_flutter/features/home/presentation/providers/home_grid_config_provider.dart';
@@ -19,10 +18,6 @@ import 'package:songloft_flutter/l10n/app_localizations.dart';
 /// 网格几何本身的边界在 test/features/home/domain/home_grid_config_test.dart 里
 /// 单测；这里只验证「配置真的接到了 GridView 上」以及数据源三态 gating。
 void main() {
-  // 网格经 context.responsive → isTv 读取 AppConfig.isTvMode（late final），
-  // 测试环境没有原生检测流程，须先显式赋值。
-  AppConfig.isTvMode = false;
-
   setUp(() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
   });
@@ -86,9 +81,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
   }
 
-  SliverGridDelegateWithFixedCrossAxisCount firstDelegate(
-    WidgetTester tester,
-  ) {
+  SliverGridDelegateWithFixedCrossAxisCount firstDelegate(WidgetTester tester) {
     final grid = tester.widget<GridView>(find.byType(GridView).first);
     return grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
   }
@@ -276,8 +269,7 @@ class _FakePlaylistsNotifier extends PaginatedPlaylistsNotifier {
 
 /// 可分页的假上游：模拟 total 条数据，按 pageLimit 分页，记录 loadMore 调用次数。
 class _PagedNotifier extends PaginatedPlaylistsNotifier {
-  _PagedNotifier(String super.typeArg, {required this.total})
-    : _type = typeArg;
+  _PagedNotifier(String super.typeArg, {required this.total}) : _type = typeArg;
 
   final String _type;
   final int total;

@@ -63,38 +63,39 @@ class SongListTile extends StatelessWidget {
 
   Widget _buildMobileTile(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final actions = isSelectionMode
-        ? const <BrowseCardAction>[]
-        : <BrowseCardAction>[
-            if (onTap != null)
-              BrowseCardAction(
-                value: 'play',
-                icon: Icons.play_arrow,
-                label: l10n.libraryPlay,
-                onTap: onTap!,
-              ),
-            if (onEdit != null)
-              BrowseCardAction(
-                value: 'edit',
-                icon: Icons.edit,
-                label: l10n.libraryEdit,
-                onTap: onEdit!,
-              ),
-            if (onAddToPlaylist != null)
-              BrowseCardAction(
-                value: 'add_to_playlist',
-                icon: Icons.playlist_add,
-                label: l10n.addToPlaylist,
-                onTap: onAddToPlaylist!,
-              ),
-            if (onDelete != null)
-              BrowseCardAction(
-                value: 'delete',
-                icon: Icons.delete,
-                label: l10n.commonDelete,
-                onTap: onDelete!,
-              ),
-          ];
+    final actions =
+        isSelectionMode
+            ? const <BrowseCardAction>[]
+            : <BrowseCardAction>[
+              if (onTap != null)
+                BrowseCardAction(
+                  value: 'play',
+                  icon: Icons.play_arrow,
+                  label: l10n.libraryPlay,
+                  onTap: onTap!,
+                ),
+              if (onEdit != null)
+                BrowseCardAction(
+                  value: 'edit',
+                  icon: Icons.edit,
+                  label: l10n.libraryEdit,
+                  onTap: onEdit!,
+                ),
+              if (onAddToPlaylist != null)
+                BrowseCardAction(
+                  value: 'add_to_playlist',
+                  icon: Icons.playlist_add,
+                  label: l10n.addToPlaylist,
+                  onTap: onAddToPlaylist!,
+                ),
+              if (onDelete != null)
+                BrowseCardAction(
+                  value: 'delete',
+                  icon: Icons.delete,
+                  label: l10n.commonDelete,
+                  onTap: onDelete!,
+                ),
+            ];
 
     return SongTile(
       song: song,
@@ -125,14 +126,15 @@ class SongListTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isCurrentSong ? colorScheme.secondaryContainer : null,
           borderRadius: isCurrentSong ? BorderRadius.circular(12) : null,
-          border: isCurrentSong
-              ? null
-              : Border(
-                  bottom: BorderSide(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-                    width: 0.5,
+          border:
+              isCurrentSong
+                  ? null
+                  : Border(
+                    bottom: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      width: 0.5,
+                    ),
                   ),
-                ),
         ),
         child: Row(
           children: [
@@ -142,19 +144,20 @@ class SongListTile extends StatelessWidget {
             else
               SizedBox(
                 width: 40,
-                child: isCurrentSong
-                    ? Icon(
-                        Icons.equalizer_rounded,
-                        size: 20,
-                        color: colorScheme.primary,
-                      )
-                    : Text(
-                        '${index + 1}',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                child:
+                    isCurrentSong
+                        ? Icon(
+                          Icons.equalizer_rounded,
+                          size: 20,
+                          color: colorScheme.primary,
+                        )
+                        : Text(
+                          '${index + 1}',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
               ),
             const SizedBox(width: 12),
             // 封面
@@ -167,12 +170,13 @@ class SongListTile extends StatelessWidget {
                 song.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: isCurrentSong
-                    ? TextStyle(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      )
-                    : null,
+                style:
+                    isCurrentSong
+                        ? TextStyle(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        )
+                        : null,
               ),
             ),
             const SizedBox(width: 16),
@@ -180,7 +184,8 @@ class SongListTile extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(
-                song.artist ?? AppLocalizations.of(context).libraryUnknownArtist,
+                song.artist ??
+                    AppLocalizations.of(context).libraryUnknownArtist,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: colorScheme.onSurfaceVariant),
@@ -192,7 +197,8 @@ class SongListTile extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  song.album ?? AppLocalizations.of(context).libraryUnknownAlbum,
+                  song.album ??
+                      AppLocalizations.of(context).libraryUnknownAlbum,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: colorScheme.onSurfaceVariant),
@@ -315,7 +321,11 @@ class SongListTile extends StatelessWidget {
           onPressed: onTap,
         ),
         FavoriteButton(songId: song.id, songType: song.type, size: 20),
-        actionButton(icon: Icons.edit, tooltip: l10n.libraryEdit, onPressed: onEdit),
+        actionButton(
+          icon: Icons.edit,
+          tooltip: l10n.libraryEdit,
+          onPressed: onEdit,
+        ),
         actionButton(
           icon: Icons.playlist_add,
           tooltip: l10n.addToPlaylist,

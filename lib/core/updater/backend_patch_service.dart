@@ -84,8 +84,7 @@ class BackendPatchInfo {
       soUrl: soUrl,
       md5: (m['md5'] ?? '') as String,
       size: (m['size'] as num?)?.toInt() ?? 0,
-      contractHash:
-          (m['contractHash'] ?? m['contract_hash'] ?? '') as String,
+      contractHash: (m['contractHash'] ?? m['contract_hash'] ?? '') as String,
     );
   }
 }

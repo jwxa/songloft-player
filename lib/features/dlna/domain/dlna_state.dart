@@ -43,8 +43,7 @@ class DlnaState {
   }) {
     return DlnaState(
       devices: devices ?? this.devices,
-      activeDevice:
-          activeDevice != null ? activeDevice() : this.activeDevice,
+      activeDevice: activeDevice != null ? activeDevice() : this.activeDevice,
       isDiscovering: isDiscovering ?? this.isDiscovering,
       isCasting: isCasting ?? this.isCasting,
       position: position ?? this.position,

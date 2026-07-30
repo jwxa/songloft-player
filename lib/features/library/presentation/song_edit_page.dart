@@ -134,7 +134,10 @@ class _SongEditPageState extends ConsumerState<SongEditPage> {
                             widget.song!.filePath,
                           )
                         else ...[
-                          _buildReadOnlyUrlRow(l10n.libraryPlay, widget.song!.url),
+                          _buildReadOnlyUrlRow(
+                            l10n.libraryPlay,
+                            widget.song!.url,
+                          ),
                           if (widget.song!.coverUrl != null &&
                               widget.song!.coverUrl!.isNotEmpty)
                             _buildReadOnlyUrlRow(
@@ -218,9 +221,10 @@ class _SongEditPageState extends ConsumerState<SongEditPage> {
                   TextFormField(
                     controller: _urlController,
                     decoration: InputDecoration(
-                      labelText: isEditMode
-                          ? l10n.libraryEditSourceUrlLabel
-                          : l10n.libraryEditUrlLabel,
+                      labelText:
+                          isEditMode
+                              ? l10n.libraryEditSourceUrlLabel
+                              : l10n.libraryEditUrlLabel,
                       hintText: l10n.libraryEditUrlHint,
                       border: const OutlineInputBorder(),
                     ),
@@ -244,9 +248,10 @@ class _SongEditPageState extends ConsumerState<SongEditPage> {
                 TextFormField(
                   controller: _coverUrlController,
                   decoration: InputDecoration(
-                    labelText: isEditMode
-                        ? l10n.libraryEditSourceCoverUrlLabel
-                        : l10n.libraryEditCoverUrlLabel,
+                    labelText:
+                        isEditMode
+                            ? l10n.libraryEditSourceCoverUrlLabel
+                            : l10n.libraryEditCoverUrlLabel,
                     hintText: l10n.libraryEditCoverUrlHint,
                     border: const OutlineInputBorder(),
                   ),
@@ -275,9 +280,10 @@ class _SongEditPageState extends ConsumerState<SongEditPage> {
                   TextFormField(
                     controller: _lyricUrlController,
                     decoration: InputDecoration(
-                      labelText: isEditMode
-                          ? l10n.libraryEditLyricRemoteUrlLabel
-                          : l10n.libraryEditLyricUrlLabel,
+                      labelText:
+                          isEditMode
+                              ? l10n.libraryEditLyricRemoteUrlLabel
+                              : l10n.libraryEditLyricUrlLabel,
                       hintText: l10n.libraryEditLyricUrlHint,
                       border: const OutlineInputBorder(),
                     ),
@@ -301,9 +307,10 @@ class _SongEditPageState extends ConsumerState<SongEditPage> {
               // 封面预览
               Builder(
                 builder: (context) {
-                  final previewUrl = isEditMode
-                      ? (widget.song?.coverUrl ?? '')
-                      : _coverUrlController.text;
+                  final previewUrl =
+                      isEditMode
+                          ? (widget.song?.coverUrl ?? '')
+                          : _coverUrlController.text;
                   if (previewUrl.isEmpty) return const SizedBox.shrink();
                   return Column(
                     children: [
@@ -496,7 +503,8 @@ class _SongEditPageState extends ConsumerState<SongEditPage> {
         final l10n = AppLocalizations.of(context);
         ResponsiveSnackBar.show(
           context,
-          message: isEditMode ? l10n.librarySaveSuccess : l10n.libraryAddSuccess,
+          message:
+              isEditMode ? l10n.librarySaveSuccess : l10n.libraryAddSuccess,
         );
         Navigator.pop(context, true);
       }

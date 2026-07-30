@@ -46,7 +46,9 @@ void main() {
     });
 
     test('无 host 返回空串（由调用方降级为入口域名）', () {
-      final base = ServerRedirectResolver.deriveBase(Uri.parse('/api/v1/health'));
+      final base = ServerRedirectResolver.deriveBase(
+        Uri.parse('/api/v1/health'),
+      );
       expect(base, '');
     });
   });

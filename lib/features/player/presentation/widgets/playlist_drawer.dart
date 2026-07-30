@@ -198,7 +198,12 @@ class _PlaylistDrawerState extends ConsumerState<PlaylistDrawer>
           index: index,
           isCurrentSong: isCurrentSong,
           isPlaying: isPlaying,
-          onTap: () => notifier.playPlaylist(state.playlist, startIndex: index),
+          onTap:
+              () => notifier.playPlaylist(
+                state.playlist,
+                startIndex: index,
+                keepContext: true,
+              ),
           onRemove: () => _removeSong(context, notifier, index, song),
         );
       },
@@ -338,7 +343,8 @@ class _DrawerSongItem extends StatelessWidget {
                             placeholder:
                                 (_, _) => _buildCoverPlaceholder(colorScheme),
                             errorWidget:
-                                (_, _, _) => _buildCoverPlaceholder(colorScheme),
+                                (_, _, _) =>
+                                    _buildCoverPlaceholder(colorScheme),
                           ),
                         )
                       else
@@ -408,7 +414,8 @@ class _DrawerSongItem extends StatelessWidget {
                   onPressed: onRemove,
                   icon: const Icon(Icons.close_rounded),
                   iconSize: 16,
-                  tooltip: AppLocalizations.of(context).playerRemoveFromPlaylist,
+                  tooltip:
+                      AppLocalizations.of(context).playerRemoveFromPlaylist,
                   visualDensity: VisualDensity.compact,
                   style: IconButton.styleFrom(
                     foregroundColor: colorScheme.onSurfaceVariant,

@@ -47,8 +47,10 @@ void main() {
 
     test('全部行数返回 null（不截断）', () {
       expect(
-        const HomeGridConfig(columns: 5, rows: HomeGridConfig.allRows)
-            .maxItems(5),
+        const HomeGridConfig(
+          columns: 5,
+          rows: HomeGridConfig.allRows,
+        ).maxItems(5),
         isNull,
       );
     });

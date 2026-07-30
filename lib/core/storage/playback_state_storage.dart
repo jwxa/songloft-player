@@ -58,9 +58,7 @@ class PlaybackStateStorage {
       if (jsonStr == null || jsonStr.isEmpty) return [];
 
       final list = jsonDecode(jsonStr) as List<dynamic>;
-      return list
-          .map((e) => Song.fromJson(e as Map<String, dynamic>))
-          .toList();
+      return list.map((e) => Song.fromJson(e as Map<String, dynamic>)).toList();
     } catch (e) {
       debugPrint('[PlaybackStateStorage] loadQueue failed: $e');
       return [];

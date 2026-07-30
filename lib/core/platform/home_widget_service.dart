@@ -13,8 +13,7 @@ class HomeWidgetService {
   factory HomeWidgetService() => _instance;
   HomeWidgetService._();
 
-  static const String _androidWidgetName =
-      'SongloftNowPlayingWidgetProvider';
+  static const String _androidWidgetName = 'SongloftNowPlayingWidgetProvider';
   static const String _iosWidgetKind = 'SongloftNowPlayingWidget';
 
   static const String _keyTitle = 'widget_song_title';
@@ -29,8 +28,7 @@ class HomeWidgetService {
   bool _initialized = false;
   Timer? _progressTimer;
 
-  bool get _isApplicable =>
-      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  bool get _isApplicable => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   Future<void> init() async {
     if (!_isApplicable || _initialized) return;
@@ -140,13 +138,9 @@ class HomeWidgetService {
 
   Future<void> _triggerUpdate() async {
     if (Platform.isAndroid) {
-      await HomeWidget.updateWidget(
-        androidName: _androidWidgetName,
-      );
+      await HomeWidget.updateWidget(androidName: _androidWidgetName);
     } else if (Platform.isIOS) {
-      await HomeWidget.updateWidget(
-        iOSName: _iosWidgetKind,
-      );
+      await HomeWidget.updateWidget(iOSName: _iosWidgetKind);
     }
   }
 }

@@ -7,11 +7,7 @@ class LyricWord {
   final Duration end;
   final String text;
 
-  const LyricWord({
-    required this.start,
-    required this.end,
-    required this.text,
-  });
+  const LyricWord({required this.start, required this.end, required this.text});
 
   @override
   String toString() => 'LyricWord($start-$end: $text)';
@@ -49,12 +45,12 @@ class LyricLine {
   Duration? get endTime => hasWords ? words!.last.end : null;
 
   LyricLine copyWith({String? translation, String? romaji}) => LyricLine(
-        time: time,
-        text: text,
-        words: words,
-        translation: translation ?? this.translation,
-        romaji: romaji ?? this.romaji,
-      );
+    time: time,
+    text: text,
+    words: words,
+    translation: translation ?? this.translation,
+    romaji: romaji ?? this.romaji,
+  );
 
   @override
   String toString() => 'LyricLine(time: $time, text: $text)';
@@ -135,15 +131,17 @@ class LyricParser {
   }
 
   /// 行首（单括号）时间标签，锚定行首，天然不会误匹配逐字用的 `[[...]]`。
-  static final RegExp _lineTimeRegex =
-      RegExp(r'^\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]');
+  static final RegExp _lineTimeRegex = RegExp(
+    r'^\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]',
+  );
 
   /// 洛雪相对偏移逐字标记：`<起始ms,持续ms>` + 其后文本（到下一个 `<` 为止）。
   static final RegExp _lxWordRegex = RegExp(r'<(\d+),(\d+)>([^<]*)');
 
   /// 绝对时间戳逐字标记：`[[mm:ss.xx]]` + 其后文本（到下一个 `[` 为止）。
-  static final RegExp _absWordRegex =
-      RegExp(r'\[\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]\]([^\[]*)');
+  static final RegExp _absWordRegex = RegExp(
+    r'\[\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]\]([^\[]*)',
+  );
 
   /// 判断一段歌词文本是否包含逐字标记（洛雪相对或绝对双括号）。
   ///
@@ -186,11 +184,13 @@ class LyricParser {
       }
 
       if (words != null && words.isNotEmpty) {
-        lyrics.add(LyricLine(
-          time: lineTime ?? words.first.start,
-          text: words.map((w) => w.text).join(),
-          words: words,
-        ));
+        lyrics.add(
+          LyricLine(
+            time: lineTime ?? words.first.start,
+            text: words.map((w) => w.text).join(),
+            words: words,
+          ),
+        );
       } else if (ltMatch != null) {
         // 有行首时间但无逐字标记 → 普通行
         lyrics.add(LyricLine(time: lineTime!, text: body.trim()));
@@ -207,9 +207,10 @@ class LyricParser {
       if (ws == null || ws.isEmpty) continue;
       final last = ws.last;
       if (last.end > last.start) continue; // 已有有效 end（洛雪格式或已补齐）
-      final fallbackEnd = i + 1 < lyrics.length
-          ? lyrics[i + 1].time
-          : last.start + const Duration(seconds: 4);
+      final fallbackEnd =
+          i + 1 < lyrics.length
+              ? lyrics[i + 1].time
+              : last.start + const Duration(seconds: 4);
       ws[ws.length - 1] = LyricWord(
         start: last.start,
         end: fallbackEnd > last.start ? fallbackEnd : last.start,
@@ -229,11 +230,13 @@ class LyricParser {
       final text = m.group(3) ?? '';
       if (text.isEmpty) continue;
       final start = lineTime + Duration(milliseconds: off);
-      words.add(LyricWord(
-        start: start,
-        end: start + Duration(milliseconds: dur),
-        text: text,
-      ));
+      words.add(
+        LyricWord(
+          start: start,
+          end: start + Duration(milliseconds: dur),
+          text: text,
+        ),
+      );
     }
     return words;
   }
@@ -254,12 +257,14 @@ class LyricParser {
     final words = <LyricWord>[];
     for (var i = 0; i < starts.length; i++) {
       final isLast = i == starts.length - 1;
-      words.add(LyricWord(
-        start: starts[i],
-        // 非末字 end 取下一字 start；末字暂置为 start，跨行阶段补齐
-        end: isLast ? starts[i] : starts[i + 1],
-        text: texts[i],
-      ));
+      words.add(
+        LyricWord(
+          start: starts[i],
+          // 非末字 end 取下一字 start；末字暂置为 start，跨行阶段补齐
+          end: isLast ? starts[i] : starts[i + 1],
+          text: texts[i],
+        ),
+      );
     }
     return words;
   }
@@ -273,12 +278,14 @@ class LyricParser {
     String? rlyric,
     Duration tolerance = const Duration(milliseconds: 600),
   }) {
-    final tLines = (tlyric != null && tlyric.trim().isNotEmpty)
-        ? parse(tlyric)
-        : const <LyricLine>[];
-    final rLines = (rlyric != null && rlyric.trim().isNotEmpty)
-        ? parse(rlyric)
-        : const <LyricLine>[];
+    final tLines =
+        (tlyric != null && tlyric.trim().isNotEmpty)
+            ? parse(tlyric)
+            : const <LyricLine>[];
+    final rLines =
+        (rlyric != null && rlyric.trim().isNotEmpty)
+            ? parse(rlyric)
+            : const <LyricLine>[];
     if (tLines.isEmpty && rLines.isEmpty) return base;
 
     String? nearest(List<LyricLine> lines, Duration t) {
@@ -346,16 +353,17 @@ class LyricParser {
         LyricLine(
           time: clamp(l.time + offset),
           text: l.text,
-          words: l.words == null
-              ? null
-              : [
-                  for (final w in l.words!)
-                    LyricWord(
-                      start: clamp(w.start + offset),
-                      end: clamp(w.end + offset),
-                      text: w.text,
-                    ),
-                ],
+          words:
+              l.words == null
+                  ? null
+                  : [
+                    for (final w in l.words!)
+                      LyricWord(
+                        start: clamp(w.start + offset),
+                        end: clamp(w.end + offset),
+                        text: w.text,
+                      ),
+                  ],
           translation: l.translation,
           romaji: l.romaji,
         ),

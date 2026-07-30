@@ -96,10 +96,7 @@ class SettingsMasterDetail extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            category.title,
-                            style: textTheme.bodyLarge,
-                          ),
+                          Text(category.title, style: textTheme.bodyLarge),
                           const SizedBox(height: 2),
                           Text(
                             category.subtitle,
@@ -160,9 +157,10 @@ class SettingsMasterDetail extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                 child: Material(
-                  color: isSelected
-                      ? colorScheme.secondaryContainer
-                      : Colors.transparent,
+                  color:
+                      isSelected
+                          ? colorScheme.secondaryContainer
+                          : Colors.transparent,
                   borderRadius: AppRadius.mdAll,
                   child: InkWell(
                     borderRadius: AppRadius.mdAll,
@@ -178,18 +176,20 @@ class SettingsMasterDetail extends StatelessWidget {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: isSelected
-                                  ? colorScheme.onSecondaryContainer
-                                      .withValues(alpha: 0.12)
-                                  : colorScheme.surfaceContainerHigh,
+                              color:
+                                  isSelected
+                                      ? colorScheme.onSecondaryContainer
+                                          .withValues(alpha: 0.12)
+                                      : colorScheme.surfaceContainerHigh,
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               category.icon,
                               size: 20,
-                              color: isSelected
-                                  ? colorScheme.onSecondaryContainer
-                                  : colorScheme.onSurfaceVariant,
+                              color:
+                                  isSelected
+                                      ? colorScheme.onSecondaryContainer
+                                      : colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(width: AppSpacing.sm + 4),
@@ -200,21 +200,22 @@ class SettingsMasterDetail extends StatelessWidget {
                                 Text(
                                   category.title,
                                   style: textTheme.bodyMedium?.copyWith(
-                                    fontWeight: isSelected
-                                        ? FontWeight.w600
-                                        : null,
-                                    color: isSelected
-                                        ? colorScheme.onSecondaryContainer
-                                        : null,
+                                    fontWeight:
+                                        isSelected ? FontWeight.w600 : null,
+                                    color:
+                                        isSelected
+                                            ? colorScheme.onSecondaryContainer
+                                            : null,
                                   ),
                                 ),
                                 Text(
                                   category.subtitle,
                                   style: textTheme.bodySmall?.copyWith(
-                                    color: isSelected
-                                        ? colorScheme.onSecondaryContainer
-                                            .withValues(alpha: 0.7)
-                                        : colorScheme.onSurfaceVariant,
+                                    color:
+                                        isSelected
+                                            ? colorScheme.onSecondaryContainer
+                                                .withValues(alpha: 0.7)
+                                            : colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],

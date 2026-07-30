@@ -22,24 +22,25 @@ class PluginIcon extends StatelessWidget {
       final isSvg = url.toLowerCase().endsWith('.svg');
       return ClipRRect(
         borderRadius: BorderRadius.circular(size / 5),
-        child: isSvg
-            ? SvgPicture.network(
-                url,
-                width: size,
-                height: size,
-                fit: BoxFit.contain,
-                placeholderBuilder: (_) => _buildFallback(),
-                errorBuilder: (_, _, _) => _buildFallback(),
-              )
-            : ExcludeSemantics(
-              child: Image.network(
+        child:
+            isSvg
+                ? SvgPicture.network(
                   url,
                   width: size,
                   height: size,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
+                  placeholderBuilder: (_) => _buildFallback(),
                   errorBuilder: (_, _, _) => _buildFallback(),
+                )
+                : ExcludeSemantics(
+                  child: Image.network(
+                    url,
+                    width: size,
+                    height: size,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => _buildFallback(),
+                  ),
                 ),
-              ),
       );
     }
     return _buildFallback();
@@ -85,24 +86,25 @@ class PluginNavIcon extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: isSvg
-          ? SvgPicture.network(
-              url,
-              width: size,
-              height: size,
-              fit: BoxFit.contain,
-              placeholderBuilder: (_) => fallbackIcon,
-              errorBuilder: (_, _, _) => fallbackIcon,
-            )
-          : ExcludeSemantics(
-            child: Image.network(
+      child:
+          isSvg
+              ? SvgPicture.network(
                 url,
                 width: size,
                 height: size,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
+                placeholderBuilder: (_) => fallbackIcon,
                 errorBuilder: (_, _, _) => fallbackIcon,
+              )
+              : ExcludeSemantics(
+                child: Image.network(
+                  url,
+                  width: size,
+                  height: size,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => fallbackIcon,
+                ),
               ),
-            ),
     );
   }
 }

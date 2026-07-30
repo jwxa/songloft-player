@@ -44,9 +44,7 @@ class ServersPage extends ConsumerWidget {
         error: (e, _) => Center(child: Text(l10n.commonLoadFailedDetail('$e'))),
         data: (servers) {
           const showLocalMode = !kIsWeb && AppConfig.hasEmbeddedBackend;
-          const localModeCard = showLocalMode
-              ? _LocalModeCard()
-              : null;
+          const localModeCard = showLocalMode ? _LocalModeCard() : null;
 
           if (servers.isEmpty) {
             return ListView(
@@ -99,7 +97,9 @@ class ServersPage extends ConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 96),
                   itemCount: servers.length,
                   onReorderItem: (oldIndex, newIndex) {
-                    ref.read(serversProvider.notifier).reorder(oldIndex, newIndex);
+                    ref
+                        .read(serversProvider.notifier)
+                        .reorder(oldIndex, newIndex);
                   },
                   itemBuilder: (context, index) {
                     final entry = servers[index];
@@ -112,9 +112,11 @@ class ServersPage extends ConsumerWidget {
                       isCurrent: isCurrent,
                       status: status,
                       onEdit: () => _showEditDialog(context, ref, entry),
-                      onDelete: () => _confirmDelete(context, ref, entry, isCurrent),
+                      onDelete:
+                          () => _confirmDelete(context, ref, entry, isCurrent),
                       onTest: () => _probeOne(context, ref, entry),
-                      onSwitchTo: () => _switchTo(context, ref, entry, isCurrent),
+                      onSwitchTo:
+                          () => _switchTo(context, ref, entry, isCurrent),
                     );
                   },
                 ),
@@ -123,11 +125,14 @@ class ServersPage extends ConsumerWidget {
           );
         },
       ),
-      floatingActionButton: isLocal ? null : FloatingActionButton(
-        onPressed: () => _showEditDialog(context, ref, null),
-        tooltip: l10n.settingsServersAdd,
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton:
+          isLocal
+              ? null
+              : FloatingActionButton(
+                onPressed: () => _showEditDialog(context, ref, null),
+                tooltip: l10n.settingsServersAdd,
+                child: const Icon(Icons.add),
+              ),
     );
   }
 
@@ -159,78 +164,81 @@ class ServersPage extends ConsumerWidget {
 
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(existing == null
-            ? l10n.settingsServersAdd
-            : l10n.settingsServersEditTitle),
-        content: Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsServersNameLabel,
-                    hintText: l10n.settingsServersNameHint,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: urlController,
-                  keyboardType: TextInputType.url,
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsServersUrlLabel,
-                    hintText: 'http://192.168.1.10:58091',
-                    border: const OutlineInputBorder(),
-                  ),
-                  validator: (v) {
-                    try {
-                      ServerEntry.normalizeUrl(v ?? '');
-                      return null;
-                    } on FormatException catch (e) {
-                      return e.message;
-                    }
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsServersUsername,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: l10n.settingsServersPassword,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-              ],
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(
+              existing == null
+                  ? l10n.settingsServersAdd
+                  : l10n.settingsServersEditTitle,
             ),
+            content: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: l10n.settingsServersNameLabel,
+                        hintText: l10n.settingsServersNameHint,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: urlController,
+                      keyboardType: TextInputType.url,
+                      decoration: InputDecoration(
+                        labelText: l10n.settingsServersUrlLabel,
+                        hintText: 'http://192.168.1.10:58091',
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (v) {
+                        try {
+                          ServerEntry.normalizeUrl(v ?? '');
+                          return null;
+                        } on FormatException catch (e) {
+                          return e.message;
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                        labelText: l10n.settingsServersUsername,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.settingsServersPassword,
+                        border: const OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.commonCancel),
+              ),
+              FilledButton(
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.pop(ctx, true);
+                  }
+                },
+                child: Text(l10n.settingsServersSave),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.pop(ctx, true);
-              }
-            },
-            child: Text(l10n.settingsServersSave),
-          ),
-        ],
-      ),
     );
 
     if (ok != true) return;
@@ -238,10 +246,12 @@ class ServersPage extends ConsumerWidget {
     try {
       final url = ServerEntry.normalizeUrl(urlController.text);
       final name = nameController.text.trim();
-      final username = usernameController.text.trim().isEmpty
-          ? null : usernameController.text.trim();
-      final password = passwordController.text.isEmpty
-          ? null : passwordController.text;
+      final username =
+          usernameController.text.trim().isEmpty
+              ? null
+              : usernameController.text.trim();
+      final password =
+          passwordController.text.isEmpty ? null : passwordController.text;
       final notifier = ref.read(serversProvider.notifier);
       if (existing == null) {
         await notifier.add(
@@ -254,16 +264,21 @@ class ServersPage extends ConsumerWidget {
           ),
         );
       } else {
-        await notifier.editEntry(existing.copyWith(
-          name: name,
-          url: url,
-          usernameOverride: () => username,
-          passwordOverride: () => password,
-        ));
+        await notifier.editEntry(
+          existing.copyWith(
+            name: name,
+            url: url,
+            usernameOverride: () => username,
+            passwordOverride: () => password,
+          ),
+        );
       }
     } catch (e) {
       if (context.mounted) {
-        ResponsiveSnackBar.showError(context, message: l10n.settingsServersSaveFailed('$e'));
+        ResponsiveSnackBar.showError(
+          context,
+          message: l10n.settingsServersSaveFailed('$e'),
+        );
       }
     }
   }
@@ -277,27 +292,28 @@ class ServersPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.settingsServersDeleteTitle),
-        content: Text(
-          isCurrent
-              ? l10n.settingsServersDeleteCurrentConfirm
-              : l10n.settingsServersDeleteConfirm(entry.displayName),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(l10n.settingsServersDeleteTitle),
+            content: Text(
+              isCurrent
+                  ? l10n.settingsServersDeleteCurrentConfirm
+                  : l10n.settingsServersDeleteConfirm(entry.displayName),
             ),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.commonDelete),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l10n.commonCancel),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l10n.commonDelete),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     if (ok != true) return;
     await ref.read(serversProvider.notifier).remove(entry.id);
@@ -315,9 +331,10 @@ class ServersPage extends ConsumerWidget {
     if (context.mounted) {
       ResponsiveSnackBar.show(
         context,
-        message: result.ok
-            ? l10n.settingsServersReachable(entry.displayName)
-            : l10n.settingsServersUnreachable(entry.displayName),
+        message:
+            result.ok
+                ? l10n.settingsServersReachable(entry.displayName)
+                : l10n.settingsServersUnreachable(entry.displayName),
       );
     }
   }
@@ -350,7 +367,10 @@ class ServersPage extends ConsumerWidget {
   ) async {
     final l10n = AppLocalizations.of(context);
     if (isCurrent) {
-      ResponsiveSnackBar.show(context, message: l10n.settingsServersAlreadyCurrent);
+      ResponsiveSnackBar.show(
+        context,
+        message: l10n.settingsServersAlreadyCurrent,
+      );
       return;
     }
     await applyServerSelection(ref, entry);
@@ -433,15 +453,25 @@ class _ServerTile extends StatelessWidget {
                   onSwitchTo();
               }
             },
-            itemBuilder: (_) => [
-              PopupMenuItem(value: 'switch', child: Text(l10n.settingsServersSwitchTo)),
-              PopupMenuItem(value: 'test', child: Text(l10n.settingsServersTestConnection)),
-              PopupMenuItem(value: 'edit', child: Text(l10n.settingsServersEditAction)),
-              PopupMenuItem(
-                value: 'delete',
-                child: Text(l10n.commonDelete),
-              ),
-            ],
+            itemBuilder:
+                (_) => [
+                  PopupMenuItem(
+                    value: 'switch',
+                    child: Text(l10n.settingsServersSwitchTo),
+                  ),
+                  PopupMenuItem(
+                    value: 'test',
+                    child: Text(l10n.settingsServersTestConnection),
+                  ),
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Text(l10n.settingsServersEditAction),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text(l10n.commonDelete),
+                  ),
+                ],
           ),
           ReorderableDragStartListener(
             index: index,
@@ -522,9 +552,8 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
                 ),
                 Switch(
                   value: isLocal,
-                  onChanged: _isSwitching
-                      ? null
-                      : (value) => _handleToggle(value),
+                  onChanged:
+                      _isSwitching ? null : (value) => _handleToggle(value),
                 ),
               ],
             ),
@@ -532,8 +561,8 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
             Text(
               l10n.settingsServersLocalModeDesc,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             if (_isSwitching) ...[
               const SizedBox(height: 8),
@@ -556,11 +585,14 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
                         const SizedBox(height: 4),
                         Text(
                           musicDir ?? l10n.settingsServersNotSelected,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: musicDir != null
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color:
+                                musicDir != null
                                     ? colorScheme.onSurface
                                     : colorScheme.error,
-                              ),
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -582,8 +614,8 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
                 Text(
                   l10n.settingsServersFixedMusicDirHint,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ],
@@ -603,8 +635,12 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
       }
     } catch (e) {
       if (mounted) {
-        ResponsiveSnackBar.showError(context,
-            message: AppLocalizations.of(context).settingsServersSwitchFailed('$e'));
+        ResponsiveSnackBar.showError(
+          context,
+          message: AppLocalizations.of(
+            context,
+          ).settingsServersSwitchFailed('$e'),
+        );
       }
     } finally {
       if (mounted) {
@@ -649,19 +685,22 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
     dio.close();
 
     // 尝试恢复本地 session
-    final restored = await storage.restoreWallet(SecureStorageService.localWalletKey);
+    final restored = await storage.restoreWallet(
+      SecureStorageService.localWalletKey,
+    );
     if (restored && !await storage.isAccessTokenExpired()) {
       ref.read(authStateProvider.notifier).setAuthenticated();
     } else {
-      await ref.read(authStateProvider.notifier).login(
-        username: 'admin',
-        password: 'admin',
-      );
+      await ref
+          .read(authStateProvider.notifier)
+          .login(username: 'admin', password: 'admin');
     }
 
     if (mounted) {
-      ResponsiveSnackBar.show(context,
-          message: AppLocalizations.of(context).settingsServersSwitchedLocal);
+      ResponsiveSnackBar.show(
+        context,
+        message: AppLocalizations.of(context).settingsServersSwitchedLocal,
+      );
     }
   }
 
@@ -678,7 +717,9 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
     if (servers.isNotEmpty) {
       final target = servers.first;
       ref.read(baseUrlProvider.notifier).set(target.url);
-      final restored = await storage.restoreWallet(SecureStorageService.walletKey(target.url));
+      final restored = await storage.restoreWallet(
+        SecureStorageService.walletKey(target.url),
+      );
       if (restored && !await storage.isAccessTokenExpired()) {
         ref.read(authStateProvider.notifier).setAuthenticated();
         return;
@@ -695,8 +736,10 @@ class _LocalModeCardState extends ConsumerState<_LocalModeCard> {
     if (result != null) {
       await ref.read(localMusicDirProvider.notifier).set(result);
       if (mounted) {
-        ResponsiveSnackBar.show(context,
-            message: AppLocalizations.of(context).settingsServersMusicDirUpdated);
+        ResponsiveSnackBar.show(
+          context,
+          message: AppLocalizations.of(context).settingsServersMusicDirUpdated,
+        );
       }
     }
   }

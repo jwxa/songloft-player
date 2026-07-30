@@ -158,9 +158,7 @@ class PatchUpdateDialog extends ConsumerStatefulWidget {
       }
       if (backendPatch != null &&
           backendPatch.patchLabel == prefs.getIgnoredBackendPatchVersion()) {
-        debugPrint(
-          '[Updater] maybeShow: 后端补丁 ${backendPatch.patchLabel} 已被忽略',
-        );
+        debugPrint('[Updater] maybeShow: 后端补丁 ${backendPatch.patchLabel} 已被忽略');
         backendPatch = null;
       }
     }

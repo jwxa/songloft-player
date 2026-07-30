@@ -117,8 +117,9 @@ mixin PlaylistCoverEditMixin<T extends StatefulWidget> on State<T> {
           imageUrl: UrlHelper.buildCoverUrl(previewUrl),
           fit: BoxFit.cover,
           placeholder:
-              (context, url) =>
-                  const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              (context, url) => const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
           errorWidget:
               (context, url, error) => buildCoverPlaceholder(colorScheme),
         ),

@@ -91,10 +91,8 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
     final position = widget.scrollController.position;
     if (position.maxScrollExtent <= 0) return 0.0;
 
-    final songOffset =
-        math.max(0.0, position.pixels - widget.headerExtent);
-    final totalSongExtent =
-        widget.totalItemCount * widget.estimatedItemHeight;
+    final songOffset = math.max(0.0, position.pixels - widget.headerExtent);
+    final totalSongExtent = widget.totalItemCount * widget.estimatedItemHeight;
     if (totalSongExtent <= 0) return 0.0;
     return (songOffset / totalSongExtent).clamp(0.0, 1.0);
   }
@@ -110,16 +108,16 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
   }
 
   int _indexFromFraction(double fraction) {
-    return (fraction * widget.totalItemCount)
-        .round()
-        .clamp(0, widget.totalItemCount);
+    return (fraction * widget.totalItemCount).round().clamp(
+      0,
+      widget.totalItemCount,
+    );
   }
 
   double _thumbHeight(double trackHeight) {
     if (widget.totalItemCount <= 0) return _thumbMinHeight;
     if (!widget.scrollController.hasClients) return _thumbMinHeight;
-    final viewportHeight =
-        widget.scrollController.position.viewportDimension;
+    final viewportHeight = widget.scrollController.position.viewportDimension;
     final visibleItems = viewportHeight / widget.estimatedItemHeight;
     final fraction = visibleItems / widget.totalItemCount;
     return math.max(_thumbMinHeight, trackHeight * fraction);
@@ -138,8 +136,9 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
     final scrollableTrack = trackHeight - thumbH;
     if (scrollableTrack <= 0) return;
 
-    final newFraction =
-        (_dragThumbFraction + details.delta.dy / scrollableTrack).clamp(0.0, 1.0);
+    final newFraction = (_dragThumbFraction +
+            details.delta.dy / scrollableTrack)
+        .clamp(0.0, 1.0);
     setState(() => _dragThumbFraction = newFraction);
 
     _scrollToFraction(newFraction, jump: true);
@@ -174,7 +173,7 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
 
     final targetOffset =
         fraction * widget.totalItemCount * widget.estimatedItemHeight +
-            widget.headerExtent;
+        widget.headerExtent;
 
     if (targetOffset <= position.maxScrollExtent) {
       if (jump) {
@@ -202,8 +201,7 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
       if (widget.scrollController.hasClients) {
-        final maxExtent =
-            widget.scrollController.position.maxScrollExtent;
+        final maxExtent = widget.scrollController.position.maxScrollExtent;
         widget.scrollController.animateTo(
           math.min(targetOffset, maxExtent),
           duration: const Duration(milliseconds: 200),
@@ -250,11 +248,11 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
 
     final fraction = _isDragging ? _dragThumbFraction : _scrollFraction();
     final thumbTop =
-        _trackVerticalPadding + (scrollableTrack * fraction).clamp(0.0, scrollableTrack);
+        _trackVerticalPadding +
+        (scrollableTrack * fraction).clamp(0.0, scrollableTrack);
 
-    final displayIndex = _isDragging
-        ? _indexFromFraction(_dragThumbFraction)
-        : _currentIndex();
+    final displayIndex =
+        _isDragging ? _indexFromFraction(_dragThumbFraction) : _currentIndex();
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -289,9 +287,10 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
               height: thumbH,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: _isDragging
-                      ? colorScheme.primary.withValues(alpha: 0.8)
-                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                  color:
+                      _isDragging
+                          ? colorScheme.primary.withValues(alpha: 0.8)
+                          : colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   borderRadius: AppRadius.smAll,
                 ),
               ),
@@ -327,9 +326,9 @@ class _DraggableScrollbarOverlayState extends State<DraggableScrollbarOverlay> {
         ),
         child: Text(
           text,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: colorScheme.onInverseSurface,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(color: colorScheme.onInverseSurface),
         ),
       ),
     );

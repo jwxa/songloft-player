@@ -34,16 +34,18 @@ class BrowseCollectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = layout == BrowseCardLayout.grid
-        ? _buildGrid(context)
-        : _buildList(context);
+    final content =
+        layout == BrowseCardLayout.grid
+            ? _buildGrid(context)
+            : _buildList(context);
 
     final centered = Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1200),
-        child: onRefresh != null
-            ? RefreshIndicator(onRefresh: onRefresh!, child: content)
-            : content,
+        child:
+            onRefresh != null
+                ? RefreshIndicator(onRefresh: onRefresh!, child: content)
+                : content,
       ),
     );
 
@@ -55,7 +57,6 @@ class BrowseCollectionView extends StatelessWidget {
     mobile: AppSpacing.md,
     tablet: AppSpacing.lg,
     desktop: AppSpacing.xl,
-    tv: AppSpacing.xxl,
   );
 
   Widget _buildGrid(BuildContext context) {
@@ -63,7 +64,6 @@ class BrowseCollectionView extends StatelessWidget {
       mobile: 2,
       tablet: 3,
       desktop: 4,
-      tv: 5,
     );
     final hp = _horizontalPadding(context);
     return GridView.builder(
@@ -110,6 +110,9 @@ class BrowseCollectionView extends StatelessWidget {
   }
 
   Widget _loadingCell() => const Center(
-    child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()),
+    child: Padding(
+      padding: EdgeInsets.all(16),
+      child: CircularProgressIndicator(),
+    ),
   );
 }

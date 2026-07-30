@@ -9,11 +9,7 @@ class DirEntry {
   final String path;
   final bool hasChildren;
 
-  DirEntry({
-    required this.name,
-    required this.path,
-    required this.hasChildren,
-  });
+  DirEntry({required this.name, required this.path, required this.hasChildren});
 
   factory DirEntry.fromJson(Map<String, dynamic> json) {
     return DirEntry(
@@ -29,13 +25,11 @@ class DirectoryListResult {
   final List<DirEntry> directories;
   final String root;
 
-  DirectoryListResult({
-    required this.directories,
-    required this.root,
-  });
+  DirectoryListResult({required this.directories, required this.root});
 
   factory DirectoryListResult.fromJson(Map<String, dynamic> json) {
-    final dirs = (json['directories'] as List<dynamic>?)
+    final dirs =
+        (json['directories'] as List<dynamic>?)
             ?.map((e) => DirEntry.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];
@@ -86,7 +80,8 @@ class DirectoryApi {
         queryParameters: queryParams,
       );
       return DirectoryListResult.fromJson(
-          response.data as Map<String, dynamic>);
+        response.data as Map<String, dynamic>,
+      );
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
     }
@@ -96,8 +91,7 @@ class DirectoryApi {
   /// GET /api/v1/scan/dir-names
   Future<List<String>> getDirNames() async {
     try {
-      final response =
-          await dio.get('${AppConfig.apiPrefix}/scan/dir-names');
+      final response = await dio.get('${AppConfig.apiPrefix}/scan/dir-names');
       final names = response.data['names'] as List<dynamic>?;
       return names?.map((e) => e as String).toList() ?? [];
     } on DioException catch (e) {
@@ -109,8 +103,7 @@ class DirectoryApi {
   /// POST /api/v1/songs/clean
   Future<CleanResult> cleanInvalidSongs() async {
     try {
-      final response =
-          await dio.post('${AppConfig.apiPrefix}/songs/clean');
+      final response = await dio.post('${AppConfig.apiPrefix}/songs/clean');
       return CleanResult.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);

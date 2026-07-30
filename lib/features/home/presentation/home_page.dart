@@ -164,94 +164,95 @@ class _HomePageState extends ConsumerState<HomePage> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1200),
         child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: AppSpacing.md),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: AppSpacing.md),
 
-        // 我的歌单区域
-        if (normalPlaylists.isNotEmpty || normalFailed) ...[
-          SectionHeader(
-            title: l10n.homeMyPlaylists,
-            actionText: l10n.homeViewAll,
-            // 跳转到曲库的「全部歌单」视图；即使该视图在自定义配置里被隐藏也能到达。
-            onAction: () => context.go('${AppRoutes.library}?view=playlist'),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (normalFailed && normalPlaylists.isEmpty)
-            _SectionLoadError(
-              onRetry: () => ref.invalidate(playlistListProvider('normal')),
-            )
-          else if (isWide)
-            _PlaylistGrid(
-              playlists: normalPlaylists,
-              currentPlaylistId: currentPlaylistId,
-              isPlaying: isPlaying,
-            )
-          else
-            PlaylistCarousel(
-              playlists: normalPlaylists,
-              currentPlaylistId: currentPlaylistId,
-              isPlaying: isPlaying,
-              onPlaylistTap: (playlist) {
-                context.push('/playlists/${playlist.id}');
-              },
+            // 我的歌单区域
+            if (normalPlaylists.isNotEmpty || normalFailed) ...[
+              SectionHeader(
+                title: l10n.homeMyPlaylists,
+                actionText: l10n.homeViewAll,
+                // 跳转到曲库的「全部歌单」视图；即使该视图在自定义配置里被隐藏也能到达。
+                onAction:
+                    () => context.go('${AppRoutes.library}?view=playlist'),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (normalFailed && normalPlaylists.isEmpty)
+                _SectionLoadError(
+                  onRetry: () => ref.invalidate(playlistListProvider('normal')),
+                )
+              else if (isWide)
+                _PlaylistGrid(
+                  playlists: normalPlaylists,
+                  currentPlaylistId: currentPlaylistId,
+                  isPlaying: isPlaying,
+                )
+              else
+                PlaylistCarousel(
+                  playlists: normalPlaylists,
+                  currentPlaylistId: currentPlaylistId,
+                  isPlaying: isPlaying,
+                  onPlaylistTap: (playlist) {
+                    context.push('/playlists/${playlist.id}');
+                  },
+                ),
+              SizedBox(height: isWide ? AppSpacing.xl : AppSpacing.lg),
+            ],
+
+            // 电台歌单区域
+            if (radioPlaylists.isNotEmpty || radioFailed) ...[
+              SectionHeader(
+                title: l10n.homeMyRadios,
+                icon: Icons.radio_rounded,
+                actionText: l10n.homeViewAll,
+                // 跳转到曲库的「电台歌单」视图；网格按行数截断后用户需要这个出口。
+                // 即使该视图在自定义配置里被隐藏也能到达（_applyInitialViewKey 会强制选中）。
+                onAction:
+                    () =>
+                        context.go('${AppRoutes.library}?view=playlist_radio'),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (radioFailed && radioPlaylists.isEmpty)
+                _SectionLoadError(
+                  onRetry: () => ref.invalidate(playlistListProvider('radio')),
+                )
+              else if (isWide)
+                _PlaylistGrid(
+                  playlists: radioPlaylists,
+                  currentPlaylistId: currentPlaylistId,
+                  isPlaying: isPlaying,
+                )
+              else
+                PlaylistCarousel(
+                  playlists: radioPlaylists,
+                  currentPlaylistId: currentPlaylistId,
+                  isPlaying: isPlaying,
+                  onPlaylistTap: (playlist) {
+                    context.push('/playlists/${playlist.id}');
+                  },
+                ),
+              SizedBox(height: isWide ? AppSpacing.xl : AppSpacing.lg),
+            ],
+
+            // JS 插件入口区域
+            const JSPluginGrid(),
+            const SizedBox(height: AppSpacing.lg),
+
+            // 统计信息条
+            StatsStrip(
+              normalCount: normalTotalCount,
+              radioCount: radioTotalCount,
             ),
-          SizedBox(height: isWide ? AppSpacing.xl : AppSpacing.lg),
-        ],
+            const SizedBox(height: AppSpacing.lg),
 
-        // 电台歌单区域
-        if (radioPlaylists.isNotEmpty || radioFailed) ...[
-          SectionHeader(
-            title: l10n.homeMyRadios,
-            icon: Icons.radio_rounded,
-            actionText: l10n.homeViewAll,
-            // 跳转到曲库的「电台歌单」视图；网格按行数截断后用户需要这个出口。
-            // 即使该视图在自定义配置里被隐藏也能到达（_applyInitialViewKey 会强制选中）。
-            onAction:
-                () => context.go('${AppRoutes.library}?view=playlist_radio'),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (radioFailed && radioPlaylists.isEmpty)
-            _SectionLoadError(
-              onRetry: () => ref.invalidate(playlistListProvider('radio')),
-            )
-          else if (isWide)
-            _PlaylistGrid(
-              playlists: radioPlaylists,
-              currentPlaylistId: currentPlaylistId,
-              isPlaying: isPlaying,
-            )
-          else
-            PlaylistCarousel(
-              playlists: radioPlaylists,
-              currentPlaylistId: currentPlaylistId,
-              isPlaying: isPlaying,
-              onPlaylistTap: (playlist) {
-                context.push('/playlists/${playlist.id}');
-              },
-            ),
-          SizedBox(height: isWide ? AppSpacing.xl : AppSpacing.lg),
-        ],
-
-        // JS 插件入口区域
-        const JSPluginGrid(),
-        const SizedBox(height: AppSpacing.lg),
-
-        // 统计信息条
-        StatsStrip(
-          normalCount: normalTotalCount,
-          radioCount: radioTotalCount,
+            // 底部安全区域
+            SizedBox(height: MediaQuery.of(context).padding.bottom + 80),
+          ],
         ),
-        const SizedBox(height: AppSpacing.lg),
-
-        // 底部安全区域
-        SizedBox(height: MediaQuery.of(context).padding.bottom + 80),
-      ],
-    ),
       ),
     );
   }
-
 }
 
 /// 问候栏 AppBar
@@ -442,9 +443,10 @@ class _GridPlaylistCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: AppRadius.mdAll,
                       color: colorScheme.surfaceContainerHighest,
-                      border: isCurrent
-                          ? Border.all(color: colorScheme.primary, width: 2)
-                          : null,
+                      border:
+                          isCurrent
+                              ? Border.all(color: colorScheme.primary, width: 2)
+                              : null,
                       boxShadow: AppShadows.light,
                     ),
                     clipBehavior: Clip.antiAlias,
@@ -453,9 +455,9 @@ class _GridPlaylistCard extends StatelessWidget {
                       children: [
                         playlist.coverImageUrl != null
                             ? _buildNetworkImage(
-                                playlist.coverImageUrl!,
-                                colorScheme,
-                              )
+                              playlist.coverImageUrl!,
+                              colorScheme,
+                            )
                             : _buildPlaceholder(colorScheme),
                         if (isPlaying)
                           Container(
@@ -503,8 +505,7 @@ class _GridPlaylistCard extends StatelessWidget {
       imageUrl: UrlHelper.buildCoverUrl(coverUrl),
       fit: BoxFit.cover,
       placeholder: (context, url) => _buildPlaceholder(colorScheme),
-      errorWidget:
-          (context, url, error) => _buildPlaceholder(colorScheme),
+      errorWidget: (context, url, error) => _buildPlaceholder(colorScheme),
     );
   }
 

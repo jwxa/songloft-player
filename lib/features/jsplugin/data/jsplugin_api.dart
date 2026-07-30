@@ -208,9 +208,13 @@ class JSPluginBatchUpdateResponse {
       updated: json['updated'] as int? ?? 0,
       failed: json['failed'] as int? ?? 0,
       skipped: json['skipped'] as int? ?? 0,
-      results: (json['results'] as List<dynamic>?)
-              ?.map((e) =>
-                  JSPluginBatchUpdateResult.fromJson(e as Map<String, dynamic>))
+      results:
+          (json['results'] as List<dynamic>?)
+              ?.map(
+                (e) => JSPluginBatchUpdateResult.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
               .toList() ??
           [],
       message: json['message'] as String? ?? '',
@@ -331,15 +335,18 @@ class RegistryRefreshResponse {
 
   factory RegistryRefreshResponse.fromJson(Map<String, dynamic> json) {
     return RegistryRefreshResponse(
-      plugins: (json['plugins'] as List<dynamic>?)
-              ?.map((e) =>
-                  RegistryPluginEntry.fromJson(e as Map<String, dynamic>))
+      plugins:
+          (json['plugins'] as List<dynamic>?)
+              ?.map(
+                (e) => RegistryPluginEntry.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           [],
       total: json['total'] as int? ?? 0,
       page: json['page'] as int? ?? 1,
       pageSize: json['page_size'] as int? ?? 20,
-      warnings: (json['warnings'] as List<dynamic>?)
+      warnings:
+          (json['warnings'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           [],
@@ -429,8 +436,7 @@ class JSPluginApi {
     try {
       await dio.delete(
         '${AppConfig.apiPrefix}/jsplugins/$id',
-        queryParameters:
-            keepData ? {'keep_data': 'true'} : <String, String>{},
+        queryParameters: keepData ? {'keep_data': 'true'} : <String, String>{},
       );
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
@@ -558,10 +564,7 @@ class JSPluginApi {
     String? token,
   }) async {
     try {
-      final body = <String, dynamic>{
-        'page': page,
-        'page_size': pageSize,
-      };
+      final body = <String, dynamic>{'page': page, 'page_size': pageSize};
       // 聚合「全部」模式：忽略单源 URL 与 token，后端遍历所有启用源
       if (allSources) {
         body['all_sources'] = true;

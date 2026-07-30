@@ -14,7 +14,7 @@ import '../providers/player_provider.dart';
 /// `MaterialApp.builder`（Navigator 之上）挂载，是所有路由的公共祖先，故
 /// push 出来的全屏播放页 / 队列 BottomSheet 等脱离 ShellRoute 的页面也能命中
 /// （songloft-org/songloft#279）。仅桌面挂载（由 `main.dart` 用
-/// `PlatformUtils.isDesktop` 守卫），移动/Web/TV 不包裹本层。
+/// `PlatformUtils.isDesktop` 守卫），移动/Web 不包裹本层。
 ///
 /// 焦点在文本输入（[EditableText]）上时豁免，不拦截打字。
 class PlayerShortcutScope extends ConsumerWidget {
