@@ -20,8 +20,4 @@ const List<GithubProxyOption> kGithubProxyPresets = [
   GithubProxyOption(label: 'ghproxy.com', value: 'https://ghproxy.com/'),
   GithubProxyOption(label: 'ghfast.top', value: 'https://ghfast.top/'),
   GithubProxyOption(label: 'gh.con.sh', value: 'https://gh.con.sh/'),
-  GithubProxyOption(
-    label: 'mirror.ghproxy.com',
-    value: 'https://mirror.ghproxy.com/',
-  ),
 ];

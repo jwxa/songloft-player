@@ -61,7 +61,7 @@ class _UpgradeDialogState extends ConsumerState<UpgradeDialog> {
       final upgradeApi = ref.read(upgradeApiProvider);
       final result = await upgradeApi
           .checkUpgrade(githubProxy: proxy.isNotEmpty ? proxy : null)
-          .timeout(const Duration(seconds: 15));
+          .timeout(const Duration(seconds: 30));
       if (!mounted) return;
       setState(() => _checkResult = result);
     } on ApiException catch (e) {

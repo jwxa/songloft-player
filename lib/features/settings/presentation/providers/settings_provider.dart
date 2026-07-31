@@ -105,13 +105,14 @@ final duplicatesProvider = FutureProvider<DuplicatesResult>((ref) async {
 });
 
 /// 检查服务端更新
-/// 带上已记住的 GitHub 代理，并加 15s 超时，避免网络不通时长时间转圈
+/// 带上已记住的 GitHub 代理，并加 30s 超时（后端代理失败会降级直连重试，
+/// 最坏 12s+12s），避免网络不通时长时间转圈
 final upgradeCheckProvider = FutureProvider<UpgradeCheck>((ref) async {
   final upgradeApi = ref.watch(upgradeApiProvider);
   final proxy = await ref.watch(githubProxyProvider.future);
   return upgradeApi
       .checkUpgrade(githubProxy: proxy.isNotEmpty ? proxy : null)
-      .timeout(const Duration(seconds: 15));
+      .timeout(const Duration(seconds: 30));
 });
 
 /// 获取服务端版本号 + 构建时间。构建时间用于给开发版标注具体编译时刻，方便核对

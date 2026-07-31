@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../config/app_config.dart';
+import '../../../core/network/github_proxy_fallback.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/utils/web_os.dart';
 import '../../../l10n/app_localizations.dart';
@@ -220,7 +221,10 @@ class ClientDownloadPage extends ConsumerWidget {
                 FilledButton.icon(
                   onPressed:
                       () => _launch(
-                        _applyProxy(proxy, '$_standardBase${standard.asset}'),
+                        applyGithubProxy(
+                          '$_standardBase${standard.asset}',
+                          proxy,
+                        ),
                       ),
                   icon: const Icon(Icons.download_outlined, size: 18),
                   label: Text(
@@ -231,7 +235,7 @@ class ClientDownloadPage extends ConsumerWidget {
                 OutlinedButton.icon(
                   onPressed:
                       () => _launch(
-                        _applyProxy(proxy, '$_bundleBase${bundle.asset}'),
+                        applyGithubProxy('$_bundleBase${bundle.asset}', proxy),
                       ),
                   icon: const Icon(Icons.download_outlined, size: 18),
                   label: Text(
@@ -278,7 +282,7 @@ class ClientDownloadPage extends ConsumerWidget {
               highlighted
                   ? Icon(Icons.download_outlined, color: colorScheme.primary)
                   : const Icon(Icons.download_outlined),
-          onTap: () => _launch(_applyProxy(proxy, '$base${a.asset}')),
+          onTap: () => _launch(applyGithubProxy('$base${a.asset}', proxy)),
         ),
       );
     }
@@ -293,7 +297,7 @@ class ClientDownloadPage extends ConsumerWidget {
   ) {
     final colorScheme = Theme.of(context).colorScheme;
     return TextButton.icon(
-      onPressed: () => _launch(_applyProxy(proxy, url)),
+      onPressed: () => _launch(applyGithubProxy(url, proxy)),
       icon: Icon(Icons.open_in_new, size: 16, color: colorScheme.primary),
       label: Text(label, style: TextStyle(color: colorScheme.primary)),
     );
@@ -314,13 +318,6 @@ class ClientDownloadPage extends ConsumerWidget {
     WebOS.linux => 'Linux',
     WebOS.unknown => '',
   };
-
-  /// 套用 GitHub 加速前缀（与后端 applyProxy 一致：确保结尾 `/` 后拼接原始 URL）。
-  static String _applyProxy(String proxy, String url) {
-    if (proxy.isEmpty) return url;
-    final prefix = proxy.endsWith('/') ? proxy : '$proxy/';
-    return '$prefix$url';
-  }
 
   static Future<void> _launch(String url) async {
     final uri = Uri.parse(url);

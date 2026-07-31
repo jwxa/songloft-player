@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../config/app_config.dart';
+import '../../../core/network/github_proxy_fallback.dart';
 import '../../../l10n/l10n_holder.dart';
 
 /// 前端版本检查结果模型
@@ -92,8 +93,11 @@ class FrontendVersionApi {
       const currentVersion = AppConfig.frontendVersion;
       const isDev = currentVersion == 'dev';
       const rawUrl = isDev ? _devReleaseApiUrl : _latestReleaseApiUrl;
-      final url = _applyProxy(rawUrl, githubProxy);
-      final response = await _dio.get(url);
+      final response = await githubGetWithProxyFallback<dynamic>(
+        _dio,
+        rawUrl,
+        proxy: githubProxy,
+      );
       final data = response.data as Map<String, dynamic>;
 
       // 解析 tag_name，去掉 v 前缀
@@ -158,17 +162,9 @@ class FrontendVersionApi {
     }
   }
 
-  /// 对 URL 拼接代理前缀
-  static String _applyProxy(String rawUrl, String? proxyPrefix) {
-    if (proxyPrefix == null || proxyPrefix.isEmpty) return rawUrl;
-    final prefix = proxyPrefix.endsWith('/') ? proxyPrefix : '$proxyPrefix/';
-    return '$prefix$rawUrl';
-  }
-
-  /// 对外暴露的代理拼接方法，供 UI 层使用
-  static String applyProxy(String rawUrl, String? proxyPrefix) {
-    return _applyProxy(rawUrl, proxyPrefix);
-  }
+  /// 对 URL 拼接代理前缀，供 UI 层使用（委托共享实现 [applyGithubProxy]）
+  static String applyProxy(String rawUrl, String? proxyPrefix) =>
+      applyGithubProxy(rawUrl, proxyPrefix);
 
   /// 获取主仓库 dev release 的 version.json，用于 git_commit / build_time 精确比较。
   /// 失败时返回 null，调用方回退到 published_at 比较。
@@ -176,8 +172,11 @@ class FrontendVersionApi {
     String? githubProxy,
   ) async {
     try {
-      final url = _applyProxy(_devVersionJsonUrl, githubProxy);
-      final response = await _dio.get(url);
+      final response = await githubGetWithProxyFallback<dynamic>(
+        _dio,
+        _devVersionJsonUrl,
+        proxy: githubProxy,
+      );
       final data = response.data;
       if (data is Map<String, dynamic>) return data;
     } catch (_) {

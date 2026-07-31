@@ -28,9 +28,10 @@ const kPatchCheckStartupDelay = Duration(seconds: 4);
 
 /// 检查阶段（两类补丁并行拉 manifest）的整体超时兜底。
 ///
-/// 各 dio 自带 10s/30s 超时，但 stable 渠道还要先打一次 `/releases/latest`，
-/// 串起来可能远超单次超时；这里给整个检查阶段一个上限。
-const _kPatchCheckTimeout = Duration(seconds: 20);
+/// 各 dio 自带 10s/30s 超时，且代理失败会降级直连重试（单请求最坏翻倍）；
+/// stable 渠道还要先打一次 `/releases/latest`，串起来可能远超单次超时，
+/// 这里给整个检查阶段一个上限。
+const _kPatchCheckTimeout = Duration(seconds: 45);
 
 /// 统一的启动更新检查 + 手动更新对话框（Android）。
 ///
@@ -246,16 +247,10 @@ class _PatchUpdateDialogState extends ConsumerState<PatchUpdateDialog> {
     // 1) 前端补丁（libapp.so）
     final fp = widget.frontendPatch;
     if (ok && fp != null) {
-      final toApply = PatchInfo(
-        version: fp.version,
-        patchUrl: PatchUpdateService.applyProxy(fp.patchUrl, proxyOrNull),
-        md5: fp.md5,
-        signature: fp.signature,
-        targetVersionCode: fp.targetVersionCode,
-        raw: fp.raw,
-      );
+      // patchUrl 保持原始地址，applyPatch 内部套代理并在失败时降级直连
       ok = await _frontendService.applyPatch(
-        toApply,
+        fp,
+        githubProxy: proxyOrNull,
         onProgress: (prog) {
           if (mounted) setState(() => _fraction = prog.fraction);
         },

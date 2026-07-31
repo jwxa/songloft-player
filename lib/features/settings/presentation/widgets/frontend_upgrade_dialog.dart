@@ -56,7 +56,7 @@ class _FrontendUpgradeDialogState extends ConsumerState<FrontendUpgradeDialog> {
       final api = ref.read(frontendVersionApiProvider);
       final result = await api
           .checkUpdate(githubProxy: proxy.isNotEmpty ? proxy : null)
-          .timeout(const Duration(seconds: 15));
+          .timeout(const Duration(seconds: 30));
       if (mounted) setState(() => _checkResult = result);
     } on TimeoutException {
       if (mounted) {

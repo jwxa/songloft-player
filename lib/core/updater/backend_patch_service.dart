@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../config/app_config.dart';
 import '../backend/embedded_backend_service.dart';
 import '../backend/native_contract_service.dart';
+import '../network/github_proxy_fallback.dart';
 import '../utils/platform_utils.dart';
 import 'channel_release_resolver.dart';
 import 'patch_update_service.dart' show PatchUpdateService;
@@ -168,9 +169,15 @@ class BackendPatchService {
         );
         return null;
       }
-      final url = PatchUpdateService.applyProxy(rawUrl, githubProxy);
-      debugPrint('[BackendPatch] checkPatch: 拉取 manifest $url');
-      final resp = await _githubDio.get<dynamic>(url);
+      debugPrint(
+        '[BackendPatch] checkPatch: 拉取 manifest '
+        '${PatchUpdateService.applyProxy(rawUrl, githubProxy)}',
+      );
+      final resp = await githubGetWithProxyFallback<dynamic>(
+        _githubDio,
+        rawUrl,
+        proxy: githubProxy,
+      );
       final map = _asMap(resp.data);
       if (map == null) {
         debugPrint('[BackendPatch] checkPatch: manifest 解析失败,跳过');
@@ -262,10 +269,11 @@ class BackendPatchService {
       tmp = File('${tmpDir.path}/libgojni.so.part');
       if (await tmp.exists()) await tmp.delete();
 
-      final url = PatchUpdateService.applyProxy(info.soUrl, githubProxy);
-      await _githubDio.download(
-        url,
+      await githubDownloadWithProxyFallback(
+        _githubDio,
+        info.soUrl,
         tmp.path,
+        proxy: githubProxy,
         onReceiveProgress: (received, total) {
           onProgress?.call(total > 0 ? received / total : null);
         },

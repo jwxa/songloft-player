@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../config/app_config.dart';
-import 'patch_update_service.dart' show PatchUpdateService;
+import '../network/github_proxy_fallback.dart';
 
 /// 解析「本渠道最新 Release」的补丁资产下载地址（无基线模型）。
 ///
@@ -49,15 +49,26 @@ class ChannelReleaseResolver {
     return assets?[assetName];
   }
 
-  Future<Map<String, String>?> _stableAssetMap(String? githubProxy) =>
-      _stableAssetsFuture ??= _fetchStableAssetMap(githubProxy);
+  Future<Map<String, String>?> _stableAssetMap(String? githubProxy) {
+    final f = _stableAssetsFuture ??= _fetchStableAssetMap(githubProxy);
+    // 失败（null）不长期缓存：代理+直连都挂时清掉记忆,让下一次检查有机会重查。
+    f.then((v) {
+      if (v == null && identical(_stableAssetsFuture, f)) {
+        _stableAssetsFuture = null;
+      }
+    });
+    return f;
+  }
 
   Future<Map<String, String>?> _fetchStableAssetMap(String? githubProxy) async {
     try {
       const rawApi =
           'https://api.github.com/repos/${AppConfig.frontendUpdateRepo}/releases/latest';
-      final url = PatchUpdateService.applyProxy(rawApi, githubProxy);
-      final resp = await _dio.get<dynamic>(url);
+      final resp = await githubGetWithProxyFallback<dynamic>(
+        _dio,
+        rawApi,
+        proxy: githubProxy,
+      );
       final data = resp.data;
       if (data is! Map) return null;
       final assets = data['assets'];

@@ -6,6 +6,7 @@ import 'package:flutter_patcher/flutter_patcher.dart';
 
 import '../../config/app_config.dart';
 import '../backend/native_contract_service.dart';
+import '../network/github_proxy_fallback.dart';
 import '../utils/platform_utils.dart';
 import 'channel_release_resolver.dart';
 import 'version_compare.dart';
@@ -49,12 +50,9 @@ class PatchUpdateService {
   /// 当前平台是否支持热更新（仅 Android)。
   bool get isSupported => isPlatformSupported;
 
-  /// 给 GitHub URL 套代理前缀（空则直连）。规则同 `frontend_version_api._applyProxy`。
-  static String applyProxy(String rawUrl, String? proxy) {
-    if (proxy == null || proxy.isEmpty) return rawUrl;
-    final prefix = proxy.endsWith('/') ? proxy : '$proxy/';
-    return '$prefix$rawUrl';
-  }
+  /// 给 GitHub URL 套代理前缀（空则直连）。委托共享实现 [applyGithubProxy]。
+  static String applyProxy(String rawUrl, String? proxy) =>
+      applyGithubProxy(rawUrl, proxy);
 
   /// 检查本渠道最新是否有可热更、且引擎兼容的前端补丁。
   ///
@@ -75,9 +73,14 @@ class PatchUpdateService {
         return null;
       }
 
-      final url = applyProxy(rawUrl, githubProxy);
-      debugPrint('[Patcher] checkPatch: 拉取 manifest $url');
-      final resp = await _dio.get<dynamic>(url);
+      debugPrint(
+        '[Patcher] checkPatch: 拉取 manifest ${applyProxy(rawUrl, githubProxy)}',
+      );
+      final resp = await githubGetWithProxyFallback<dynamic>(
+        _dio,
+        rawUrl,
+        proxy: githubProxy,
+      );
       final map = _asMap(resp.data);
       if (map == null) {
         debugPrint('[Patcher] checkPatch: manifest 解析失败,跳过');
@@ -202,25 +205,55 @@ class PatchUpdateService {
   }
 
   /// 下载并安装补丁（阻塞到完成)。成功返回 true,冷启动生效。
+  ///
+  /// 约定传入的 [patch] 的 `patchUrl` 为**原始地址**；[githubProxy] 非空时先经
+  /// 代理下载，失败则降级为原始 URL 直连重试一次。
   Future<bool> applyPatch(
     PatchInfo patch, {
+    String? githubProxy,
     void Function(PatchApplyProgress)? onProgress,
   }) async {
     if (!isSupported) return false;
+    final proxiedUrl = applyProxy(patch.patchUrl, githubProxy);
+    final ok = await _applyPatchOnce(
+      _withPatchUrl(patch, proxiedUrl),
+      onProgress,
+    );
+    if (ok || proxiedUrl == patch.patchUrl) return ok;
+    debugPrint('[Patcher] applyPatch 经代理失败,降级直连重试: 失败URL=$proxiedUrl');
+    return _applyPatchOnce(patch, onProgress);
+  }
+
+  Future<bool> _applyPatchOnce(
+    PatchInfo patch,
+    void Function(PatchApplyProgress)? onProgress,
+  ) async {
     try {
       final result = await FlutterPatcher.applyPatch(
         patch,
         onProgress: onProgress,
       );
       if (!result.ok) {
-        debugPrint('[Patcher] applyPatch 失败: ${result.error}');
+        debugPrint(
+          '[Patcher] applyPatch 失败: ${result.error} '
+          '(url=${patch.patchUrl})',
+        );
       }
       return result.ok;
     } catch (e) {
-      debugPrint('[Patcher] applyPatch 异常: $e');
+      debugPrint('[Patcher] applyPatch 异常: $e (url=${patch.patchUrl})');
       return false;
     }
   }
+
+  static PatchInfo _withPatchUrl(PatchInfo patch, String url) => PatchInfo(
+    version: patch.version,
+    patchUrl: url,
+    md5: patch.md5,
+    signature: patch.signature,
+    targetVersionCode: patch.targetVersionCode,
+    raw: patch.raw,
+  );
 
   static Map<String, dynamic>? _asMap(dynamic data) {
     if (data is Map) return Map<String, dynamic>.from(data);
